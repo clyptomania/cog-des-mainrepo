@@ -31,7 +31,7 @@ This is the official project repository for Cognition Design <br> *HfG Offenbach
 <br> 
 
 <br> 
-
+ 
 ## Git LFS (Large File Storage)
 
 <p> Git Large File Storage (LFS) replaces large files such as audio samples, videos, datasets, and graphics with text pointers inside Git, while storing the file contents on a remote server like GitHub.com or GitHub Enterprise. </p>
