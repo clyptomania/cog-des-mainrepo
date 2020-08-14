@@ -1,6 +1,17 @@
 # Cognition Design
 This is the official project repository for Cognition Design <br> *HfG Offenbach am Main / Goethe University Cognition Lab*
 
+## Basic Bash/Shell Commands:
+<p> Navigate to Directory <br> <code> $ cd path/to/directory </code> </p>
+
+<p> Inspect current directory files and folders <br> <code> $ ls </code> </p>
+
+<p> Create new directory <br> <code> $ mkdir directoryname </code> </p>
+
+<p> Command to find files larger than x (in current parent and child directory) <br> <code> $ find . -size +100M | xargs du -sh </code> </p>
+
+
+
 ## Basic Git Commands:
 
 <p> Initialize local Git repository <br> <code> $ git init </code> </p>
@@ -22,8 +33,6 @@ This is the official project repository for Cognition Design <br> *HfG Offenbach
 <p> Git show pack size: <br> <code> $ git count-objects -Hv </code> </p>
 
 <p> Git check ignored files: <br> <code> $ git check-ignore </code> </p>
-
-<p> Bash command to find files larger than x <br> <code> $ find . -size +100M | xargs du -sh </code> </p>
 
 
 <br> 
