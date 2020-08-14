@@ -14,6 +14,8 @@ This is the official project repository for Cognition Design <br> *HfG Offenbach
 
 ## Basic Git Commands:
 
+[list of all Git commands](https://git-scm.com/docs)
+
 <p> Initialize local Git repository <br> <code> $ git init </code> </p>
 
 <p> Add file(s) to index <br> <code> $ git add <file> </code> </p>
@@ -27,6 +29,8 @@ This is the official project repository for Cognition Design <br> *HfG Offenbach
 <p> Push to remote repository <br> <code> $ git push </code> </p>
 
 <p> Pull latest from remote repository <br> <code> $ git pull </code> </p>
+
+<p> Switch branches or restore working tree files <br> <code> $ git checkout </code> </p>
 
 <p> Clone repository into a new directory <br> <code> $ git clone </code> </p>
 
