@@ -58,3 +58,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# User Generated Light Maps
+[Ll]ightmap*.png
+[Ll]ightmap*.exr
