@@ -11,7 +11,7 @@ This is the official project repository for Cognition Design <br> *HfG Offenbach
 
 <p> Commit changes in index <br> <code> $ git commit -m "Type Comment Here" </code> </p>
 
-<p> Commit specific file in a directory <br> <code> $ git commit -m "my notes" path/to/my/file.ext </code> </p>
+<p> Commit specific file in a directory <br> <code> $ git commit -m "Type Comment Here" path/to/my/file.ext </code> </p>
 
 <p> Push to remote repository <br> <code> $ git push </code> </p>
 
