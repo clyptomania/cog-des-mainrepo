@@ -3,27 +3,27 @@ This is the official project repository for Cognition Design <br> *HfG Offenbach
 
 ## Basic Git Commands:
 
-<p> Initialize Local Git Repository <br> <code> $ git init </code> </p>
+<p> Initialize local Git repository <br> <code> $ git init </code> </p>
 
-<p> Add File(s) to Index <br> <code> $ git add <file> </code> </p>
+<p> Add file(s) to index <br> <code> $ git add <file> </code> </p>
 
-<p> Check Status of Working Tree <br> <code> $ git status </code> </p>
+<p> Check status of working tree <br> <code> $ git status </code> </p>
 
-<p> Commit Changes in Index <br> <code> $ git commit </code> </p>
+<p> Commit changes in index <br> <code> $ git commit </code> </p>
 
-<p> Push to Remote Repository <br> <code> $ git push </code> </p>
+<p> Push to remote repository <br> <code> $ git push </code> </p>
 
 <p> Pull latest from remote repository <br> <code> $ git pull </code> </p>
 
 <p> Clone repository into a new directory <br> <code> $ git clone </code> </p>
 
-<p> Count File Size: <br> <code> $ git count-objects -Hv </code> </p>
+<p> Git show pack size: <br> <code> $ git count-objects -Hv </code> </p>
 
-<<<<<<< HEAD
-=======
-<p> Git Check Ignored Files: <br> <code> $ git check-ignore </code> </p>
+<p> Git check ignored files: <br> <code> $ git check-ignore </code> </p>
 
->>>>>>> f5ed6cadf3d0e01699c6579a3b647aaa819d5ae2
+<p> Bash command to find files larger than x <br> <code> $ find . -size +100M | xargs du -sh </code> </p>
+
+
 <br> 
 
 ![Git Essential Workflow Diagram](https://it.mathworks.com/help/matlab/matlab_prog/srcctrl_git_diagram.png)
