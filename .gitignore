@@ -69,4 +69,4 @@ crashlytics-build.properties
 *[Ll]ightmap*.exr
 **/Lightmap*.exr
 **/Lightmap*.png
-./codesgalpha/Assets/Scenes/**/Lightmap*.exr
+./codges_alpha_SSD/Assets/Scenes/**/Lightmap*.exr
