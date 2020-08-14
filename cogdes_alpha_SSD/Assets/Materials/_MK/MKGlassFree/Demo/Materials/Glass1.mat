@@ -4,8 +4,9 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Glass1
   m_Shader: {fileID: 4800000, guid: 7f205347e1ebaf14c97b28211ae55dbe, type: 3}
   m_ShaderKeywords: _MK_BUMP_MAP _MK_LIGHTMODEL_BLINN_PHONG _MK_REFLECTIVE_DEFAULT
@@ -113,7 +114,7 @@ Material:
     - _UseTranslucent: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 0, b: 0, a: 1}
+    - _Color: {r: 0.46858314, g: 0.764151, b: 0.6437369, a: 1}
     - _DetailColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectColor: {r: 1, g: 1, b: 1, a: 0.5}

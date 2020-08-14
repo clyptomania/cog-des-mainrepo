@@ -48,6 +48,12 @@ ExportedObj/
 *.pdb.meta
 *.mdb.meta
 
+# Lightmaps and Probes
+*.exr
+*.exr.meta
+Lightmap*.png
+Lightmap*.png.meta
+
 # Unity3D generated file on crash reports
 sysinfo.txt
 
