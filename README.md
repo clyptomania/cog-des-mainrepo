@@ -36,7 +36,7 @@ This is the official project repository for Cognition Design <br> *HfG Offenbach
 
 <p> Git show pack size: <br> <code> $ git count-objects -Hv </code> </p>
 
-<p> Git check ignored files: <br> <code> $ git check-ignore </code> </p>
+<p> Git check ignored files: <br> <code> $ git status --ignored </code> </p>
 
 
 <br> 
