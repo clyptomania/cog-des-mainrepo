@@ -70,3 +70,5 @@ crashlytics-build.properties
 **/Lightmap*.exr
 **/Lightmap*.png
 ./cogdes_alpha_SSD/Assets/Scenes/**/Lightmap*.exr
+File.txt
+./cogdes_alpha_SSD/Assets/Scenes/**/File.txt
