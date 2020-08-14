@@ -30,7 +30,7 @@ This is the official project repository for Cognition Design <br> *HfG Offenbach
 
 <p> Pull latest from remote repository <br> <code> $ git pull </code> </p>
 
-<p> Switch branches or restore working tree files <br> <code> $ git checkou </code> </p>
+<p> Switch branches or restore working tree files <br> <code> $ git checkout </code> </p>
 
 <p> Clone repository into a new directory <br> <code> $ git clone </code> </p>
 
