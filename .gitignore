@@ -48,6 +48,14 @@ ExportedObj/
 *.pdb.meta
 *.mdb.meta
 
+# Lightmaps
+*.exr
+*.exr.meta
+LightmapSnapshot.asset
+LightmapSnapshot.asset.meta
+LightingData.asset
+LightingData.asset.meta
+
 # Unity3D generated file on crash reports
 sysinfo.txt
 
@@ -57,4 +65,3 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
-

@@ -89,6 +89,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6551254149688695892}
     m_Modifications:
+    - target: {fileID: -8994155328803480457, guid: dc84d1835ed5b46fb89ffab30db328a3,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc84d1835ed5b46fb89ffab30db328a3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -175,6 +180,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: 22_Querstrebe_mit_DigitalerS-BahnAnzeige
+      objectReference: {fileID: 0}
+    - target: {fileID: 2377794546744528956, guid: dc84d1835ed5b46fb89ffab30db328a3,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 5727619552344669361, guid: dc84d1835ed5b46fb89ffab30db328a3,
         type: 3}
