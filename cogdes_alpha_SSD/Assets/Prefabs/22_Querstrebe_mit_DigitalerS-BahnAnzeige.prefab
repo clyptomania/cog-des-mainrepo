@@ -176,12 +176,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7003955940847458055, guid: 9a7c232cc91b84bff8262d1d5b56d4e9,
         type: 3}
+    - target: {fileID: -927199367670048503, guid: dc84d1835ed5b46fb89ffab30db328a3,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: dc84d1835ed5b46fb89ffab30db328a3,
         type: 3}
       propertyPath: m_Name
       value: 22_Querstrebe_mit_DigitalerS-BahnAnzeige
       objectReference: {fileID: 0}
     - target: {fileID: 2377794546744528956, guid: dc84d1835ed5b46fb89ffab30db328a3,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 4393128189822414837, guid: dc84d1835ed5b46fb89ffab30db328a3,
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
@@ -195,6 +205,18 @@ PrefabInstance:
     - target: {fileID: 7692793987098726890, guid: dc84d1835ed5b46fb89ffab30db328a3,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 7003955940847458055, guid: 9a7c232cc91b84bff8262d1d5b56d4e9,
+        type: 3}
+    - target: {fileID: 7692793987098726890, guid: dc84d1835ed5b46fb89ffab30db328a3,
+        type: 3}
+      propertyPath: m_Materials.Array.data[2]
+      value: 
+      objectReference: {fileID: 8248561939587186364, guid: cba77810af5d8455685bb7b2d7b355a5,
+        type: 3}
+    - target: {fileID: 7692793987098726890, guid: dc84d1835ed5b46fb89ffab30db328a3,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 7003955940847458055, guid: 9a7c232cc91b84bff8262d1d5b56d4e9,
         type: 3}
@@ -228,6 +250,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: 6_DigitaleS-BahnAnzeige
       objectReference: {fileID: 0}
+    - target: {fileID: 1152648289669043547, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 1294794941777326762, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 1974948511291514857, guid: 904d3ec9987a37e48937d869e92f163a,
         type: 3}
       propertyPath: m_text
@@ -248,10 +280,35 @@ PrefabInstance:
       propertyPath: m_textInfo.wordCount
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2274290211901258520, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2449339910003001853, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2614256489972049264, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838047494273425876, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 2888624542214495906, guid: 904d3ec9987a37e48937d869e92f163a,
         type: 3}
       propertyPath: m_Mesh
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3006881642741754872, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 3556834252178805973, guid: 904d3ec9987a37e48937d869e92f163a,
         type: 3}
@@ -323,6 +380,11 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5296136541343537025, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 5409656968549705697, guid: 904d3ec9987a37e48937d869e92f163a,
         type: 3}
       propertyPath: m_text
@@ -423,6 +485,16 @@ PrefabInstance:
       propertyPath: m_textInfo.characterCount
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8829304202624764137, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 8830815995376653206, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 9217360422494329164, guid: 904d3ec9987a37e48937d869e92f163a,
         type: 3}
       propertyPath: m_text
@@ -483,10 +555,50 @@ PrefabInstance:
       propertyPath: m_Name
       value: 6_DigitaleS-BahnAnzeige (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1101147921119324638, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 1152648289669043547, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 1294794941777326762, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274290211901258520, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2449339910003001853, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2614256489972049264, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838047494273425876, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 2888624542214495906, guid: 904d3ec9987a37e48937d869e92f163a,
         type: 3}
       propertyPath: m_Mesh
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3006881642741754872, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 4016239189687404224, guid: 904d3ec9987a37e48937d869e92f163a,
         type: 3}
@@ -553,6 +665,11 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5296136541343537025, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 5938616596269640107, guid: 904d3ec9987a37e48937d869e92f163a,
         type: 3}
       propertyPath: m_Mesh
@@ -567,6 +684,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Mesh
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8829304202624764137, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 8830815995376653206, guid: 904d3ec9987a37e48937d869e92f163a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 904d3ec9987a37e48937d869e92f163a, type: 3}
