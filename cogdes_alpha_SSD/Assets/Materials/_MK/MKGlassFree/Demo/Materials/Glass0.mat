@@ -89,7 +89,7 @@ Material:
     - _MKEditorShowRimBehavior: 1
     - _MKEditorShowSpecularBehavior: 0
     - _MKEditorShowTranslucentBehavior: 0
-    - _MainTint: 0.875
+    - _MainTint: 0.76
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -97,7 +97,7 @@ Material:
     - _ReflectIntensity: 0.25
     - _RenderMode: 0
     - _RimIntensity: 1
-    - _RimSize: 0.73
+    - _RimSize: 0.42
     - _ShadowIntensity: 0.1
     - _Shininess: 0.115
     - _SmoothnessTextureChannel: 0
@@ -114,10 +114,10 @@ Material:
     - _UseTranslucent: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
     - _DetailColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectColor: {r: 1, g: 1, b: 1, a: 0.5}
-    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor: {r: 0.5754717, g: 0.5754717, b: 0.5754717, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _TranslucentColor: {r: 1, g: 1, b: 1, a: 0.5}
