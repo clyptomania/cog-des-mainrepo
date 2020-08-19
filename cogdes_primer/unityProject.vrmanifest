@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.cogdes_prototype_ken.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\VR-Rechner\\Desktop\\Ken_CogDes\\cogdes_test\\CogDes_Prototype_Ken\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Users\\VR-Rechner\\Desktop\\Ken_CogDes\\cog-des-mainrepo\\cogdes_primer\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "CogDes_Prototype_Ken [Testing]"
