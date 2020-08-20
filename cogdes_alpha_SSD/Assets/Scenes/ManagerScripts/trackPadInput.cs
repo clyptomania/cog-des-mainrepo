@@ -94,7 +94,7 @@ public class TrackPadInput: ITrackInput
 		}
 	}
 	
-	public bool HeldDown()
+	public bool heldDisplayDown()
 	{
 		return heldDisplay;
 	}

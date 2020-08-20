@@ -15,12 +15,13 @@ public class ExpeControl : MonoBehaviour
     
     // Playlist data
     private readonly List<playlistElement> playlist = new List<playlistElement>(90);
-    public int m_currentTrialIdx = -1;
+    public int m_currentTrialIdx = 0;
     public int currentTrialIdx => m_currentTrialIdx;
     public playlistElement currentTrial => playlist[currentTrialIdx];
     private string currentRoom => playlist[currentTrialIdx].room_name;
     private int currentRoomIdx => playlist[currentTrialIdx].room_idx;
 
+    [SerializeField] private Transform cameraRig; 
     public Camera mainCam;
     
     public enum lateralisation
@@ -69,11 +70,15 @@ public class ExpeControl : MonoBehaviour
     
     private EyeTrackingSampler _eyeTrack => (EyeTrackingSampler.instance);
     private bool isTracking => (_eyeTrack.ready);
+    private InstructBehaviour _instructBehaviour;
 
     void Awake()
     {
+        instance = this;
         string[] RoomNames = RoomManager.RoomNames;
-
+        cameraRig = transform;
+        _instructBehaviour = GetComponent<InstructBehaviour>();
+        
         // Disable panels
         instructionPanel.SetActive(false);
         pauseCanvas.SetActive(false);
@@ -168,7 +173,6 @@ public class ExpeControl : MonoBehaviour
             tasks.Add(linesplit[0], linesplit[1]);
             print(line);
         }
-        Quit();
     }
     private void setUserPlaylist(int idx)
     {
@@ -200,7 +204,7 @@ public class ExpeControl : MonoBehaviour
             string[] els = ell[i].Split('-');
             print(els);
              
-            // 0: Scene, 1: Target, 2: Mask
+            // 0: Scene, 1: Task
             int.TryParse(els[0], out var room_idx);
             int.TryParse(els[1], out var quest_idx);
 
@@ -213,9 +217,10 @@ public class ExpeControl : MonoBehaviour
 
     private bool m_isPresenting;
 
-    public SteamVR_Action_Boolean PointTarget;
     public SteamVR_Input_Sources handType;
-    public bool userPressed => true; // SteamVR_Actions.default_InteractUI.GetStateUp(handType);
+    public bool userPressed => SteamVR_Actions.default_InteractUI.GetStateUp(handType);
+    public bool userPressedSpecial => TrackPadInput.instance.heldDisplayDown() &&
+                                      TrackPadInput.instance.Pressed();
 
     IEnumerator Start()
     {
@@ -252,7 +257,7 @@ public class ExpeControl : MonoBehaviour
         instructionPanel.SetActive(true);
         // Wait for user ID
         yield return new WaitUntil(() => !instructionPanel.activeSelf);
-        
+
         while (m_currentTrialIdx < playlist.Count)
         {
             toggleMessage(true, "unloading");
@@ -272,25 +277,33 @@ public class ExpeControl : MonoBehaviour
             writeInfo(RoomManager.instance.currSceneName);
             yield return new WaitUntil(() => !RoomManager.instance.actionInProgress && RoomManager.instance.currentScene.isLoaded);
             yield return null;
-            
             toggleMessage(false);
             
             // Start new gaze record (record name = stimulus name)
             _eyeTrack.startNewRecord();
             // Start trial
             m_isPresenting = true;
-            
             long start_time = getTimeStamp();
-            // Update info panel with new question (currentTaskString)
-            // Update controller info panel with new question
             
-            // Wait till user clicks the trigger or max duration has been reached
-            yield return new WaitUntil(() => userPressed);
+            // Teleport user to starting position
+            Transform startTr = GameObject.Find("Start").transform;
+            cameraRig.position = startTr.position;
+            cameraRig.rotation = startTr.rotation;
+            startTr.gameObject.SetActive(false);
+            
+            // Position instruction panel relative to new user location
+            _instructBehaviour.positionWorldInstruction(cameraRig.position, cameraRig.rotation);
+            // Set instruction panel visible
+            _instructBehaviour.toggleWorldInstruction(true);
+            // Update all info panels with new question
+            _instructBehaviour.setInstruction(currentTaskString);
+            
+            // Wait till user presses a special combination of inputs to stop the trial
+            yield return new WaitUntil(() => userPressedSpecial);
             m_isPresenting = false;
             
             // Stop recording gaze
             _eyeTrack.stopRecord(getTimeStamp() - start_time);
-            // Toggle masks off
             
             Debug.Log($"Finished: {currentTrial.expName} - {trialidx + 1}");
             
@@ -302,8 +315,6 @@ public class ExpeControl : MonoBehaviour
         toggleMessage(false);
 
         flushInfo();
-        
-        Quit();
     }
     
     bool paused;
@@ -317,8 +328,6 @@ public class ExpeControl : MonoBehaviour
         pauseCanvas.SetActive(paused);
         Text msgHolder = pauseCanvas.transform.GetChild(0).Find("ContentTxt").GetComponent<Text>();
         msgHolder.text = messages[message];
-        msgHolder = pauseCanvas.transform.GetChild(0).Find("TitleTxt").GetComponent<Text>();
-        msgHolder.text = message=="pause"?"Break":"Information";
     }
 
     private void OnGUI()
