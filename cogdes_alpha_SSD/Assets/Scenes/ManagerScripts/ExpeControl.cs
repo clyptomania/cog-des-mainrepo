@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 using Valve.VR;
@@ -182,27 +183,27 @@ public class ExpeControl : MonoBehaviour
             Quit();
         }
 
-        StreamReader file = new StreamReader(Directory.GetParent(Application.dataPath) + "/SubjectData/playlist.csv");
+        StreamReader file = new StreamReader(Directory.GetParent(Application.dataPath) +
+                                             "/SubjectData/playlist.csv", Encoding.UTF8);
 
         int nrep = 10;
-        int linesize = 3 * nrep + (nrep-1) + 1; // Number of characters per line plus line return
+        int linesize = 3 * nrep + (nrep-1) + 2;
+        // Number of characters per line plus line return
 
         // Read line according to the user ID number
         char[] lineChar = new char[linesize-1];
         file.BaseStream.Position = idx*linesize;
         file.Read(lineChar, 0, lineChar.Length);
         file.Close();
-
+        
         // Convert line from char[] to string
         string line = new string(lineChar);
         // Split line by commas
         string[] ell = line.Split(',');
-        print(line);
         // For all element in list
         for (int i=0; i<ell.Length; i++){
             // Split by '-' 
             string[] els = ell[i].Split('-');
-            print(els);
              
             // 0: Scene, 1: Task
             int.TryParse(els[0], out var room_idx);
@@ -257,6 +258,8 @@ public class ExpeControl : MonoBehaviour
         instructionPanel.SetActive(true);
         // Wait for user ID
         yield return new WaitUntil(() => !instructionPanel.activeSelf);
+        
+        print($"Starting {playlist}");
 
         while (m_currentTrialIdx < playlist.Count)
         {
@@ -268,14 +271,16 @@ public class ExpeControl : MonoBehaviour
             
             int trialidx = currentTrial.task_idx;
             
-            // Inter-trial break
-            // Calibration
+            // TODO: Training scene
+            // TODO: Inter-trial break
+            // TODO: Calibration
 
             long timeSpentLoading = getTimeStamp();
             toggleMessage(true, "loading");
             RoomManager.instance.LoadScene(currentTrial.room_idx);
             writeInfo(RoomManager.instance.currSceneName);
-            yield return new WaitUntil(() => !RoomManager.instance.actionInProgress && RoomManager.instance.currentScene.isLoaded);
+            yield return new WaitUntil(() => !RoomManager.instance.actionInProgress &&
+                                                      RoomManager.instance.currentScene.isLoaded);
             yield return null;
             toggleMessage(false);
             
@@ -310,6 +315,7 @@ public class ExpeControl : MonoBehaviour
             m_currentTrialIdx++;
             flushInfo();
         }
+        
         toggleMessage(true, "end");
         yield return new WaitUntil(() => userPressed || Input.GetKeyUp(KeyCode.Space));
         toggleMessage(false);

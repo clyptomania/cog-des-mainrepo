@@ -73,7 +73,7 @@ public class EyeTrackingSampler: MonoBehaviour
         }
     }
     
-    private void OnPostRender()
+    private void Update()
     {
         RetrieveCameraData();
         if (isSampling)
@@ -81,8 +81,9 @@ public class EyeTrackingSampler: MonoBehaviour
             m_recorder_HMD.WriteLine(
                 $"{gazePoint.data.timestamp},{UnityTimeStamp}," +
                 $"{(gazePoint.LeftCollide != null ? gazePoint.LeftCollide.name : "None")}," +
-                $"{(gazePoint.RightCollide != null ? gazePoint.RightCollide.name : "None")}");
-            m_recorder_HMD.Flush();
+                $"{(gazePoint.RightCollide != null ? gazePoint.RightCollide.name : "None")}" +
+                $"{(gazePoint.CombinedCollide != null ? gazePoint.CombinedCollide.name : "None")}");
+            // m_recorder_HMD.Flush();
         }
     }
 
@@ -106,7 +107,7 @@ public class EyeTrackingSampler: MonoBehaviour
                                           _expeControl.currentTrial.expName + "_HMD.csv");
         m_recorder_HMD.WriteLine(
             "OcutimeStamp,UnityTimeStamp," +
-            "LeftCollide,RightCollide");
+            "LeftCollide,RightCollide,CombCollide");
         
         isSampling = true;
         
@@ -128,12 +129,7 @@ public class EyeTrackingSampler: MonoBehaviour
     
     private Vector3 cameraPosition;
     private Quaternion cameraQuaternion;
-    private Matrix4x4 camStereoProjLeft;
-    private Matrix4x4 camStereoProjRight;
-    private Matrix4x4 camViewMat;
-
-    private Vector3 torsoPosition;
-    private Quaternion torsoRotation;
+    
     [NonSerialized]
     public long UnityTimeStamp;
     
@@ -170,25 +166,15 @@ public class EyeTrackingSampler: MonoBehaviour
             LeftWorldRay = getGazeRay(ExpeControl.lateralisation.left);
             RightWorldRay = getGazeRay(ExpeControl.lateralisation.right);
             RightWorldRay = getGazeRay(ExpeControl.lateralisation.comb);
-
-            LeftLocalRay = new Ray(LeftGaze.gaze_origin_mm, LeftGaze.gaze_direction_normalized);
-            RightLocalRay = new Ray(RightGaze.gaze_origin_mm, RightGaze.gaze_direction_normalized);
-            RightLocalRay = new Ray(CombGaze.gaze_origin_mm, RightGaze.gaze_direction_normalized);
         }
 
         public readonly EyeData data;
         public readonly SingleEyeData LeftGaze;
         public readonly SingleEyeData RightGaze;
         public readonly SingleEyeData CombGaze;
-        public readonly SingleEyeData CombinedGaze;
 
         public readonly Ray LeftWorldRay;
         public readonly Ray RightWorldRay;
-        public readonly Ray CombinedWorldRay;
-
-        public readonly Ray LeftLocalRay;
-        public readonly Ray RightLocalRay;
-        public readonly Ray CombinedLocalRay;
 
         public Transform LeftCollide;
         public Transform RightCollide;

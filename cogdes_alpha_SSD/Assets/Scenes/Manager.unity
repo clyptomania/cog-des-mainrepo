@@ -299,6 +299,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_currentTrialIdx: 0
+  cameraRig: {fileID: 0}
   mainCam: {fileID: 217876316}
   instructionPanel: {fileID: 2090746102}
   pauseCanvas: {fileID: 1173956107313542}
@@ -323,7 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2dc41856e084764f92c26edcf80961c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  instructionGeneral: {fileID: 2090746106}
+  instructionGeneral: {fileID: 223541974522993496}
   instructionControllerL: {fileID: 732645059}
   instructionControllerR: {fileID: 2034906144}
 --- !u!1001 &732645058
@@ -826,12 +827,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!223 &2090746106 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 251284778542795507, guid: fb18987d190cc2149b0e03a7b0131a1b,
-    type: 3}
-  m_PrefabInstance: {fileID: 2090746101}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1147030594581936
 GameObject:
   m_ObjectHideFlags: 0
