@@ -843,7 +843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ba69168a91b4cb41972d755f53bd3ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectType: landmark
+  currentObjectType: 1
 --- !u!1 &369262200
 GameObject:
   m_ObjectHideFlags: 0
@@ -6832,4 +6832,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ba69168a91b4cb41972d755f53bd3ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectType: orientation
+  currentObjectType: 0

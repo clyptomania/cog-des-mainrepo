@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class selfregister : MonoBehaviour
 {
-    public enum ObjectType
+    public enum objectType
     {
         Orientation,
         Landmark
     }
 
-    public ObjectType currentObjectType;
+    public objectType currentObjectType;
 
     // Start is called before the first frame update
     void Start()
