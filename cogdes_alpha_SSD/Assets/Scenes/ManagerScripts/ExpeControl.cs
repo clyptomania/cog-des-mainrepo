@@ -55,20 +55,13 @@ public class ExpeControl : MonoBehaviour
             "Take a moment to rest before continuing with the experiment.\n" +
             "Press the trigger to start the experiment."},
         {"calibstart", 
-            "Press the trigger to start a calibration."},
-        {"failedVal", 
-            "The <b>validation</b> phase failed.\n\n" +
-            "A new calibration phase will start in 3 seconds."},
-        {"failedCal", 
-            "The <b>calibration</b> phase failed.\n\n" +
-            "Take a minute to rest your eyes.\n" +
-            "Press the trigger when you are ready to resume."},
+            "Re-calibrate the eye tracker.\nCall the experimentalist for assistance."},
         {"loading",
             "Loading next room."},
         {"unloading", 
             "Unloading current room."},
         {"end", 
-            "This is the end of the experiment.\nThank you very much for your participation."},
+            "This is the end of the experiment.\nThank you very much for your participation.\nYou can take off the headset."},
     };
     
     // Show training stimuli?
@@ -110,10 +103,12 @@ public class ExpeControl : MonoBehaviour
 
     private void SetUp(){
         m_userdataPath = m_basePath + "/Subj_" + m_userId;
+        // If this user already exists: start after last trial
         if (Directory.Exists(m_userdataPath))
         {
             int count = Directory.GetFiles(m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
-
+    
+            // Rename userdata file before creating a new one
             if (File.Exists(m_userdataPath + "/UserData.txt"))
             {
                 File.Move(m_userdataPath + "/UserData.txt", m_userdataPath + $"/UserData_{getTimeStamp()}.txt" );
@@ -122,27 +117,27 @@ public class ExpeControl : MonoBehaviour
             if (count > 1){
                 m_currentTrialIdx = count/2;
             }
-            // Quit();
         }
 
         print(m_userdataPath);
         // Create new folder with subject ID
         Directory.CreateDirectory(m_userdataPath);
-        
+        // User information: basic data + playlist
         m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt");
 
-        // Add treaining trials if needed
+        // Add training trials if needed
         if (trainPhase) {
             playlist.Add(new playlistElement(0, 0, -1));
         }
         // get playlist for user ID
         setUserPlaylist(m_userId);
+        setTaskList();
 
         // Record some protocol information
         writeInfo("User_ID: " + m_userId);
         writeInfo("Stimuli order, room name, target idx, scotoma condition:");
         foreach (playlistElement elp in playlist)
-            writeInfo($"{elp.exp_idx} - {elp.expName}");
+            writeInfo($"{elp.expName} - quest_{elp.task_idx}");
         flushInfo();
     }
 
@@ -157,7 +152,24 @@ public class ExpeControl : MonoBehaviour
         if (m_recorder_info.BaseStream.CanWrite)
                 m_recorder_info.Flush();
     }
+    
+    private IDictionary<string, string> tasks;
 
+    public string currentTaskString => $"{currentTrial.room_idx}.{currentTrial.task_idx}";
+
+    private void setTaskList()
+    {
+        tasks = new Dictionary<string, string>();
+        var lines = File.ReadLines(
+            Directory.GetParent(Application.dataPath) + "/SubjectData/questions.csv");
+        foreach (var line in lines)
+        {
+            string[] linesplit = line.Split(',');
+            tasks.Add(linesplit[0], linesplit[1]);
+            print(line);
+        }
+        Quit();
+    }
     private void setUserPlaylist(int idx)
     {
         int max_idx = 100;
@@ -168,7 +180,8 @@ public class ExpeControl : MonoBehaviour
 
         StreamReader file = new StreamReader(Directory.GetParent(Application.dataPath) + "/SubjectData/playlist.csv");
 
-        int linesize = 3 * 9; // Number of characters per line plus line return
+        int nrep = 10;
+        int linesize = 3 * nrep + (nrep-1) + 1; // Number of characters per line plus line return
 
         // Read line according to the user ID number
         char[] lineChar = new char[linesize-1];
@@ -180,10 +193,12 @@ public class ExpeControl : MonoBehaviour
         string line = new string(lineChar);
         // Split line by commas
         string[] ell = line.Split(',');
+        print(line);
         // For all element in list
         for (int i=0; i<ell.Length; i++){
             // Split by '-' 
             string[] els = ell[i].Split('-');
+            print(els);
              
             // 0: Scene, 1: Target, 2: Mask
             int.TryParse(els[0], out var room_idx);
@@ -202,7 +217,6 @@ public class ExpeControl : MonoBehaviour
     public SteamVR_Input_Sources handType;
     public bool userPressed => true; // SteamVR_Actions.default_InteractUI.GetStateUp(handType);
 
-    private bool m_ETsubscribed = false;
     IEnumerator Start()
     {
         /*
@@ -213,16 +227,11 @@ public class ExpeControl : MonoBehaviour
          *         Data input (subj num)
          *     Train
          *         Explore scene to get used to the headset (scene that needs a long time to load)
-         *         Search 5 objects in the scene (obvious to 
-         *             Learn where to look for the target name
-         *             Learn to center oneself on the mark in the middle of the room and face the target-displaying panel
-         *             learn to operate the controller and point at the target object)
-         *             1*ctrl, 2*central, 3*periph
+         *             1-2 tasks in training station
          *     Inter-trial break
          *     Trial
          *         Recenter
-         *         Press controller
-         *         Display target name
+         *         Read question
          *         End:
          *             Wait n seconds
          *             Wait till target is found: trigger pressed
@@ -236,18 +245,13 @@ public class ExpeControl : MonoBehaviour
          */
         
         writeInfo("Waiting for the eyetracker to start");
-        // Wait for ET server to start
         yield return new WaitUntil(() => _eyeTrack.ready);
-
-        m_ETsubscribed = true;
         writeInfo("Eyetracker started and sampling");
 
         // Show SubjInfo panel
         instructionPanel.SetActive(true);
         // Wait for user ID
         yield return new WaitUntil(() => !instructionPanel.activeSelf);
-        
-        // m_currentTrialIdx = 0;
         
         while (m_currentTrialIdx < playlist.Count)
         {
@@ -257,7 +261,7 @@ public class ExpeControl : MonoBehaviour
             yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
             toggleMessage(false);
             
-            int trialidx = currentTrial.exp_idx;
+            int trialidx = currentTrial.task_idx;
             
             // Inter-trial break
             // Calibration
@@ -277,9 +281,8 @@ public class ExpeControl : MonoBehaviour
             m_isPresenting = true;
             
             long start_time = getTimeStamp();
-            // Toggle mask gameObjects on
-            // Set mask type and size
-            yield return null; // Wait till next frame
+            // Update info panel with new question (currentTaskString)
+            // Update controller info panel with new question
             
             // Wait till user clicks the trigger or max duration has been reached
             yield return new WaitUntil(() => userPressed);
@@ -328,7 +331,6 @@ public class ExpeControl : MonoBehaviour
     public static long getTimeStamp()
     {
         // USE solution I used in Olivier Z. 's project
-        Debug.Log("[getTimeStamp] USE solution I used in Olivier Z. 's project");
         return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     }
 

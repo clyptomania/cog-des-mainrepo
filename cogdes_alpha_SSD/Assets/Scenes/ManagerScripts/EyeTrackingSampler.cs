@@ -25,16 +25,12 @@ public class EyeTrackingSampler: MonoBehaviour
         _expeControl = ExpeControl.instance;
         ready = false;
 
-        print("sampler: waiting");
-
         while (SRanipal_Eye_Framework.Status != SRanipal_Eye_Framework.FrameworkStatus.WORKING &&
             SRanipal_Eye_Framework.Status != SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT)
         {
             yield return null;
         }
         
-        print("sampler: done");
-
         SRanipal_Eye.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye.CallbackBasic)Callback));
 
         ready = true;
@@ -114,7 +110,7 @@ public class EyeTrackingSampler: MonoBehaviour
         
         isSampling = true;
         
-        _expeControl.writeInfo($"Started: [{_expeControl.currentTrial.exp_idx + 1}] " +
+        _expeControl.writeInfo($"Started: [{_expeControl.currentTrial.task_idx + 1}] " +
                                $"{_expeControl.currentTrial.expName}");
     }
 
