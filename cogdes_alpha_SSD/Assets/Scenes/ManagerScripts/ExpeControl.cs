@@ -32,6 +32,23 @@ public class ExpeControl : MonoBehaviour
         comb
     }
     
+    public struct LightStruct
+    {
+        public bool orientation;
+        public bool landmark;
+    }
+    static public List<LightStruct> LightConditions = new List<LightStruct>(4)
+    {
+        // 0: No lightning (ctrl)
+        new LightStruct{orientation = false, landmark = false},
+        // 1: set light on orientation markers
+        new LightStruct{orientation = true, landmark = false},
+        // 2: set light on landmarks
+        new LightStruct{orientation = false, landmark = true},
+        // 3: set light on landmarks and orientation markers
+        new LightStruct{orientation = true, landmark = true},
+    };
+    
     // UI go
     public GameObject instructionPanel;
 
@@ -133,7 +150,7 @@ public class ExpeControl : MonoBehaviour
 
         // Add training trials if needed
         if (trainPhase) {
-            playlist.Add(new playlistElement(0, 0, -1));
+            playlist.Add(new playlistElement(0, 0, 0, -1));
         }
         // get playlist for user ID
         setUserPlaylist(m_userId);
@@ -187,7 +204,7 @@ public class ExpeControl : MonoBehaviour
                                              "/SubjectData/playlist.csv", Encoding.UTF8);
 
         int nrep = 10;
-        int linesize = 3 * nrep + (nrep-1) + 2;
+        int linesize = 5 * nrep + (nrep-1) + 2;
         // Number of characters per line plus line return
 
         // Read line according to the user ID number
@@ -200,17 +217,20 @@ public class ExpeControl : MonoBehaviour
         string line = new string(lineChar);
         // Split line by commas
         string[] ell = line.Split(',');
+        print(ell);
         // For all element in list
         for (int i=0; i<ell.Length; i++){
             // Split by '-' 
+            print(ell[i]);
             string[] els = ell[i].Split('-');
              
-            // 0: Scene, 1: Task
+            // 0: Scene, 1: light cond, 2: Task
             int.TryParse(els[0], out var room_idx);
-            int.TryParse(els[1], out var quest_idx);
+            int.TryParse(els[1], out var light_cond);
+            int.TryParse(els[2], out var quest_idx);
 
             // new playlistElement to insert in playlist
-            playlist.Add(new playlistElement(room_idx + (trainPhase?1:0), quest_idx, i));
+            playlist.Add(new playlistElement(room_idx + (trainPhase?1:0), light_cond, quest_idx, i));
         }
         
         print($"playlist.Count: {playlist.Count}");
@@ -296,6 +316,10 @@ public class ExpeControl : MonoBehaviour
             cameraRig.rotation = startTr.rotation;
             startTr.gameObject.SetActive(false);
             
+            // TODO: Have scenes self-register light object or find them at scene onset
+            // TODO: Set lighting condition
+            setLights(LightConditions[currentTrial.light_cond]);
+            
             // Position instruction panel relative to new user location
             _instructBehaviour.positionWorldInstruction(cameraRig.position, cameraRig.rotation);
             // Set instruction panel visible
@@ -334,6 +358,11 @@ public class ExpeControl : MonoBehaviour
         pauseCanvas.SetActive(paused);
         Text msgHolder = pauseCanvas.transform.GetChild(0).Find("ContentTxt").GetComponent<Text>();
         msgHolder.text = messages[message];
+    }
+
+    private void setLights(LightStruct cond)
+    {
+        throw new NotImplementedException();   
     }
 
     private void OnGUI()
