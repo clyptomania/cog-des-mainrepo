@@ -51,7 +51,7 @@ public class ObjectManager
             _o.ToggleLight(state);
         }
         
-        Debug.Log($"Toggle: {type} {state} (N={list.Count})");
+        // Debug.Log($"Toggle: {type} {state} (N={list.Count})");
     }
 
     public bool GetLightState(selfregister.objectType type)
