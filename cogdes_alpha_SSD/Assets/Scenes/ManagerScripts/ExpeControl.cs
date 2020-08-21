@@ -13,6 +13,7 @@ using Valve.VR;
 public class ExpeControl : MonoBehaviour
 {
     public static ExpeControl instance { get; private set; }
+    [SerializeField] private bool debugging;
     
     // Playlist data
     private readonly List<playlistElement> playlist = new List<playlistElement>(90);
@@ -89,6 +90,7 @@ public class ExpeControl : MonoBehaviour
     private EyeTrackingSampler _eyeTrack => (EyeTrackingSampler.instance);
     private bool isTracking => (_eyeTrack.ready);
     private InstructBehaviour _instructBehaviour;
+    public ObjectManager condObjects { get; private set; }
 
     void Awake()
     {
@@ -96,6 +98,7 @@ public class ExpeControl : MonoBehaviour
         string[] RoomNames = RoomManager.RoomNames;
         cameraRig = transform;
         _instructBehaviour = GetComponent<InstructBehaviour>();
+        condObjects = new ObjectManager();
         
         // Disable panels
         instructionPanel.SetActive(false);
@@ -245,7 +248,7 @@ public class ExpeControl : MonoBehaviour
 
     IEnumerator Start()
     {
-        /*
+            /*
          * FLOW
          *     Pre
          *         Vision tests: dominant eye, stereo vision, color vision, visual acuity
@@ -269,10 +272,13 @@ public class ExpeControl : MonoBehaviour
          *         Wait the remainder of the rest time
          *         Enable cameras
          */
-        
-        writeInfo("Waiting for the eyetracker to start");
-        yield return new WaitUntil(() => _eyeTrack.ready);
-        writeInfo("Eyetracker started and sampling");
+
+        if (!debugging)
+        {
+            writeInfo("Waiting for the eyetracker to start");
+            yield return new WaitUntil(() => _eyeTrack.ready);
+            writeInfo("Eyetracker started and sampling");
+        }
 
         // Show SubjInfo panel
         instructionPanel.SetActive(true);
@@ -294,6 +300,8 @@ public class ExpeControl : MonoBehaviour
             // TODO: Training scene
             // TODO: Inter-trial break
             // TODO: Calibration
+            
+            condObjects.Clear();
 
             long timeSpentLoading = getTimeStamp();
             toggleMessage(true, "loading");
@@ -309,16 +317,29 @@ public class ExpeControl : MonoBehaviour
             // Start trial
             m_isPresenting = true;
             long start_time = getTimeStamp();
+
+            if (debugging)
+            {
+                foreach (var lightCond in LightConditions)
+                {
+                    // yield return new WaitForSecondsRealtime(1);
+                    yield return new WaitUntil(() => userPressed || Input.GetKeyUp(KeyCode.Space));
+                    yield return null;
+                    setLights(lightCond);
+                    print("------");
+                }
+                yield return new WaitUntil(() => userPressed || Input.GetKeyUp(KeyCode.Space));
+            }
+            else
+            { 
+                setLights(LightConditions[currentTrial.light_cond]);
+            }
             
             // Teleport user to starting position
             Transform startTr = GameObject.Find("Start").transform;
             cameraRig.position = startTr.position;
             cameraRig.rotation = startTr.rotation;
             startTr.gameObject.SetActive(false);
-            
-            // TODO: Have scenes self-register light object or find them at scene onset
-            // TODO: Set lighting condition
-            setLights(LightConditions[currentTrial.light_cond]);
             
             // Position instruction panel relative to new user location
             _instructBehaviour.positionWorldInstruction(cameraRig.position, cameraRig.rotation);
@@ -345,6 +366,7 @@ public class ExpeControl : MonoBehaviour
         toggleMessage(false);
 
         flushInfo();
+        Quit();
     }
     
     bool paused;
@@ -362,7 +384,8 @@ public class ExpeControl : MonoBehaviour
 
     private void setLights(LightStruct cond)
     {
-        throw new NotImplementedException();   
+        condObjects.ToggleLight(cond.orientation, selfregister.objectType.Orientation);
+        condObjects.ToggleLight(cond.landmark, selfregister.objectType.Landmark);
     }
 
     private void OnGUI()
