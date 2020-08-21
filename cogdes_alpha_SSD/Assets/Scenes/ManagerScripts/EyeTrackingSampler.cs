@@ -4,7 +4,6 @@ using System.IO;
 using UnityEngine;
 using ViveSR.anipal.Eye;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 public class EyeTrackingSampler: MonoBehaviour
 {
@@ -35,7 +34,6 @@ public class EyeTrackingSampler: MonoBehaviour
 
         ready = true;
     }
-
 
     public bool isSampling { get; private set; }
     private long lastOcuTS;

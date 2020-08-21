@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InstructBehaviour : MonoBehaviour
 {
-    [SerializeField]
     private static InstructBehaviour instance;
     [SerializeField]
     private Canvas instructionGeneral;

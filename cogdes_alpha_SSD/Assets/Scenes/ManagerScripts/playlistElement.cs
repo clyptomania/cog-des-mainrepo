@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public struct playlistElement
+﻿public struct playlistElement
 {
     public playlistElement(int room_idx, int light_cond, int task_idx, int order_idx)
     {
