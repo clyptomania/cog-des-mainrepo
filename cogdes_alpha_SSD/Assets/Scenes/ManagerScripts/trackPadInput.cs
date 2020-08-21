@@ -1,108 +1,79 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 
-public interface ITrackInput
-{
-	bool Pressed();
-}
 
-// https://medium.com/@sarthakghosh/a-complete-guide-to-the-steamvr-2-0-input-system-in-unity-380e3b1b3311
-
-public class TrackPadInput: ITrackInput
+public class TrackPadInput: MonoBehaviour
 {
-	public static TrackPadInput instance
-	{
-		get
-		{
-			if (_instance == null)
-			{
-				_instance = new TrackPadInput();
-			}
-			return _instance;
-		}
-	}
 	private static TrackPadInput _instance;
+	public static TrackPadInput instance => _instance;
+
+	private void Awake()
+	{
+		_instance = this;
+	}
+
+	public delegate void triggerCallback(bool b, ExpeControl.lateralisation l);
+	public static Dictionary<string, triggerCallback> triggerCallbacks = new Dictionary<string, triggerCallback>();
 	
-	public SteamVR_Action_Boolean PointTarget;
-	public SteamVR_Action_Boolean DisplayInstruct;
-	public SteamVR_Input_Sources handType;
-	
-	public delegate void triggerCallback(bool pressed);
-	public Dictionary<string, triggerCallback> triggerCallbacks = new Dictionary<string, triggerCallback>();
-	
-	public delegate void touchCallback(bool pressed);
-	public Dictionary<string, touchCallback> touchCallbacks = new Dictionary<string, touchCallback>();
+	public delegate void touchCallback(bool pressed, ExpeControl.lateralisation l);
+	public static Dictionary<string, touchCallback> touchCallbacks = new Dictionary<string, touchCallback>();
 
 	public TrackPadInput()
 	{
-		PointTarget = SteamVR_Actions.default_InteractUI;
-		DisplayInstruct = SteamVR_Actions.default_ShowInstuct;
-		handType = SteamVR_Input_Sources.Any;
-		
-		PointTarget.AddOnStateDownListener(TriggerDown, handType);
-		PointTarget.AddOnStateUpListener(TriggerUp, handType);
-		
-		DisplayInstruct.AddOnStateDownListener(heldToDisplay, handType);
-		DisplayInstruct.AddOnStateUpListener(releaseToDisplay, handType);
 	}
 
-	private bool pressed;
-	public void TriggerDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-	{
-		pressed = true;
-		
-		foreach (triggerCallback func in triggerCallbacks.Values)
-		{
-			func(pressed);
-		}
-	}
-
-	public void TriggerUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-	{
-		pressed = false;
-		
-		foreach (triggerCallback func in triggerCallbacks.Values)
-		{
-			func(pressed);
-		}
-	}
+	private bool _pressedL;
+	private bool _pressedR;
 	
+	private bool _heldDisplayL;
+	private bool _heldDisplayR;
+
 	public bool Pressed()
 	{
-		return pressed;
-	}
-
-	private bool heldDisplay;
-	public void heldToDisplay(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-	{
-		heldDisplay = true;
-		
-		foreach (touchCallback func in touchCallbacks.Values)
-		{
-			func(heldDisplay);
-		}
-	}
-	public void releaseToDisplay(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-	{
-		heldDisplay = false;
-		
-		foreach (touchCallback func in touchCallbacks.Values)
-		{
-			func(heldDisplay);
-		}
+		return _pressedL || _pressedR;
 	}
 	
-	public bool heldDisplayDown()
+	public bool HeldDisplayDown()
 	{
-		return heldDisplay;
+		return _heldDisplayL || _heldDisplayR;
 	}
-}
 
-public class MockTrackPadInput: ITrackInput
-{
-	public bool Pressed()
+	public void TriggerPressL(bool state)
+	{ TriggerPress(state, ExpeControl.lateralisation.left); }
+	public void TriggerPressR(bool state)
+	{ TriggerPress(state, ExpeControl.lateralisation.right); }
+	
+	public void heldToDisplayL(bool state)
+	{ HeldToDisplay(state, ExpeControl.lateralisation.left); }
+	public void heldToDisplayR(bool state)
+	{ HeldToDisplay(state, ExpeControl.lateralisation.right); }
+	
+
+	public void TriggerPress(bool state, ExpeControl.lateralisation hand)
 	{
-		return Input.GetKeyUp(KeyCode.Space);
+		if (hand == ExpeControl.lateralisation.left)  _pressedL = state;
+		else  _pressedR = state;
+
+		// print($"TT {Pressed()} {hand}");
+		
+		foreach (triggerCallback func in TrackPadInput.triggerCallbacks.Values)
+		{
+			func(state, hand);
+		}
+	}
+
+	public void HeldToDisplay(bool state, ExpeControl.lateralisation hand)
+	{
+		if (hand == ExpeControl.lateralisation.left)  _heldDisplayL = state;
+		else  _heldDisplayR = state;
+		
+		// print($"HD {HeldDisplayDown()} {hand}");
+		
+		foreach (touchCallback func in TrackPadInput.touchCallbacks.Values)
+		{
+			func(state, hand);
+		}
 	}
 }

@@ -243,8 +243,8 @@ public class ExpeControl : MonoBehaviour
     private bool m_isPresenting;
 
     public SteamVR_Input_Sources handType;
-    public bool userPressed => SteamVR_Actions.default_InteractUI.GetStateUp(handType);
-    public bool userPressedSpecial => TrackPadInput.instance.heldDisplayDown() &&
+    public bool userPressed => TrackPadInput.instance.Pressed();
+    public bool userPressedSpecial => TrackPadInput.instance.HeldDisplayDown() &&
                                       TrackPadInput.instance.Pressed();
 
     IEnumerator Start()
@@ -286,8 +286,6 @@ public class ExpeControl : MonoBehaviour
         // Wait for user ID
         yield return new WaitUntil(() => !instructionPanel.activeSelf);
         
-        print($"Starting {playlist}");
-
         while (m_currentTrialIdx < playlist.Count)
         {
             toggleMessage(true, "unloading");
@@ -300,11 +298,11 @@ public class ExpeControl : MonoBehaviour
             
             // TODO: Training scene
             // TODO: Inter-trial break
-            // TODO: Calibration
+            // TODO: Calibration (start + between scenes)
             
             condObjects.Clear();
             
-            // Go to next trial if the station scene is not finished
+            // Skip trial if the station scene is not finished
             if (!RoomManager.instance.isRoomAvailable(currentTrial.room_idx))  { m_currentTrialIdx++; continue;  }
 
             long timeSpentLoading = getTimeStamp();
@@ -328,9 +326,8 @@ public class ExpeControl : MonoBehaviour
                 {
                     // yield return new WaitForSecondsRealtime(1);
                     yield return new WaitUntil(() => userPressed || Input.GetKeyUp(KeyCode.Space));
-                    yield return null;
+                    yield return null; // Leave time for key up event to disappear
                     setLights(lightCond);
-                    print("------");
                 }
                 yield return new WaitUntil(() => userPressed || Input.GetKeyUp(KeyCode.Space));
             }
@@ -357,6 +354,8 @@ public class ExpeControl : MonoBehaviour
             // Wait till user presses a special combination of inputs to stop the trial
             yield return new WaitUntil(() => userPressedSpecial || Input.GetKeyUp(KeyCode.Space));
             m_isPresenting = false;
+            
+            _instructBehaviour.setInstruction("Please wait");
             
             // Stop recording gaze
             _eyeTrack.stopRecord(getTimeStamp() - start_time);

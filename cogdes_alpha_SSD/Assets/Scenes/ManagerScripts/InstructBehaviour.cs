@@ -28,16 +28,18 @@ public class InstructBehaviour : MonoBehaviour
         _texts.Add(instructionControllerL.GetComponentInChildren<Text>());
         _texts.Add(instructionControllerR.GetComponentInChildren<Text>());
         
-        TrackPadInput.instance.touchCallbacks.Add("showCtrlInstruct",
-            touching =>
+        TrackPadInput.touchCallbacks.Add("showCtrlInstruct",
+            (state, lat) =>
             {
-                instructionControllerL.gameObject.SetActive(touching);
-                instructionControllerR.gameObject.SetActive(touching);
+                if (lat == ExpeControl.lateralisation.left)
+                    instructionControllerL.gameObject.SetActive(state);
+                else
+                    instructionControllerR.gameObject.SetActive(state);
             }
         );
         
-        TrackPadInput.instance.triggerCallbacks.Add("HideGeneralInstruct",
-            touching =>
+        TrackPadInput.triggerCallbacks.Add("HideGeneralInstruct",
+            (state, lat) =>
             {
                 if (isInstructGeneralDisplayed)
                     instructionGeneral.gameObject.SetActive(false);
