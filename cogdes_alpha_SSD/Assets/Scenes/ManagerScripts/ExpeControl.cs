@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using Tilia.Locomotors.Teleporter;
 using Valve.VR;
 
 public class ExpeControl : MonoBehaviour
@@ -22,7 +22,7 @@ public class ExpeControl : MonoBehaviour
     private string currentRoom => playlist[currentTrialIdx].room_name;
     private int currentRoomIdx => playlist[currentTrialIdx].room_idx;
 
-    [SerializeField] private Transform cameraRig; 
+    private Transform cameraRig; 
     public Camera mainCam;
     
     public enum lateralisation
@@ -90,14 +90,16 @@ public class ExpeControl : MonoBehaviour
     private bool isTracking => (_eyeTrack.ready);
     private InstructBehaviour _instructBehaviour;
     public ObjectManager condObjects { get; private set; }
+    private TeleporterFacade _teleporter;
 
     void Awake()
     {
         instance = this;
         string[] RoomNames = RoomManager.RoomNames;
-        cameraRig = transform;
+        cameraRig = transform.GetChild(0);
         _instructBehaviour = GetComponent<InstructBehaviour>();
         condObjects = new ObjectManager();
+        _teleporter = gameObject.GetComponentInChildren<TeleporterFacade>();
         
         // Disable panels
         instructionPanel.SetActive(false);
@@ -180,7 +182,7 @@ public class ExpeControl : MonoBehaviour
     
     private IDictionary<string, string> tasks;
 
-    public string currentTaskString => $"{currentTrial.room_idx}.{currentTrial.task_idx}";
+    public string currentTaskString => tasks[$"{currentTrial.room_idx}.{currentTrial.task_idx}"];
 
     private void setTaskList()
     {
@@ -301,6 +303,9 @@ public class ExpeControl : MonoBehaviour
             // TODO: Calibration
             
             condObjects.Clear();
+            
+            // Go to next trial if the station scene is not finished
+            if (!RoomManager.instance.isRoomAvailable(currentTrial.room_idx))  { m_currentTrialIdx++; continue;  }
 
             long timeSpentLoading = getTimeStamp();
             toggleMessage(true, "loading");
@@ -336,19 +341,21 @@ public class ExpeControl : MonoBehaviour
             
             // Teleport user to starting position
             Transform startTr = GameObject.Find("Start").transform;
-            cameraRig.position = startTr.position;
-            cameraRig.rotation = startTr.rotation;
+            _teleporter.Teleport(startTr);
             startTr.gameObject.SetActive(false);
             
+            // Give time to teleport before relocating world instruction panel
+            yield return new WaitForSecondsRealtime(.5f);
+            
             // Position instruction panel relative to new user location
-            _instructBehaviour.positionWorldInstruction(cameraRig.position, cameraRig.rotation);
+            _instructBehaviour.positionWorldInstruction(startTr);
             // Set instruction panel visible
             _instructBehaviour.toggleWorldInstruction(true);
-            // Update all info panels with new question
+            // Update all info panels with the new trial question (there can be more than one question for a same scene)
             _instructBehaviour.setInstruction(currentTaskString);
             
             // Wait till user presses a special combination of inputs to stop the trial
-            yield return new WaitUntil(() => userPressedSpecial);
+            yield return new WaitUntil(() => userPressedSpecial || Input.GetKeyUp(KeyCode.Space));
             m_isPresenting = false;
             
             // Stop recording gaze

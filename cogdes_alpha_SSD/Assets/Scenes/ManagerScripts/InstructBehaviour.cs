@@ -45,19 +45,18 @@ public class InstructBehaviour : MonoBehaviour
         );
     }
 
-    public void positionWorldInstruction(Vector3 pos, Quaternion rot)
+    public void positionWorldInstruction(Transform start)
     {
         Transform tr = instructionGeneral.transform;
         
         // Position and rotate on top of user
-        tr.position = pos;
-        tr.rotation = rot;
+        tr.position = start.position;
+        tr.rotation = start.rotation;
         // Move 2 units away from user new position
-        tr.position += tr.forward * 2;
-        // Move up by half a unit
-        tr.position += new Vector3(0,.5f,0);
-        // Rotate normal toward user (otherwise will see back of the canvas)
-        tr.Rotate(Vector3.back);
+        tr.position += start.forward * 3;
+        // Move up
+        tr.position += tr.up * 1.1f;
+        // tr.LookAt(start);
     }
 
     public bool isWorldInstructionShowing => instructionGeneral.gameObject.activeSelf;
