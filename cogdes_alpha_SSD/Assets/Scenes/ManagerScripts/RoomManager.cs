@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +12,7 @@ public class RoomManager : MonoBehaviour
     {
         "Version 0", "Version 1", "Version 2", "Version 3", "Version 4", "Version 5", "Version 6", "Version 7", "Version 8", "Version 9"
     };
+    [SerializeField] private List<int> availableRooms = new List<int>{0,1,2,3,4,5,6,7,8,9};
 
     public static RoomManager instance { get; private set; }
 
@@ -31,6 +33,11 @@ public class RoomManager : MonoBehaviour
                 return null;
             }
         }
+    }
+
+    public bool isRoomAvailable(int roomIdx)
+    {
+        return availableRooms.Contains(roomIdx);
     }
 
     public bool isRoomLoaded
@@ -67,39 +74,13 @@ public class RoomManager : MonoBehaviour
 
     void Enable()
     {
-//        print(SceneManager.sceneCountInBuildSettings);
-//        currentSceneIdx = 0;
-
         if (debug)
         {
             LoadScene(1);
         }
     }
     
-    // Example that will load/Unload all rooms one after another and output the loading time in msec.
-//    void Update()
-//    {
-//        if (isLoading || isUnloading)
-//        {
-//            return;
-//        }
-//        
-//        if (isRoomLoaded)
-//        {
-//            UnloadScene(currentSceneIdx);
-//        }
-//        else if (isValidSceneIdx)
-//        {
-//            LoadScene(currentSceneIdx);
-//        }
-//        else
-//        {
-//            print("Done");
-//            Quit();
-//        }
-//    }
-
-    public void LoadScene(int roomIDx, bool force = false)
+    public void LoadScene(int roomIdx, bool force = false)
     {
         if (actionInProgress && !force)
         {
@@ -114,16 +95,16 @@ public class RoomManager : MonoBehaviour
             return;
         }
         
-        currentSceneIdx = roomIDx;
+        currentSceneIdx = roomIdx;
         if (isValidSceneIdx)
         {
-            StartCoroutine(AsyncSceneLoadMonitor(roomIDx));
+            StartCoroutine(AsyncSceneLoadMonitor(roomIdx));
         }
         else
         {
             currentSceneIdx = -1;
             // Write to debug file
-            print($"Wrong scene build index: {roomIDx}");
+            print($"Wrong scene build index: {roomIdx}");
         }
         
     }
@@ -132,7 +113,7 @@ public class RoomManager : MonoBehaviour
     {
         UnloadScene(currentSceneIdx, force);
     }
-    public void UnloadScene(int roomIDx, bool force = false)
+    public void UnloadScene(int roomIdx, bool force = false)
     {
         if (actionInProgress && !force)
         {
@@ -149,13 +130,13 @@ public class RoomManager : MonoBehaviour
         
         if (isRoomLoaded)
         {
-            StartCoroutine(AsyncSceneUnloadMonitor(roomIDx));
+            StartCoroutine(AsyncSceneUnloadMonitor(roomIdx));
             currentSceneIdx = -1;
         }
         else
         {
             // Write to debug file
-            print($"Scene {currSceneName} is not loaded");
+            print($"Scene \"{currSceneName}\" is not loaded (id: {roomIdx})");
         }
     }
 
