@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ObjectManager
 {
-    private List<selfregister> _oOrientation;
-    private List<selfregister> _oLandmark;
+    private List<ILightable> _oOrientation;
+    private List<ILightable> _oLandmark;
 
     private bool _lOrientation;
     private bool _lLandmark;
@@ -16,8 +16,8 @@ public class ObjectManager
 
     public void Clear()
     {
-        _oOrientation = new List<selfregister>(50);
-        _oLandmark = new List<selfregister>(50);
+        _oOrientation = new List<ILightable>(50);
+        _oLandmark = new List<ILightable>(50);
     }
 
     public void Add(selfregister _o)
@@ -34,7 +34,7 @@ public class ObjectManager
 
     public void ToggleLight(bool state, selfregister.objectType type)
     {
-        List<selfregister> list;
+        List<ILightable> list;
         if (type == selfregister.objectType.Orientation)
         {
             list = _oOrientation;
@@ -46,7 +46,7 @@ public class ObjectManager
             _lLandmark = state;
         }
         
-        foreach (selfregister _o in list)
+        foreach (ILightable _o in list)
         {
             _o.ToggleLight(state);
         }
