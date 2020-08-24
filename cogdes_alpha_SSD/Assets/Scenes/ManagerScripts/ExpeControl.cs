@@ -352,7 +352,7 @@ public class ExpeControl : MonoBehaviour
             _instructBehaviour.setInstruction(currentTaskString);
             
             // Wait till user presses a special combination of inputs to stop the trial
-            yield return new WaitUntil(() => userPressedSpecial || Inzput.GetKeyUp(KeyCode.Space));
+            yield return new WaitUntil(() => userPressedSpecial || Input.GetKeyUp(KeyCode.Space));
             m_isPresenting = false;
             
             _instructBehaviour.setInstruction("Please wait");
