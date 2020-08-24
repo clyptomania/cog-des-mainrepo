@@ -220,6 +220,16 @@ PrefabInstance:
       propertyPath: ValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 562062325859012807, guid: b67cdfe3d8b4d224ab1ac0e37d30d2e1,
+        type: 3}
+      propertyPath: maximumLength.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 562062325859012807, guid: b67cdfe3d8b4d224ab1ac0e37d30d2e1,
+        type: 3}
+      propertyPath: segmentCount
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 1604341586501890221, guid: b67cdfe3d8b4d224ab1ac0e37d30d2e1,
         type: 3}
       propertyPath: Activated.m_PersistentCalls.m_Calls.Array.size
