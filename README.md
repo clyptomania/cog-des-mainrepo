@@ -1,6 +1,13 @@
 # Cognition Design
 This is the official project repository for Cognition Design <br> *HfG Offenbach am Main / Goethe University Cognition Lab*
 
+## Necessary installs
+
+1. **[Git LFS](https://github.com/clyptomania/cog-des-mainrepo/wiki/Using-Git-LFS)** - to deal with the large file sizes | [see our Wiki-Entry](https://github.com/clyptomania/cog-des-mainrepo/wiki/Using-Git-LFS)
+2. **Unity** - to edit the project
+3. **'Substance for Unity' Plugin** -- to enable Unity to use the included .sbsar materials
+4. **Blender** -- to enable Unity to use the included .blend assets
+
 ## Basic Bash/Shell Commands:
 <p> Navigate to Directory <br> <code> $ cd path/to/directory </code> </p>
 
