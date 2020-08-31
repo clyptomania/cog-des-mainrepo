@@ -1,8 +1,11 @@
 # Cognition Design
 This is the official project repository for Cognition Design <br> *HfG Offenbach am Main / Goethe University Cognition Lab*
 
-## Necessary installs
+## Hardware Requirements
+- A VR ready Windows PC
+- Vive Pro Eye
 
+## Necessary installs
 1. **[Git LFS](https://github.com/clyptomania/cog-des-mainrepo/wiki/Using-Git-LFS)** - to deal with the large file sizes | [see our Wiki-Entry](https://github.com/clyptomania/cog-des-mainrepo/wiki/Using-Git-LFS)
 2. **Unity** - to edit the project
 3. **'Substance for Unity' Plugin** -- to enable Unity to use the included .sbsar materials
