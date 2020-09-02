@@ -575,7 +575,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d499c400edc6df409b93a085618878c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableRooms: 0000000005000000070000000800000009000000
+  availableRooms: 0a0000000000000005000000070000000800000009000000
   currentSceneIdx: -1
   isLoading: 0
   isUnloading: 0
