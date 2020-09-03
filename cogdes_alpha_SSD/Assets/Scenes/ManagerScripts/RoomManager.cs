@@ -10,7 +10,7 @@ public class RoomManager : MonoBehaviour
 
     static public string[] RoomNames =
     {
-        "Version 0", "Version 1", "Version 2", "Version 3", "Version 4", "Version 5", "Version 6", "Version 7", "Version 8", "Version 9", "Tutorial", "Break room"
+        "Version 0", "Version 1", "Version 2", "Version 3", "Version 4", "Version 5", "Version 6", "Version 7", "Version 8", "Version 9", "Tutorial", "BreakRoom"
     };
     [SerializeField] private List<int> availableRooms = new List<int>{0,1,2,3,4,5,6,7,8,9};
 
