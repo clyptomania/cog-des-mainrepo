@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 6064ac5ecca724a8f9092b3745e9435b, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -187,6 +187,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: 2_Fahrkarten-Automat 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516335458502260551, guid: c334ad4d40c2dee438f8b32149ef7192,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c334ad4d40c2dee438f8b32149ef7192, type: 3}
