@@ -16,9 +16,7 @@ ScriptedImporter:
     graphDescIndex: 0
     generateAllOutputs: 0
     generateMipMaps: 1
-    preset: " <sbspreset pkgurl=\"pkg://bricks_red_regular\" label=\"\" >\n  <presetinput
-      identifier=\"$outputsize\" uid=\"3533762066\" type=\"8\" value=\"9,9\" />\n
-      </sbspreset>\n"
+    preset: " <sbspreset pkgurl=\"pkg://bricks_red_regular\" label=\"\" >\n </sbspreset>\n"
     shaderName: Standard
     materialProperties:
       shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
@@ -104,7 +102,7 @@ ScriptedImporter:
         float: 1
       colors:
       - name: _Color
-        color: {r: 0.5471698, g: 0.3768245, b: 0.3768245, a: 1}
+        color: {r: 1, g: 1, b: 1, a: 1}
       - name: _EmissionColor
         color: {r: 0, g: 0, b: 0, a: 1}
     outputDescList:
