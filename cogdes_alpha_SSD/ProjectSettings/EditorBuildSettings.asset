@@ -38,4 +38,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Version 9.unity
     guid: 5f01e77f4a92c48908933748678d3cc0
+  - enabled: 1
+    path: Assets/Scenes/BreakRoom.unity
+    guid: cdcc6b015ce8f4eafa0b97f227e563f7
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: 1a134ee2a555d4ee09ae346427e16cc4
   m_configObjects: {}

@@ -13,7 +13,7 @@
     public readonly int task_idx;
     public readonly int order_idx;
 
-    public string room_name => RoomManager.RoomNames[room_idx].Split(' ')[1];
+    public string room_name => RoomManager.RoomNames[room_idx];
 
     public string expName => $"{room_name}_{task_idx}_{order_idx}";
 }

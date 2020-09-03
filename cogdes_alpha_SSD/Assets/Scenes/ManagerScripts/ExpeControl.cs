@@ -207,7 +207,7 @@ public class ExpeControl : MonoBehaviour
         StreamReader file = new StreamReader(Directory.GetParent(Application.dataPath) +
                                              "/SubjectData/playlist.csv", Encoding.UTF8);
 
-        int nrep = 15;
+        int nrep = 14;
         int linesize = 5 * nrep + (nrep-1) + 2;
         // Number of characters per line plus line return
 
