@@ -8877,6 +8877,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d64561b8bcd349428fea6750dc76f4f, type: 3}
+--- !u!1 &583958745 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5361292035194376347, guid: 7d64561b8bcd349428fea6750dc76f4f,
+    type: 3}
+  m_PrefabInstance: {fileID: 583958744}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &583958746
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 583958745}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 8390621628588880083, guid: 7d64561b8bcd349428fea6750dc76f4f, type: 3}
 --- !u!1001 &589322998
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17053,6 +17073,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: 48_GleisabschittC
       objectReference: {fileID: 0}
+    - target: {fileID: 5760800539773260001, guid: cd638369303b86b4cb9369ac00540f21,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd638369303b86b4cb9369ac00540f21, type: 3}
 --- !u!1 &1077678065
@@ -22640,6 +22665,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: 24_Zigarettenautomat 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3750332054118874034, guid: 4803952614671a44f973067ba555390a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 4557655529714114824, guid: 4803952614671a44f973067ba555390a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -22694,6 +22724,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90.00001
+      objectReference: {fileID: 0}
+    - target: {fileID: 6095030636927512191, guid: 4803952614671a44f973067ba555390a,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4803952614671a44f973067ba555390a, type: 3}
