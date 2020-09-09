@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Globalization;
 using System.IO;
 using UnityEngine;
 using ViveSR.anipal.Eye;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 public class EyeTrackingSampler: MonoBehaviour
 {
@@ -20,6 +22,8 @@ public class EyeTrackingSampler: MonoBehaviour
 
     private IEnumerator Start()
     {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+        
         instance = this;
         _expeControl = ExpeControl.instance;
         ready = false;
@@ -43,6 +47,8 @@ public class EyeTrackingSampler: MonoBehaviour
         
         if (instance.isSampling)
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            
             Vector3 meanBasePoint = gazePoint.CombGaze.gaze_origin_mm;
             Vector3 leftBasePoint = gazePoint.LeftGaze.gaze_origin_mm;
             Vector3 rightBasePoint = gazePoint.RightGaze.gaze_origin_mm;
@@ -99,7 +105,7 @@ public class EyeTrackingSampler: MonoBehaviour
             "rightBasePoint.x,rightBasePoint.y,rightBasePoint.z," +
             "leftEyeDirection.x,leftEyeDirection.y,leftEyeDirection.z," +
             "rightEyeDirection.x,rightEyeDirection.y,rightEyeDirection.z," +
-            "valL,valR");
+            "valB,valL,valR");
         
         m_recorder_HMD = new StreamWriter(_expeControl.m_userdataPath + "/" +
                                           _expeControl.currentTrial.expName + "_HMD.csv");

@@ -66,31 +66,32 @@ public class ExpeControl : MonoBehaviour
 
     private readonly Dictionary<string, string> messages = new Dictionary<string, string>
     {
-        {"start", 
+        {"calibrate", 
+            "Bitte beginne mit der Eyetracker Kalibration.\nFrag einen Assistenten, sofern du Hilfe benötigst.\nDanach kannst du dich eine Weile ausruhen, bevor die nächste Aufgabe beginnt."},
+        {"start",
             "The training phase has ended.\n\n" +
             "Press the trigger to start the experiment."},
         {"pause", 
             "Take off the headset if you wish.\n\n" +
             "Take a moment to rest before continuing with the experiment.\n" +
             "Press the trigger to start the experiment."},
-        {"calibstart", 
-            "Re-calibrate the eye tracker.\nCall the experimentalist for assistance."},
         {"loading",
-            "Loading next room."},
+            "Nächster Raum wird geladen."},
         {"unloading", 
             "Unloading current room."},
         {"end", 
             "This is the end of the experiment.\nThank you very much for your participation.\nYou can take off the headset."},
     };
     
-    // Show training stimuli?
-    [SerializeField] private bool trainPhase;
     
-    private EyeTrackingSampler _eyeTrack => (EyeTrackingSampler.instance);
+    private EyeTrackingSampler _eyeTrack => EyeTrackingSampler.instance;
+    private ProgressBar _progressBar => ProgressBar.instance;
     private bool isTracking => (_eyeTrack.ready);
     private InstructBehaviour _instructBehaviour;
     public ObjectManager condObjects { get; private set; }
     private TeleporterFacade _teleporter;
+
+    [Tooltip("Time in seconds needed to press touchpad ending trial")] public float DurationPressToLeave;
 
     void Awake()
     {
@@ -152,10 +153,6 @@ public class ExpeControl : MonoBehaviour
         // User information: basic data + playlist
         m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt");
 
-        // Add training trials if needed
-        if (trainPhase) {
-            playlist.Add(new playlistElement(0, 0, 0, -1));
-        }
         // get playlist for user ID
         setUserPlaylist(m_userId);
         setTaskList();
@@ -208,7 +205,7 @@ public class ExpeControl : MonoBehaviour
                                              "/SubjectData/playlist.csv", Encoding.UTF8);
 
         int nrep = 14;
-        int linesize = 5 * nrep + (nrep-1) + 2;
+        int linesize = 104 + 1;
         // Number of characters per line plus line return
 
         // Read line according to the user ID number
@@ -221,12 +218,12 @@ public class ExpeControl : MonoBehaviour
         string line = new string(lineChar);
         // Split line by commas
         string[] ell = line.Split(',');
-        print(ell);
         // For all element in list
         for (int i=0; i<ell.Length; i++){
             // Split by '-' 
-            print(ell[i]);
             string[] els = ell[i].Split('-');
+
+            // print(ell[i]);
              
             // 0: Scene, 1: light cond, 2: Task
             int.TryParse(els[0], out var room_idx);
@@ -234,7 +231,7 @@ public class ExpeControl : MonoBehaviour
             int.TryParse(els[2], out var quest_idx);
 
             // new playlistElement to insert in playlist
-            playlist.Add(new playlistElement(room_idx + (trainPhase?1:0), light_cond, quest_idx, i));
+            playlist.Add(new playlistElement(room_idx, light_cond, quest_idx, i));
         }
         
         print($"playlist.Count: {playlist.Count}");
@@ -242,52 +239,27 @@ public class ExpeControl : MonoBehaviour
 
     private bool m_isPresenting;
 
-    public SteamVR_Input_Sources handType;
     public bool userPressed => TrackPadInput.instance.Pressed();
-    public bool userPressedSpecial => TrackPadInput.instance.HeldDisplayDown() &&
-                                      TrackPadInput.instance.Pressed();
+    public bool userPressedSpecial => TrackPadInput.instance.DisplayPressed();
 
     IEnumerator Start()
     {
-            /*
-         * FLOW
-         *     Pre
-         *         Vision tests: dominant eye, stereo vision, color vision, visual acuity
-         *         Data gathering (age, gender, dominant eye, VR usage)
-         *         Data input (subj num)
-         *     Train
-         *         Explore scene to get used to the headset (scene that needs a long time to load)
-         *             1-2 tasks in training station
-         *     Inter-trial break
-         *     Trial
-         *         Recenter
-         *         Read question
-         *         End:
-         *             Wait n seconds
-         *             Wait till target is found: trigger pressed
-         *     Inter-trial break
-         *         Disable cameras
-         *         Unload/Load scenes async
-         *             Load scene if not already loaded
-         *             Else: unload then load new scene
-         *         Wait the remainder of the rest time
-         *         Enable cameras
-         */
-
-        if (!debugging)
-        {
-            writeInfo("Waiting for the eyetracker to start");
-            yield return new WaitUntil(() => _eyeTrack.ready);
-            writeInfo("Eyetracker started and sampling");
-        }
+        yield return new WaitUntil(() => _eyeTrack.ready);
+        
 
         // Show SubjInfo panel
         instructionPanel.SetActive(true);
+        pauseCanvas.SetActive(false);
+        _progressBar.gameObject.SetActive(false);
         // Wait for user ID
         yield return new WaitUntil(() => !instructionPanel.activeSelf);
+
+        print(m_currentTrialIdx);
+        print(playlist.Count);
         
         while (m_currentTrialIdx < playlist.Count)
         {
+            print("yyy");
             toggleMessage(true, "unloading");
             
             RoomManager.instance.UnloadScene();
@@ -295,10 +267,6 @@ public class ExpeControl : MonoBehaviour
             toggleMessage(false);
             
             int trialidx = currentTrial.task_idx;
-            
-            // TODO: Training scene
-            // TODO: Inter-trial break
-            // TODO: Calibration (start + between scenes)
             
             condObjects.Clear();
             
@@ -351,8 +319,35 @@ public class ExpeControl : MonoBehaviour
             // Update all info panels with the new trial question (there can be more than one question for a same scene)
             _instructBehaviour.setInstruction(currentTaskString);
             
+            // if break room = do calibration
+            if (RoomManager.instance.currSceneName == "BreakRoom")
+            {
+                toggleMessage(true, "calibrate");
+                yield return new WaitUntil(() => userPressedSpecial || Input.GetKeyUp(KeyCode.Space));
+                toggleMessage(false);
+            }
+            
             // Wait till user presses a special combination of inputs to stop the trial
-            yield return new WaitUntil(() => userPressedSpecial || Input.GetKeyUp(KeyCode.Space));
+            float padPressedTime = 0;
+            while (padPressedTime < DurationPressToLeave)
+            {
+                if (userPressedSpecial)
+                {
+                    padPressedTime += Time.deltaTime;
+                    
+                    _progressBar.gameObject.SetActive(true);
+                    _progressBar.setProgress(padPressedTime / DurationPressToLeave);
+                }
+                else
+                {
+                    _progressBar.gameObject.SetActive(false);
+                    padPressedTime = 0;
+                }
+                
+
+                yield return null;
+            }
+            _progressBar.gameObject.SetActive(false);
             m_isPresenting = false;
             
             _instructBehaviour.setInstruction("Please wait");
@@ -383,7 +378,7 @@ public class ExpeControl : MonoBehaviour
         }
         paused = state;
         pauseCanvas.SetActive(paused);
-        Text msgHolder = pauseCanvas.transform.GetChild(0).Find("ContentTxt").GetComponent<Text>();
+        Text msgHolder = pauseCanvas.transform.Find("ContentTxt").GetComponent<Text>();
         msgHolder.text = messages[message];
     }
 

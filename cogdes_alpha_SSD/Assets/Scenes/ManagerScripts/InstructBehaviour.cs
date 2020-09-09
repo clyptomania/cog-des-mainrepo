@@ -6,22 +6,22 @@ public class InstructBehaviour : MonoBehaviour
 {
     private static InstructBehaviour instance;
     [SerializeField]
-    private Canvas instructionGeneral;
+    private GameObject instructionGeneral;
     [SerializeField]
-    private Canvas instructionControllerL;
+    private GameObject instructionControllerL;
     [SerializeField]
-    private Canvas instructionControllerR;
+    private GameObject instructionControllerR;
 
     private List<Text> _texts;
-    public bool isInstructGeneralDisplayed => instructionGeneral.gameObject.activeSelf;
+    public bool isInstructGeneralDisplayed => instructionGeneral.activeSelf;
     void OnEnable()
     {
         instance = this;
         
         // Already turned off by the CameraRig
-        instructionGeneral.gameObject.SetActive(false);
-        instructionControllerL.gameObject.SetActive(false);
-        instructionControllerR.gameObject.SetActive(false);
+        instructionGeneral.SetActive(false);
+        instructionControllerL.SetActive(false);
+        instructionControllerR.SetActive(false);
         
         _texts = new List<Text>(3);
         _texts.Add(instructionGeneral.GetComponentInChildren<Text>());
@@ -32,9 +32,9 @@ public class InstructBehaviour : MonoBehaviour
             (state, lat) =>
             {
                 if (lat == ExpeControl.lateralisation.left)
-                    instructionControllerL.gameObject.SetActive(state);
+                    instructionControllerL.SetActive(state);
                 else
-                    instructionControllerR.gameObject.SetActive(state);
+                    instructionControllerR.SetActive(state);
             }
         );
         
@@ -42,7 +42,7 @@ public class InstructBehaviour : MonoBehaviour
             (state, lat) =>
             {
                 if (isInstructGeneralDisplayed)
-                    instructionGeneral.gameObject.SetActive(false);
+                    instructionGeneral.SetActive(false);
             }
         );
     }
@@ -61,10 +61,10 @@ public class InstructBehaviour : MonoBehaviour
         // tr.LookAt(start);
     }
 
-    public bool isWorldInstructionShowing => instructionGeneral.gameObject.activeSelf;
+    public bool isWorldInstructionShowing => instructionGeneral.activeSelf;
     public void toggleWorldInstruction(bool state)
     {
-        instructionGeneral.gameObject.SetActive(state);
+        instructionGeneral.SetActive(state);
     }
 
     public void setInstruction(string message)
