@@ -168,6 +168,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1812700422417759515}
   - component: {fileID: 4614559960105976179}
+  - component: {fileID: 3302248262301792442}
   m_Layer: 0
   m_Name: Spot Light (7)
   m_TagString: Untagged
@@ -240,7 +241,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 2
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -250,6 +251,19 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &3302248262301792442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4606261791256235322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f920595a91d588041b83396fe9e380f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentObjectType: 1
 --- !u!1 &4820651244813199211
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,6 +311,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1641501666776532792}
   - component: {fileID: 5984528221880136346}
+  - component: {fileID: 7691679977006059366}
   m_Layer: 0
   m_Name: Spot Light (8)
   m_TagString: Untagged
@@ -369,7 +384,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 2
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -379,6 +394,19 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &7691679977006059366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5550548907409677378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f920595a91d588041b83396fe9e380f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentObjectType: 1
 --- !u!1 &5865146592229765928
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,6 +496,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2908020787097232637}
   - component: {fileID: 3545031201812973911}
+  - component: {fileID: 6376394949163319570}
   m_Layer: 0
   m_Name: Spot Light (9)
   m_TagString: Untagged
@@ -540,7 +569,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 2
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -550,6 +579,19 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &6376394949163319570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6502837607162791902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f920595a91d588041b83396fe9e380f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentObjectType: 1
 --- !u!1 &7249517515996951875
 GameObject:
   m_ObjectHideFlags: 0
@@ -560,6 +602,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6856999204370618133}
   - component: {fileID: 8516296696300558162}
+  - component: {fileID: 6808472683982791704}
   m_Layer: 0
   m_Name: Spot Light (6)
   m_TagString: Untagged
@@ -632,7 +675,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 2
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -642,3 +685,16 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &6808472683982791704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7249517515996951875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f920595a91d588041b83396fe9e380f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentObjectType: 1
