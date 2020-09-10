@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 156893555203111644}
   - component: {fileID: 7938365265718120840}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: Orientation Highlighting Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
