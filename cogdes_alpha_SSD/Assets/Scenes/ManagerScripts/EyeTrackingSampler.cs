@@ -85,7 +85,7 @@ public class EyeTrackingSampler: MonoBehaviour
             m_recorder_HMD.WriteLine(
                 $"{gazePoint.data.timestamp},{UnityTimeStamp}," +
                 $"{(gazePoint.LeftCollide != null ? gazePoint.LeftCollide.name : "None")}," +
-                $"{(gazePoint.RightCollide != null ? gazePoint.RightCollide.name : "None")}" +
+                $"{(gazePoint.RightCollide != null ? gazePoint.RightCollide.name : "None")}," +
                 $"{(gazePoint.CombinedCollide != null ? gazePoint.CombinedCollide.name : "None")}");
             // m_recorder_HMD.Flush();
         }
