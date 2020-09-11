@@ -598,37 +598,43 @@ PrefabInstance:
     - target: {fileID: 7993270017538646830, guid: c334ad4d40c2dee438f8b32149ef7192,
         type: 3}
       propertyPath: m_text
-      value: "Dr\xFCcke auf das Touchpad, \num den Test fortzuf\xFChren."
+      value: "Bitte f\xFChre die\nEyetracking-Kalibrierung \ndurch. Falls du Hilfe
+        brauchst, \nfrag unsere Assistenten."
       objectReference: {fileID: 0}
     - target: {fileID: 7993270017538646830, guid: c334ad4d40c2dee438f8b32149ef7192,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 51
+      value: 99
       objectReference: {fileID: 0}
     - target: {fileID: 7993270017538646830, guid: c334ad4d40c2dee438f8b32149ef7192,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 8
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 7993270017538646830, guid: c334ad4d40c2dee438f8b32149ef7192,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7993270017538646830, guid: c334ad4d40c2dee438f8b32149ef7192,
         type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7993270017538646830, guid: c334ad4d40c2dee438f8b32149ef7192,
         type: 3}
       propertyPath: m_fontSize
-      value: 8
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 7993270017538646830, guid: c334ad4d40c2dee438f8b32149ef7192,
         type: 3}
       propertyPath: m_fontSizeBase
-      value: 8
+      value: 6.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7993270017538646830, guid: c334ad4d40c2dee438f8b32149ef7192,
+        type: 3}
+      propertyPath: m_textInfo.pageCount
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8761342539854617513, guid: c334ad4d40c2dee438f8b32149ef7192,
         type: 3}

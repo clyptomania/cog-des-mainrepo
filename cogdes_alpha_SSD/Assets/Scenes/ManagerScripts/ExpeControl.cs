@@ -315,7 +315,7 @@ public class ExpeControl : MonoBehaviour
             // Position instruction panel relative to new user location
             _instructBehaviour.positionWorldInstruction(startTr);
             // Set instruction panel visible
-            _instructBehaviour.toggleWorldInstruction(true);
+            _instructBehaviour.toggleWorldInstruction(false);
             // Update all info panels with the new trial question (there can be more than one question for a same scene)
             _instructBehaviour.setInstruction(currentTaskString);
             
