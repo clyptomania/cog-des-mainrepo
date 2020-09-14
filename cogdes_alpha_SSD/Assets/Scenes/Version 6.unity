@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 1.0782659, g: 0.718818, b: 1.1063429, a: 1}
+  m_IndirectSpecularColor: {r: 0.56962246, g: 0.56929517, b: 0.5429181, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -11345,27 +11345,27 @@ PrefabInstance:
     - target: {fileID: 1451771278926204099, guid: ca57bffc1e4e5d74497894f945d4eca2,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1451771278926204099, guid: ca57bffc1e4e5d74497894f945d4eca2,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1451771278926204099, guid: ca57bffc1e4e5d74497894f945d4eca2,
         type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1451771278926204099, guid: ca57bffc1e4e5d74497894f945d4eca2,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1451771278926204099, guid: ca57bffc1e4e5d74497894f945d4eca2,
         type: 3}
       propertyPath: m_text
-      value: C
+      value: D
       objectReference: {fileID: 0}
     - target: {fileID: 2698521823647631750, guid: ca57bffc1e4e5d74497894f945d4eca2,
         type: 3}
