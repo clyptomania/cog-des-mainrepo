@@ -181,6 +181,11 @@ PrefabInstance:
       propertyPath: EnableEyeDataCallback
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114214629311031788, guid: f676e25d0fcd1ec4fa22af3017316de9,
+        type: 3}
+      propertyPath: EnableEyeVersion
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f676e25d0fcd1ec4fa22af3017316de9, type: 3}
 --- !u!4 &138285052 stripped
@@ -1509,7 +1514,7 @@ PrefabInstance:
     - target: {fileID: 8338637230721046713, guid: b67cdfe3d8b4d224ab1ac0e37d30d2e1,
         type: 3}
       propertyPath: m_Name
-      value: Player Manager (200819 Update) (1)
+      value: Player Manager (200819 Update)
       objectReference: {fileID: 0}
     - target: {fileID: 8338637230721046713, guid: b67cdfe3d8b4d224ab1ac0e37d30d2e1,
         type: 3}

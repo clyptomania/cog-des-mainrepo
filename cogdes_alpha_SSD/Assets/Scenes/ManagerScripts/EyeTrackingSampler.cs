@@ -9,7 +9,6 @@ using System.Threading;
 
 public class EyeTrackingSampler: MonoBehaviour
 {
-    private static EyeData eyeData = new EyeData();
     public static EyeTrackingSampler instance { get; private set; }
     public bool ready { get; private set; }
     
@@ -34,14 +33,14 @@ public class EyeTrackingSampler: MonoBehaviour
             yield return null;
         }
         
-        SRanipal_Eye.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye.CallbackBasic)Callback));
+        SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)Callback));
 
         ready = true;
     }
-
+    
     public bool isSampling { get; private set; }
     private long lastOcuTS;
-    private static void Callback(ref EyeData eye_data)
+    private static void Callback(ref EyeData_v2 eye_data)
     {
         gazePoint = new GazePoint(eye_data);
         
@@ -54,8 +53,8 @@ public class EyeTrackingSampler: MonoBehaviour
             Vector3 rightBasePoint = gazePoint.RightGaze.gaze_origin_mm;
             
             Vector3 meanGazeDirection = gazePoint.CombGaze.gaze_direction_normalized;
-            Vector3 leftGazeDirection = gazePoint.CombGaze.gaze_direction_normalized;
-            Vector3 rightGazeDirection = gazePoint.CombGaze.gaze_direction_normalized;
+            Vector3 leftGazeDirection = gazePoint.LeftGaze.gaze_direction_normalized;
+            Vector3 rightGazeDirection = gazePoint.RightGaze.gaze_direction_normalized;
 
             bool valC = gazePoint.valid(ExpeControl.lateralisation.comb);
             bool valL = gazePoint.valid(ExpeControl.lateralisation.left);
@@ -76,6 +75,14 @@ public class EyeTrackingSampler: MonoBehaviour
              );
         }
     }
+    // private void OnGUI()
+    // {
+    //     if (gazePoint.LeftCollide != null)
+    //     {
+    //         string strInfo = gazePoint.LeftCollide.name;
+    //         GUI.TextArea(new Rect(0, 400, 350, 35), strInfo);
+    //     }
+    // }
     
     private void Update()
     {
@@ -89,7 +96,7 @@ public class EyeTrackingSampler: MonoBehaviour
                 $"{(gazePoint.CombinedCollide != null ? gazePoint.CombinedCollide.name : "None")}");
             // m_recorder_HMD.Flush();
         }
-    }
+    } 
 
     public void startNewRecord()
     {
@@ -139,14 +146,22 @@ public class EyeTrackingSampler: MonoBehaviour
     
     public void RetrieveCameraData()
     {
-        Transform camTrans = ExpeControl.instance.mainCam.transform;
+        Camera mainCam = ExpeControl.instance.mainCam;
+        Transform camTrans = mainCam.transform;
         
         cameraQuaternion = camTrans.rotation;
         cameraPosition = camTrans.position;
+            
+        SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out gazePoint.LeftWorldRay, gazePoint.data);
+        gazePoint.LeftWorldRay = new Ray(cameraPosition, mainCam.transform.TransformDirection(gazePoint.LeftWorldRay.direction));
+        SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out gazePoint.RightWorldRay, gazePoint.data);
+        gazePoint.RightWorldRay = new Ray(cameraPosition, mainCam.transform.TransformDirection(gazePoint.RightWorldRay.direction));
+        SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out gazePoint.CombWorldRay, gazePoint.data);
+        gazePoint.CombWorldRay = new Ray(cameraPosition, mainCam.transform.TransformDirection(gazePoint.CombWorldRay.direction));
         
         gazePoint.LeftCollide = Physics.Raycast(gazePoint.LeftWorldRay, out RaycastHit hitL) ? hitL.transform : null;
         gazePoint.RightCollide = Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit hitR) ? hitR.transform : null;
-        gazePoint.CombinedCollide = Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit hitC) ? hitC.transform : null;
+        gazePoint.CombinedCollide = Physics.Raycast(gazePoint.CombWorldRay, out RaycastHit hitC) ? hitC.transform : null;
         
         UnityTimeStamp = ExpeControl.getTimeStamp();
     }
@@ -157,7 +172,7 @@ public class EyeTrackingSampler: MonoBehaviour
         {
         }
         
-        public GazePoint(EyeData gaze)
+        public GazePoint(EyeData_v2 gaze)
         { 
             LeftGaze = gaze.verbose_data.left;
             RightGaze = gaze.verbose_data.left;
@@ -166,38 +181,32 @@ public class EyeTrackingSampler: MonoBehaviour
 
             LeftCollide = null;
             RightCollide = null;
-
-            LeftWorldRay = getGazeRay(ExpeControl.lateralisation.left);
-            RightWorldRay = getGazeRay(ExpeControl.lateralisation.right);
-            RightWorldRay = getGazeRay(ExpeControl.lateralisation.comb);
         }
 
-        public readonly EyeData data;
+        public readonly EyeData_v2 data;
         public readonly SingleEyeData LeftGaze;
         public readonly SingleEyeData RightGaze;
         public readonly SingleEyeData CombGaze;
 
-        public readonly Ray LeftWorldRay;
-        public readonly Ray RightWorldRay;
-
+        public Ray LeftWorldRay;
+        public Ray RightWorldRay;
+        public Ray CombWorldRay;
+        
         public Transform LeftCollide;
         public Transform RightCollide;
         public Transform CombinedCollide;
 
         public bool valid(ExpeControl.lateralisation later)
         {
-            return later == ExpeControl.lateralisation.left ?
-                LeftGaze.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_GAZE_ORIGIN_VALIDITY) :
-                RightGaze.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_GAZE_ORIGIN_VALIDITY);
-        }
-
-        public Ray getGazeRay(ExpeControl.lateralisation later)
-        {
-            SingleEyeData gp = later == ExpeControl.lateralisation.left ? LeftGaze : RightGaze;
-            
-            return new Ray(instance.cameraPosition + gp.gaze_origin_mm, 
-                instance.cameraQuaternion * gp.gaze_direction_normalized);
+            switch (later)
+            {
+                case ExpeControl.lateralisation.left:
+                    return LeftGaze.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_GAZE_ORIGIN_VALIDITY);
+                case ExpeControl.lateralisation.right:
+                    return RightGaze.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_GAZE_ORIGIN_VALIDITY);
+                default:
+                    return CombGaze.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_GAZE_ORIGIN_VALIDITY);
+            }
         }
     }
-    
 }

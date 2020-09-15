@@ -259,7 +259,6 @@ public class ExpeControl : MonoBehaviour
         
         while (m_currentTrialIdx < playlist.Count)
         {
-            print("yyy");
             toggleMessage(true, "unloading");
             
             RoomManager.instance.UnloadScene();
