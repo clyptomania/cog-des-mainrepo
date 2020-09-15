@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 4557655529714114824}
   - component: {fileID: 643962089596743341}
   - component: {fileID: 3389846378290846311}
+  - component: {fileID: 3175393849371540072}
   m_Layer: 0
-  m_Name: 24_Zigarettenautomat 1
+  m_Name: LM_Zigarettenautomat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,6 +81,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &3175393849371540072
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3750332054118874034}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 2317572673300936800, guid: d9c214b35685f2c4a9b38cdac35a7c82, type: 3}
 --- !u!1 &6095030636927512191
 GameObject:
   m_ObjectHideFlags: 0

@@ -117,8 +117,9 @@ GameObject:
   - component: {fileID: 6992790318194612410}
   - component: {fileID: 5754015481863568413}
   - component: {fileID: 6028599162696518268}
+  - component: {fileID: 1493368150740755310}
   m_Layer: 0
-  m_Name: Fahrstuhl-Anzeige-Oben
+  m_Name: LM-Fahrstuhl-Anzeige-Oben
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,6 +186,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &1493368150740755310
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 567502991035857733}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 2906613894103530392, guid: add476daabf5942b8824d1b5f69ffde5, type: 3}
 --- !u!1 &1289271403885657929
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,8 +211,9 @@ GameObject:
   - component: {fileID: 3878994655731413368}
   - component: {fileID: 3993884142865549311}
   - component: {fileID: 911402182574002570}
+  - component: {fileID: 6249503961530455035}
   m_Layer: 0
-  m_Name: Fahrstuhl-Blende-Unten
+  m_Name: LM-Fahrstuhl-Blende-Unten
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -264,6 +280,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &6249503961530455035
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289271403885657929}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3801136356892370001, guid: add476daabf5942b8824d1b5f69ffde5, type: 3}
 --- !u!1 &1902832522636816566
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,6 +305,7 @@ GameObject:
   - component: {fileID: 3184996847018377893}
   - component: {fileID: 5866052309733750931}
   - component: {fileID: 168020863155815530}
+  - component: {fileID: 907978212589583408}
   m_Layer: 0
   m_Name: 1_Fahrstuhl
   m_TagString: Untagged
@@ -350,6 +381,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &907978212589583408
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902832522636816566}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5093608705213868960, guid: add476daabf5942b8824d1b5f69ffde5, type: 3}
 --- !u!1 &2691273580285758984
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,8 +406,9 @@ GameObject:
   - component: {fileID: 23169684136104801}
   - component: {fileID: 7526004753809692809}
   - component: {fileID: 6781662950031106340}
+  - component: {fileID: 2117355428514433871}
   m_Layer: 0
-  m_Name: Fahrstuhl-Scheiben
+  m_Name: LM-Fahrstuhl-Scheiben
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -429,6 +475,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &2117355428514433871
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2691273580285758984}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 548001610211140189, guid: add476daabf5942b8824d1b5f69ffde5, type: 3}
 --- !u!1 &3286005180740319338
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,8 +500,9 @@ GameObject:
   - component: {fileID: 6089834707748343104}
   - component: {fileID: 7288806401888787624}
   - component: {fileID: 3527737920966101387}
+  - component: {fileID: 1531478334616796556}
   m_Layer: 0
-  m_Name: Fahrstuhl-Anzeige-Unten
+  m_Name: LM-Fahrstuhl-Anzeige-Unten
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -508,6 +569,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &1531478334616796556
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3286005180740319338}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -7717509769011783424, guid: add476daabf5942b8824d1b5f69ffde5, type: 3}
 --- !u!1 &3460487398927634942
 GameObject:
   m_ObjectHideFlags: 0
@@ -735,8 +810,9 @@ GameObject:
   - component: {fileID: 8093140632858971795}
   - component: {fileID: 1944239615369747670}
   - component: {fileID: 1807695779757298894}
+  - component: {fileID: 4393263346767578846}
   m_Layer: 0
-  m_Name: Fahrstuhl-Blende-Oben
+  m_Name: LM-Fahrstuhl-Blende-Oben
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -803,3 +879,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &4393263346767578846
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8955332277008223824}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8064491566660140139, guid: add476daabf5942b8824d1b5f69ffde5, type: 3}

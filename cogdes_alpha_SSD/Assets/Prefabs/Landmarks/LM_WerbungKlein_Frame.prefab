@@ -44,7 +44,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 5
+  m_Intensity: 3
   m_Range: 2.4907143
   m_SpotAngle: 52.898434
   m_InnerSpotAngle: 1
@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 7626859180151753537}
   - component: {fileID: 5637657129122774923}
   m_Layer: 0
-  m_Name: 42_Werbetafelklein
+  m_Name: LM_WerbungKlein_Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -232,7 +232,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 5
+  m_Intensity: 3
   m_Range: 2.9318795
   m_SpotAngle: 43.349895
   m_InnerSpotAngle: 1
@@ -306,7 +306,7 @@ GameObject:
   - component: {fileID: 7229522367209166133}
   - component: {fileID: 4350088243486874555}
   m_Layer: 0
-  m_Name: "202|Mesh|C|WerbetafelnFl\xE4cheKlein"
+  m_Name: LM|WerbungKlein
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

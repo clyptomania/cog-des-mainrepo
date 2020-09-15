@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 116468129482862581}
   - component: {fileID: 5970659073072651954}
   - component: {fileID: 3327210425815792964}
+  - component: {fileID: 7210859864536066344}
   m_Layer: 0
-  m_Name: Vitrineninhalt
+  m_Name: LM_Vitrineninhalt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,6 +80,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &7210859864536066344
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120354648523686453}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 1059218981626422329, guid: 926aa0392ded84def8f4e8be593af6d7, type: 3}
 --- !u!1 &1320621944179278613
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,8 +211,9 @@ GameObject:
   - component: {fileID: 293695909608525852}
   - component: {fileID: 4876574185573299777}
   - component: {fileID: 7603520056169486482}
+  - component: {fileID: 1887506737666329188}
   m_Layer: 0
-  m_Name: 7_Vitrine
+  m_Name: LM_Vitrine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -271,6 +287,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &1887506737666329188
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2262986642299456459}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5401851492329757112, guid: 926aa0392ded84def8f4e8be593af6d7, type: 3}
 --- !u!1 &2538535626076214242
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,6 +734,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6360654714751663154}
+  - component: {fileID: -9151741489092388187}
   m_Layer: 0
   m_Name: 7_Vitrine 1
   m_TagString: Untagged
@@ -733,6 +764,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &-9151741489092388187
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7935004012564794913}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &9186261836459140691
 GameObject:
   m_ObjectHideFlags: 0

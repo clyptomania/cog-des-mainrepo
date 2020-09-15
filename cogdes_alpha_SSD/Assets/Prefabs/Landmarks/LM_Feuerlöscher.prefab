@@ -223,6 +223,7 @@ GameObject:
   - component: {fileID: 5254125939788312906}
   - component: {fileID: 3868980256655297404}
   - component: {fileID: 7389818063609902981}
+  - component: {fileID: -7027319252669658299}
   m_Layer: 0
   m_Name: "23_Feuerl\xF6scher"
   m_TagString: Untagged
@@ -293,3 +294,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &-7027319252669658299
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9129146555543683929}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5914487315581118735, guid: af4c7814840d24fb2843380442ea3b04, type: 3}

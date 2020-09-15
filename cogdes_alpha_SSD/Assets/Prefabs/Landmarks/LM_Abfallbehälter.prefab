@@ -103,8 +103,9 @@ GameObject:
   - component: {fileID: 7846000027984821482}
   - component: {fileID: 1277212272706602716}
   - component: {fileID: 4793264457196878373}
+  - component: {fileID: -7623901646970822771}
   m_Layer: 0
-  m_Name: "9_Abfallbeh\xE4lter"
+  m_Name: "LM_Abfallbeh\xE4lter"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -173,6 +174,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &-7623901646970822771
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6537483574116585209}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -6571855412644133359, guid: cdfecc9c7fe4c4d22afc2c91774488d4, type: 3}
 --- !u!1 &6937123048506708017
 GameObject:
   m_ObjectHideFlags: 0

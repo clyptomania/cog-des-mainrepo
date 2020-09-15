@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 2767870424266904775}
   - component: {fileID: 4079039351799510878}
   - component: {fileID: 6400684127181628655}
+  - component: {fileID: 3624417985178661716}
   m_Layer: 0
-  m_Name: 2_Fahrkarten-Automat.001
+  m_Name: LM_Fahrkarten-Automat.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,6 +80,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &3624417985178661716
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361747844996128628}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5251297018308934664, guid: 713620260552c0e49af34d46b1e5503f, type: 3}
 --- !u!1 &726110912921789340
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,8 +105,9 @@ GameObject:
   - component: {fileID: 1332731122121834844}
   - component: {fileID: 2635176733628352999}
   - component: {fileID: 5623489327738618976}
+  - component: {fileID: 7083320826196051596}
   m_Layer: 0
-  m_Name: 2_Fahrkarten-Automat
+  m_Name: LM_Fahrkarten-Automat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -158,6 +174,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &7083320826196051596
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726110912921789340}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4242452336507074501, guid: 713620260552c0e49af34d46b1e5503f, type: 3}
 --- !u!1 &965033576050357275
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,6 +197,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 445764279857983137}
+  - component: {fileID: 1612484790094586872}
   m_Layer: 0
   m_Name: 2_Fahrkarten-Automat 1
   m_TagString: Untagged
@@ -195,6 +226,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &1612484790094586872
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965033576050357275}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &2525692989604884611
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,8 +357,9 @@ GameObject:
   - component: {fileID: 7111833822800134289}
   - component: {fileID: 7245537434248694390}
   - component: {fileID: 6873395165330965094}
+  - component: {fileID: 6254718192649649149}
   m_Layer: 0
-  m_Name: 2_Fahrkarten-Automat_Display
+  m_Name: LM_Fahrkarten-Automat_Display
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -380,6 +426,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &6254718192649649149
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4869668159410382714}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8572040532114905109, guid: 713620260552c0e49af34d46b1e5503f, type: 3}
 --- !u!1 &5303010476070715665
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,7 +832,7 @@ GameObject:
   - component: {fileID: 5573064663634157811}
   - component: {fileID: 9054127609339814999}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: LM_Fahrkarten-Automat_Display
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
