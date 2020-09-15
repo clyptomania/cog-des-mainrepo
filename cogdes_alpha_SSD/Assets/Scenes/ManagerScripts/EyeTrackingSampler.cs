@@ -48,13 +48,19 @@ public class EyeTrackingSampler: MonoBehaviour
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
             
-            Vector3 meanBasePoint = gazePoint.CombGaze.gaze_origin_mm;
-            Vector3 leftBasePoint = gazePoint.LeftGaze.gaze_origin_mm;
-            Vector3 rightBasePoint = gazePoint.RightGaze.gaze_origin_mm;
+            // Cf ./ViveSR/Scripts/Eye/SRanipal_Eye.cs#L272
+            // Cf ./ViveSR/Scripts/Eye/SRanipal_Eye.cs
+            Vector3 meanBasePoint = gazePoint.CombGaze.gaze_origin_mm * 0.001f;
+            Vector3 leftBasePoint = gazePoint.LeftGaze.gaze_origin_mm * 0.001f;
+            Vector3 rightBasePoint = gazePoint.RightGaze.gaze_origin_mm * 0.001f;
             
             Vector3 meanGazeDirection = gazePoint.CombGaze.gaze_direction_normalized;
             Vector3 leftGazeDirection = gazePoint.LeftGaze.gaze_direction_normalized;
             Vector3 rightGazeDirection = gazePoint.RightGaze.gaze_direction_normalized;
+            
+            meanGazeDirection.x *= -1;
+            leftGazeDirection.x *= -1;
+            rightGazeDirection.x *= -1;
 
             bool valC = gazePoint.valid(ExpeControl.lateralisation.comb);
             bool valL = gazePoint.valid(ExpeControl.lateralisation.left);
@@ -75,6 +81,7 @@ public class EyeTrackingSampler: MonoBehaviour
              );
         }
     }
+    
     // private void OnGUI()
     // {
     //     if (gazePoint.LeftCollide != null)
@@ -151,11 +158,13 @@ public class EyeTrackingSampler: MonoBehaviour
         
         cameraQuaternion = camTrans.rotation;
         cameraPosition = camTrans.position;
-            
+        
         SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out gazePoint.LeftWorldRay, gazePoint.data);
         gazePoint.LeftWorldRay = new Ray(cameraPosition, mainCam.transform.TransformDirection(gazePoint.LeftWorldRay.direction));
+        
         SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out gazePoint.RightWorldRay, gazePoint.data);
         gazePoint.RightWorldRay = new Ray(cameraPosition, mainCam.transform.TransformDirection(gazePoint.RightWorldRay.direction));
+        
         SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out gazePoint.CombWorldRay, gazePoint.data);
         gazePoint.CombWorldRay = new Ray(cameraPosition, mainCam.transform.TransformDirection(gazePoint.CombWorldRay.direction));
         
