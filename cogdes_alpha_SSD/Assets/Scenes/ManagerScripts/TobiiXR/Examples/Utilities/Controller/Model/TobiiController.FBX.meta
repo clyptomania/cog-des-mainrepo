@@ -1,92 +1,254 @@
 fileFormatVersion: 2
 guid: f9e308df831da5846aa65d2d91739292
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: Cylinder002
-    100002: Cylinder004
-    100004: Cylinder006
-    100006: OilTank004
-    100008: OilTank006
-    100010: Sphere001
-    100012: //RootNode
-    100014: Case Lining
-    100016: Menu Button
-    100018: System Button
-    100020: Trackpad
-    100022: Trigger
-    100024: Cylinder011
-    100026: Grip Left
-    100028: Grip Right
-    400000: Cylinder002
-    400002: Cylinder004
-    400004: Cylinder006
-    400006: OilTank004
-    400008: OilTank006
-    400010: Sphere001
-    400012: //RootNode
-    400014: Case Lining
-    400016: Menu Button
-    400018: System Button
-    400020: Trackpad
-    400022: Trigger
-    400024: Cylinder011
-    400026: Grip Left
-    400028: Grip Right
-    2100000: 'Material #3'
-    2100002: No Name
-    2100004: 'Material #2'
-    2100006: 'Material #14'
-    2100008: 'Material #16'
-    2300000: Cylinder002
-    2300002: Cylinder004
-    2300004: Cylinder006
-    2300006: OilTank004
-    2300008: OilTank006
-    2300010: Sphere001
-    2300012: Case Lining
-    2300014: Menu Button
-    2300016: System Button
-    2300018: //RootNode
-    2300020: Trackpad
-    2300022: Trigger
-    2300024: Cylinder011
-    2300026: Grip Left
-    2300028: Grip Right
-    3300000: Cylinder002
-    3300002: Cylinder004
-    3300004: Cylinder006
-    3300006: OilTank004
-    3300008: OilTank006
-    3300010: Sphere001
-    3300012: Case Lining
-    3300014: Menu Button
-    3300016: System Button
-    3300018: //RootNode
-    3300020: Trackpad
-    3300022: Trigger
-    3300024: Cylinder011
-    3300026: Grip Left
-    3300028: Grip Right
-    4300000: OilTank004
-    4300002: Cylinder004
-    4300004: Cylinder006
-    4300006: Sphere001
-    4300008: Cylinder002
-    4300010: OilTank006
-    4300012: Case
-    4300014: Case Lining
-    4300016: Trigger
-    4300018: Menu Button
-    4300020: System Button
-    4300022: Trackpad
-    4300024: Controller Body
-    4300026: Grip Left
-    4300028: Grip Right
-    4300030: Cylinder011
+  serializedVersion: 19301
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Cylinder002
+  - first:
+      1: 100002
+    second: Cylinder004
+  - first:
+      1: 100004
+    second: Cylinder006
+  - first:
+      1: 100006
+    second: OilTank004
+  - first:
+      1: 100008
+    second: OilTank006
+  - first:
+      1: 100010
+    second: Sphere001
+  - first:
+      1: 100012
+    second: //RootNode
+  - first:
+      1: 100014
+    second: Case Lining
+  - first:
+      1: 100016
+    second: Menu Button
+  - first:
+      1: 100018
+    second: System Button
+  - first:
+      1: 100020
+    second: Trackpad
+  - first:
+      1: 100022
+    second: Trigger
+  - first:
+      1: 100024
+    second: Cylinder011
+  - first:
+      1: 100026
+    second: Grip Left
+  - first:
+      1: 100028
+    second: Grip Right
+  - first:
+      4: 400000
+    second: Cylinder002
+  - first:
+      4: 400002
+    second: Cylinder004
+  - first:
+      4: 400004
+    second: Cylinder006
+  - first:
+      4: 400006
+    second: OilTank004
+  - first:
+      4: 400008
+    second: OilTank006
+  - first:
+      4: 400010
+    second: Sphere001
+  - first:
+      4: 400012
+    second: //RootNode
+  - first:
+      4: 400014
+    second: Case Lining
+  - first:
+      4: 400016
+    second: Menu Button
+  - first:
+      4: 400018
+    second: System Button
+  - first:
+      4: 400020
+    second: Trackpad
+  - first:
+      4: 400022
+    second: Trigger
+  - first:
+      4: 400024
+    second: Cylinder011
+  - first:
+      4: 400026
+    second: Grip Left
+  - first:
+      4: 400028
+    second: Grip Right
+  - first:
+      21: 2100000
+    second: Material #3
+  - first:
+      21: 2100002
+    second: No Name
+  - first:
+      21: 2100004
+    second: Material #2
+  - first:
+      21: 2100006
+    second: Material #14
+  - first:
+      21: 2100008
+    second: Material #16
+  - first:
+      23: 2300000
+    second: Cylinder002
+  - first:
+      23: 2300002
+    second: Cylinder004
+  - first:
+      23: 2300004
+    second: Cylinder006
+  - first:
+      23: 2300006
+    second: OilTank004
+  - first:
+      23: 2300008
+    second: OilTank006
+  - first:
+      23: 2300010
+    second: Sphere001
+  - first:
+      23: 2300012
+    second: Case Lining
+  - first:
+      23: 2300014
+    second: Menu Button
+  - first:
+      23: 2300016
+    second: System Button
+  - first:
+      23: 2300018
+    second: //RootNode
+  - first:
+      23: 2300020
+    second: Trackpad
+  - first:
+      23: 2300022
+    second: Trigger
+  - first:
+      23: 2300024
+    second: Cylinder011
+  - first:
+      23: 2300026
+    second: Grip Left
+  - first:
+      23: 2300028
+    second: Grip Right
+  - first:
+      33: 3300000
+    second: Cylinder002
+  - first:
+      33: 3300002
+    second: Cylinder004
+  - first:
+      33: 3300004
+    second: Cylinder006
+  - first:
+      33: 3300006
+    second: OilTank004
+  - first:
+      33: 3300008
+    second: OilTank006
+  - first:
+      33: 3300010
+    second: Sphere001
+  - first:
+      33: 3300012
+    second: Case Lining
+  - first:
+      33: 3300014
+    second: Menu Button
+  - first:
+      33: 3300016
+    second: System Button
+  - first:
+      33: 3300018
+    second: //RootNode
+  - first:
+      33: 3300020
+    second: Trackpad
+  - first:
+      33: 3300022
+    second: Trigger
+  - first:
+      33: 3300024
+    second: Cylinder011
+  - first:
+      33: 3300026
+    second: Grip Left
+  - first:
+      33: 3300028
+    second: Grip Right
+  - first:
+      43: 4300000
+    second: OilTank004
+  - first:
+      43: 4300002
+    second: Cylinder004
+  - first:
+      43: 4300004
+    second: Cylinder006
+  - first:
+      43: 4300006
+    second: Sphere001
+  - first:
+      43: 4300008
+    second: Cylinder002
+  - first:
+      43: 4300010
+    second: OilTank006
+  - first:
+      43: 4300012
+    second: Case
+  - first:
+      43: 4300014
+    second: Case Lining
+  - first:
+      43: 4300016
+    second: Trigger
+  - first:
+      43: 4300018
+    second: Menu Button
+  - first:
+      43: 4300020
+    second: System Button
+  - first:
+      43: 4300022
+    second: Trackpad
+  - first:
+      43: 4300024
+    second: Controller Body
+  - first:
+      43: 4300026
+    second: Grip Left
+  - first:
+      43: 4300028
+    second: Grip Right
+  - first:
+      43: 4300030
+    second: Cylinder011
   externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -118,34 +280,41 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 1
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -155,14 +324,16 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 0
   humanoidOversampling: 1
+  avatarSetup: 0
   additionalBone: 0
   userData: 
   assetBundleName: 

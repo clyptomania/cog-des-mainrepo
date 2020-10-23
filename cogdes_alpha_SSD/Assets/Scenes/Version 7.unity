@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: b2a68ec039b22c0428dbe01f788b51db,
+  m_LightingDataAsset: {fileID: 112000000, guid: e33527af7fe9e1c4ebc15544d1c1082f,
     type: 2}
   m_UseShadowmask: 0
 --- !u!196 &4
@@ -3773,7 +3773,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 194
+  m_RootOrder: 193
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &254454139
 GameObject:
@@ -8233,7 +8233,7 @@ Transform:
   m_LocalScale: {x: 1, y: 4.6292124, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 204
+  m_RootOrder: 203
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &524822388
 PrefabInstance:
@@ -21154,7 +21154,7 @@ Transform:
   m_LocalScale: {x: 0.0009999871, y: 0.0009999872, z: 0.0009999872}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 129
+  m_RootOrder: 128
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1170441631
 PrefabInstance:
@@ -30543,7 +30543,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 195
+  m_RootOrder: 194
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1892551496
 PrefabInstance:
@@ -32967,7 +32967,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 52
+  m_RootOrder: 51
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2063109902
 PrefabInstance:
@@ -34383,7 +34383,7 @@ Transform:
   m_LocalScale: {x: 1, y: 4.6292124, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 203
+  m_RootOrder: 202
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2108957162
 PrefabInstance:
@@ -34645,7 +34645,7 @@ Transform:
   m_LocalScale: {x: -1, y: -3.6537757, z: -0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 106
+  m_RootOrder: 105
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2116006765
 PrefabInstance:

@@ -78,9 +78,9 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
-  m_Range: 7
-  m_SpotAngle: 87
+  m_Intensity: 3
+  m_Range: 5
+  m_SpotAngle: 100
   m_InnerSpotAngle: 1
   m_CookieSize: 10
   m_Shadows:
@@ -491,7 +491,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 30f4f6f514525e441b39cd6149f05b7e, type: 2}
+      objectReference: {fileID: 2100000, guid: 4b6ca00bf4d0aa940989e4075fb67a47, type: 2}
     - target: {fileID: 8861860237480976892, guid: 041d05956ec6e0e439569b5862c485b7,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -696,7 +696,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 30f4f6f514525e441b39cd6149f05b7e, type: 2}
+      objectReference: {fileID: 2100000, guid: 4b6ca00bf4d0aa940989e4075fb67a47, type: 2}
     - target: {fileID: 3696481056283925590, guid: 88c6cb2fbbbe5e8418b760df240db6c7,
         type: 3}
       propertyPath: m_StaticEditorFlags
