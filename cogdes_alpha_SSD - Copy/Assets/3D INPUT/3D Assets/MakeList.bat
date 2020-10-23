@@ -1,1 +1,0 @@
-dir /B *.blend > List.txt
