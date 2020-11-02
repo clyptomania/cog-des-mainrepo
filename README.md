@@ -71,7 +71,7 @@ Finally yet importantly we increased the performance of the project to make it m
 After a quick feedback from Robin we also applied the requested changes to these three assets:
 
     - 3_Rolltreppe: We added the lights at the side panels and reworked the stair texture.
-    - 4_GrosseTreppe: We reworked the granite texture and replaced the glass<br> with the previously used metal to correctly represent the real world counterpart.
+    - 4_GrosseTreppe: We reworked the granite texture and replaced the glass with the previously used metal to correctly represent the real world counterpart.
     - 7_Vitrine: We added an emission to the content display, the logo and the actual font.
 <br>
 <br>
