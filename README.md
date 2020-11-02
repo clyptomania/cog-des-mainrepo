@@ -75,7 +75,7 @@ After a quick feedback from Robin we also applied the requested changes to these
     - 7_Vitrine: We added an emission to the content display, the logo and the actual font.
 
 <p align="center">
-    ◯˙ weltfern interactive  
-    Lagerstr. 11, 20357 Hamburg    
+    ◯˙ weltfern interactive<br>
+    Lagerstr. 11, 20357 Hamburg<br>   
     +49 (0) 40 2000 92 97 | info@weltfern.com
 <p>
