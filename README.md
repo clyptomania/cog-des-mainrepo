@@ -24,7 +24,7 @@ Going into the project we started to work on improving its believability. In ord
     - 14_LichteranlageKreis
     - 15_Werbetafel
     - 19_Gleistunnel
-    - 19_Gleistunnel_Endstueck
+    - 19_Gleistunnel_Endstueck
     - 20_Gleis (+ three different variations)
     - 21_Geldautomat
     - 23_Feuerloescher
@@ -71,5 +71,3 @@ After a quick feedback from Robin we also applied the requested changes to these
     - 7_Vitrine: We added an emission to the content display, the logo and the actual font.
 
 <br>
-
-![Git Essential Workflow Diagram](https://it.mathworks.com/help/matlab/matlab_prog/srcctrl_git_diagram.png)
