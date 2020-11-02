@@ -1,5 +1,5 @@
 <p align="center">
-<img src="images/weltfern_wecreatesoftware.png" width="320" height="120">
+    <img src="images/weltfern_wecreatesoftware.png" width="320" height="120">
 </p>
 
 # Cognition Design - Phase 01
@@ -74,4 +74,8 @@ After a quick feedback from Robin we also applied the requested changes to these
     - 4_GrosseTreppe: We reworked the granite texture and replaced the glass with the previously used metal to correctly represent the real world counterpart.
     - 7_Vitrine: We added an emission to the content display, the logo and the actual font.
 
-<br>
+<p align="center">
+    ◯˙ weltfern interactive  
+    Lagerstr. 11, 20357 Hamburg    
+    +49 (0) 40 2000 92 97 | info@weltfern.com
+<p>
