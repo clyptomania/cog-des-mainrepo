@@ -77,7 +77,7 @@ After a quick feedback from Robin we also applied the requested changes to these
 <br>
 <br>
 <p align="center">
-    ◯˙ weltfern interactive<br>
+    ◯˙ weltfern<br>
     Lagerstr. 11, 20357 Hamburg<br>   
     +49 (0) 40 2000 92 97 | info@weltfern.com
 <p>
