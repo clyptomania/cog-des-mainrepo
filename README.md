@@ -1,5 +1,5 @@
 <p align="center">
-<img src="images/weltfern_wecreatesoftware.png" width="160" height="60">
+<img src="images/weltfern_wecreatesoftware.png" width="320" height="120">
 </p>
 
 # Cognition Design - Phase 01
