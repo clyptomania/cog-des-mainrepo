@@ -1,54 +1,75 @@
-# Cognition Design
-This is the official project repository for Cognition Design <br> *HfG Offenbach am Main / Goethe University Cognition Lab*
+# Cognition Design - Phase 01
+This is the weltfern documentation for the first phase of Cognition Design. Everything we did while working on this project is listed here.
 
-## Hardware Requirements
-- A VR ready Windows PC
-- Vive Pro Eye
+## 1 -  What needed to happen?
+We completed each of the jointly-agreed goals which consisted of two major milestones:
 
-## Necessary installs
-1. **[Git LFS](https://github.com/clyptomania/cog-des-mainrepo/wiki/Using-Git-LFS)** - to deal with the large file sizes | [see our Wiki-Entry](https://github.com/clyptomania/cog-des-mainrepo/wiki/Using-Git-LFS)
-2. **Unity** - to edit the project
-3. **'Substance for Unity' Plugin** -- to enable Unity to use the included .sbsar materials
-4. **Blender** -- to enable Unity to use the included .blend assets
+    - The overall believability of the scenes is improved.
+    - The project runs steady at 90FPS.
 
-## Basic Bash/Shell Commands:
-<p> Navigate to Directory <br> <code> $ cd path/to/directory </code> </p>
+What we did exactly to achieve these milestones will be explained in the following paragraphs.
 
-<p> Inspect current directory files and folders <br> <code> $ ls </code> </p>
+## 2 - Revamping the assets
+Going into the project we started to work on improving its believability. In order to do that we reworked all the given assets. We remodeled them, added missing details and improved their visual quality. For each object we created completely new textures to ensure a realistic digital reproduction. A list of all these asset is written down below:
 
-<p> Create new directory <br> <code> $ mkdir directoryname </code> </p>
+    - 1_Fahrstuhl
+    - 2_Fahrkartenautomat (+ four different variations)
+    - 3_Rolltreppe
+    - 4_GrosseTreppe
+    - 5_Bank
+    - 7_Vitrine
+    - 9_Abfallbehaelter
+    - 10_Uhr
+    - 13_LichtanlageLang
+    - 14_LichteranlageKreis
+    - 15_Werbetafel
+    - 19_Gleistunnel
+    - 19_Gleistunnel_Endstueck
+    - 20_Gleis (+ three different variations)
+    - 21_Geldautomat
+    - 23_Feuerloescher
+    - 24_Zigarettenautomat
+    - 33_VitrineAnWand
+    - 34_DigitaleAnzeige
+    - 37_Notrufsaeule
+    - 38_Telefonsaeule
+    - 39_Abzug
+    - 40_Feuerloescher
+    - 41_Liniennetzplan
+    - 42_WerbetafelKlein (+ two different variations)
+    - 43_WerbetafelGross (+ two different variations)
+    - 44_Gleishaeuschen
+    - 50_RoundCeiling_Light
+    - 59_Mesh_B_Boden (Version 0)
+    - 89_Mesh_B_Boden (Version 0)
+    - 99_Bahnsteig
+    - 254_WerbeschildEingang
 
-<p> Command to find files larger than x (in current parent and child directory) <br> <code> $ find . -size +100M | xargs du -sh </code> </p>
+## 3 - Achieving realism
+In addition to the assets populating the scenes we also worked on improving their environment in general. In order to achieve a realistic look we did a couple more things:
 
+    - Completely reworked the light setup for every scene.
+        - Improved the exposure of each scene to create a reasonable variation in their illumination.
+        - Added HDRs to every light to reproduce the physical properties of real world light.
+        - Implemented sunlight to create the illusion of a living outside world.
+    - Restructured the Reflection Probes to guarantee sharp and plausible reflections.
+    - Added Anti Aliasing to prevent jagged edges when viewing the project in VR.
 
+## 4 - Increasing the performance
+Finally yet importantly we increased the performance of the project to make it more cost efficient. To accomplish the second major milestone we implemented the following changes:
 
-## Basic Git Commands:
+    - Realised LOD (Level of Detail) meshes for every revamped asset. This guarantees a reasonable quality based on the distance between the viewer and the rendered object.
+    - Reworked the light maps for a more stable representation of the scenes lighting.
+    - Optimised the current realtime light setup to be used more efficiently.
+    - Restructured the mesh colliders to improve not just the performance but also the way users can move inside VR.
 
-[list of all Git commands](https://git-scm.com/docs)
+## 5 - Additional
+After a quick feedback from Robin we also applied the requested changes to these three assets:
 
-<p> Initialize local Git repository <br> <code> $ git init </code> </p>
+    - 3_Rolltreppe: We added the lights at the side panels and reworked the stair texture.
+    - 4_GrosseTreppe: We reworked the granite texture and replaced the glass with the previously used metal to correctly represent the real world counterpart.
+    - 7_Vitrine: We added an emission to the content display, the logo and the actual font.
 
-<p> Add file(s) to index <br> <code> $ git add <file> </code> </p>
-
-<p> Check status of working tree <br> <code> $ git status </code> </p>
-
-<p> Commit changes in index <br> <code> $ git commit -m "Type Comment Here" </code> </p>
-
-<p> Commit specific file in a directory <br> <code> $ git commit -m "Type Comment Here" path/to/my/file.ext </code> </p>
-
-<p> Push to remote repository <br> <code> $ git push </code> </p>
-
-<p> Pull latest from remote repository <br> <code> $ git pull </code> </p>
-
-<p> Switch branches or restore working tree files <br> <code> $ git checkout </code> </p>
-
-<p> Clone repository into a new directory <br> <code> $ git clone </code> </p>
-
-<p> Git show pack size: <br> <code> $ git count-objects -Hv </code> </p>
-
-<p> Git check ignored files: <br> <code> $ git status --ignored </code> </p>
-
-
-<br> 
+<br>
 
 ![Git Essential Workflow Diagram](https://it.mathworks.com/help/matlab/matlab_prog/srcctrl_git_diagram.png)
