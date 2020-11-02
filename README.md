@@ -1,4 +1,6 @@
-<img src="images/weltfern_wecreatesoftware.png" width="200" height="200">
+<p align="center">
+<img src="images/weltfern_wecreatesoftware.png" width="160" height="60">
+</p>
 
 # Cognition Design - Phase 01
 This is the weltfern documentation for the first phase of Cognition Design. Everything we did while working on this project is listed here.
