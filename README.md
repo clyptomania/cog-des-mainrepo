@@ -1,4 +1,6 @@
-![weltfern_wecreatesoftware](https://user-images.githubusercontent.com/25803775/97858987-3e751c80-1d00-11eb-8536-fca806a5ae1b.png)
+ScryarToday at 10:44
+<p align="center">   <a href="https://github.com/Weltfern/augmentable-frontend%22%3E     <img src="image/logo_dark.png" width="100" height="100">   </a>
+<p align="center"> ![weltfern_wecreatesoftware](https://user-images.githubusercontent.com/25803775/97858987-3e751c80-1d00-11eb-8536-fca806a5ae1b.png) </a>
 
 # Cognition Design - Phase 01
 This is the weltfern documentation for the first phase of Cognition Design. Everything we did while working on this project is listed here.
