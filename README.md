@@ -73,9 +73,7 @@ After a quick feedback from Robin we also applied the requested changes to these
     - 3_Rolltreppe: We added the lights at the side panels and reworked the stair texture.
     - 4_GrosseTreppe: We reworked the granite texture and replaced the glass with the previously used metal to correctly represent the real world counterpart.
     - 7_Vitrine: We added an emission to the content display, the logo and the actual font.
-<br>
-<br>
-<br>
+
 <p align="center" style="font-size:50%;>
     ◯˙ weltfern interactive<br>
     Lagerstr. 11, 20357 Hamburg<br>   
