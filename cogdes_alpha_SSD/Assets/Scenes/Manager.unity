@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 1.0782659, g: 0.718818, b: 1.1063429, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -569,6 +569,89 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1791936654566074758}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &410618915 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8338637230721046713, guid: b67cdfe3d8b4d224ab1ac0e37d30d2e1,
+    type: 3}
+  m_PrefabInstance: {fileID: 293972526}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &410618917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410618915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d499c400edc6df409b93a085618878c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availableRooms: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
+  currentSceneIdx: -1
+  isLoading: 0
+  isUnloading: 0
+  debug: 0
+--- !u!114 &410618918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410618915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6d09cb6bd32ba24995437fe891509d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugging: 0
+  m_currentTrialIdx: 0
+  mainCam: {fileID: 1864773351}
+  instructionPanel: {fileID: 251284778891487387}
+  pauseCanvas: {fileID: 1488632062293182}
+  DurationPressToLeave: 3
+  idTxt: {fileID: 251284779321244572}
+--- !u!114 &410618919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410618915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5d00477c8e3f0843a7523ea2436a7d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &410618920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410618915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2dc41856e084764f92c26edcf80961c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  instructionGeneral: {fileID: 1488632062293182}
+  instructionControllerL: {fileID: 4303196172876902244, guid: 02b74bf5f48fac24faa867a871a5964b,
+    type: 3}
+  instructionControllerR: {fileID: 4303196172876902244, guid: 02b74bf5f48fac24faa867a871a5964b,
+    type: 3}
+--- !u!114 &410618921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410618915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bee0cc6ecdbedeb4391f3867664761b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &415513211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1134,6 +1217,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4419020640412130, guid: 114b3c3ce4645364a97c8f0803bed65b,
     type: 3}
   m_PrefabInstance: {fileID: 8338637230863564896}
+  m_PrefabAsset: {fileID: 0}
+--- !u!20 &1864773351 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 5014278143616978563, guid: b67cdfe3d8b4d224ab1ac0e37d30d2e1,
+    type: 3}
+  m_PrefabInstance: {fileID: 293972526}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1919298229 stripped
 Transform:
