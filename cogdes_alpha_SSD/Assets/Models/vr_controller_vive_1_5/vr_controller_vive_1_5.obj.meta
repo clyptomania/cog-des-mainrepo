@@ -3,12 +3,7 @@ guid: 902519b44eead1e4b9cd1dba7af66d9b
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: whole_model_group1Mat
-    second: {fileID: 2100000, guid: 6c9d241cda8cfac4bac5a0a29cf6eb93, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 1
     materialName: 1
@@ -50,7 +45,7 @@ ModelImporter:
     importLights: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
-    generateSecondaryUV: 1
+    generateSecondaryUV: 0
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
