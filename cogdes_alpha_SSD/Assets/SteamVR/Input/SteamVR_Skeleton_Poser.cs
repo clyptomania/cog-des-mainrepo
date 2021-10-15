@@ -72,6 +72,7 @@ namespace Valve.VR
             // NOTE: Is there a better way to get the bone count? idk
             blendedSnapshotL = new SteamVR_Skeleton_PoseSnapshot(boneCount, SteamVR_Input_Sources.LeftHand);
             blendedSnapshotR = new SteamVR_Skeleton_PoseSnapshot(boneCount, SteamVR_Input_Sources.RightHand);
+
         }
 
 
@@ -81,28 +82,30 @@ namespace Valve.VR
         /// </summary>
         public void SetBlendingBehaviourValue(string behaviourName, float value)
         {
-            PoseBlendingBehaviour behaviour = FindBlendingBehaviour(behaviourName);
-            if (behaviour != null)
+            PoseBlendingBehaviour behaviour = blendingBehaviours.Find(b => b.name == behaviourName);
+            if(behaviour == null)
             {
-                behaviour.value = value;
-
-                if (behaviour.type != PoseBlendingBehaviour.BlenderTypes.Manual)
-                {
-                    Debug.LogWarning("[SteamVR] Blending Behaviour: " + behaviourName + " is not a manual behaviour. Its value will likely be overriden.", this);
-                }
+                Debug.LogError("[SteamVR] Blending Behaviour: " + behaviourName + " not found on Skeleton Poser: " + gameObject.name);
+                return;
             }
+            if(behaviour.type != PoseBlendingBehaviour.BlenderTypes.Manual)
+            {
+                Debug.LogWarning("[SteamVR] Blending Behaviour: " + behaviourName + " is not a manual behaviour. Its value will likely be overriden.");
+            }
+            behaviour.value = value;
         }
         /// <summary>
         /// Get the blending value of a blendingBehaviour.
         /// </summary>
         public float GetBlendingBehaviourValue(string behaviourName)
         {
-            PoseBlendingBehaviour behaviour = FindBlendingBehaviour(behaviourName);
-            if (behaviour != null)
+            PoseBlendingBehaviour behaviour = blendingBehaviours.Find(b => b.name == behaviourName);
+            if (behaviour == null)
             {
-                return behaviour.value;
+                Debug.LogError("[SteamVR] Blending Behaviour: " + behaviourName + " not found on Skeleton Poser: " + gameObject.name);
+                return 0;
             }
-            return 0;
+            return behaviour.value;
         }
 
         /// <summary>
@@ -110,11 +113,13 @@ namespace Valve.VR
         /// </summary>
         public void SetBlendingBehaviourEnabled(string behaviourName, bool value)
         {
-            PoseBlendingBehaviour behaviour = FindBlendingBehaviour(behaviourName);
-            if (behaviour != null)
+            PoseBlendingBehaviour behaviour = blendingBehaviours.Find(b => b.name == behaviourName);
+            if (behaviour == null)
             {
-                behaviour.enabled = value;
+                Debug.LogError("[SteamVR] Blending Behaviour: " + behaviourName + " not found on Skeleton Poser: " + gameObject.name);
+                return;
             }
+            behaviour.enabled = value;
         }
         /// <summary>
         /// Check if a blending behaviour is enabled.
@@ -123,36 +128,29 @@ namespace Valve.VR
         /// <returns></returns>
         public bool GetBlendingBehaviourEnabled(string behaviourName)
         {
-            PoseBlendingBehaviour behaviour = FindBlendingBehaviour(behaviourName);
-            if (behaviour != null)
+            PoseBlendingBehaviour behaviour = blendingBehaviours.Find(b => b.name == behaviourName);
+            if (behaviour == null)
             {
-                return behaviour.enabled;
+                Debug.LogError("[SteamVR] Blending Behaviour: " + behaviourName + " not found on Skeleton Poser: " + gameObject.name);
+                return false;
             }
-
-            return false;
+            return behaviour.enabled;
         }
         /// <summary>
         /// Get a blending behaviour by name.
         /// </summary>
         public PoseBlendingBehaviour GetBlendingBehaviour(string behaviourName)
         {
-            return FindBlendingBehaviour(behaviourName);
-        }
-
-        protected PoseBlendingBehaviour FindBlendingBehaviour(string behaviourName, bool throwErrors = true)
-        {
             PoseBlendingBehaviour behaviour = blendingBehaviours.Find(b => b.name == behaviourName);
-
             if (behaviour == null)
             {
-                if (throwErrors)
-                    Debug.LogError("[SteamVR] Blending Behaviour: " + behaviourName + " not found on Skeleton Poser: " + gameObject.name, this);
-
+                Debug.LogError("[SteamVR] Blending Behaviour: " + behaviourName + " not found on Skeleton Poser: " + gameObject.name);
                 return null;
             }
-
             return behaviour;
         }
+
+
 
 
         public SteamVR_Skeleton_Pose GetPoseByIndex(int index)
