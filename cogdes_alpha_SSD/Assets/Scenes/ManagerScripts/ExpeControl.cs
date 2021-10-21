@@ -293,11 +293,11 @@ public class ExpeControl : MonoBehaviour {
                     // yield return new WaitForSecondsRealtime(1);
                     yield return new WaitUntil (() => userPressed || Input.GetKeyUp (KeyCode.Space));
                     yield return null; // Leave time for key up event to disappear
-                    setLights (lightCond);
+                    // setLights (lightCond);
                 }
                 yield return new WaitUntil (() => userPressed || Input.GetKeyUp (KeyCode.Space));
             } else {
-                setLights (LightConditions[currentTrial.light_cond]);
+                // setLights (LightConditions[currentTrial.light_cond]);
             }
 
             // Teleport user to starting position
@@ -373,8 +373,8 @@ public class ExpeControl : MonoBehaviour {
     }
 
     private void setLights (LightStruct cond) {
-        condObjects.ToggleLight (cond.orientation, selfregister.objectType.Orientation);
-        condObjects.ToggleLight (cond.landmark, selfregister.objectType.Landmark);
+        // condObjects.ToggleLight (cond.orientation, selfregister.objectType.Orientation);
+        // condObjects.ToggleLight (cond.landmark, selfregister.objectType.Landmark);
     }
 
     private void OnGUI () {

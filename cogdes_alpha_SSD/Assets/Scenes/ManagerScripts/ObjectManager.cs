@@ -22,42 +22,42 @@ public class ObjectManager
 
     public void Add(selfregister _o)
     {
-        if (_o.currentObjectType == selfregister.objectType.Orientation)
-        {
-            _oOrientation.Add(_o);
-        }
-        else if (_o.currentObjectType == selfregister.objectType.Landmark)
-        {
-            _oLandmark.Add(_o);
-        }
+        // if (_o.currentObjectType == selfregister.objectType.Orientation)
+        // {
+        //     _oOrientation.Add(_o);
+        // }
+        // else if (_o.currentObjectType == selfregister.objectType.Landmark)
+        // {
+        //     _oLandmark.Add(_o);
+        // }
     }
 
-    public void ToggleLight(bool state, selfregister.objectType type)
-    {
-        List<ILightable> list;
-        if (type == selfregister.objectType.Orientation)
-        {
-            list = _oOrientation;
-            _lOrientation = state;
-        }
-        else
-        {
-            list = _oLandmark;
-            _lLandmark = state;
-        }
+    // public void ToggleLight(bool state, selfregister.objectType type)
+    // {
+    //     List<ILightable> list;
+    //     if (type == selfregister.objectType.Orientation)
+    //     {
+    //         list = _oOrientation;
+    //         _lOrientation = state;
+    //     }
+    //     else
+    //     {
+    //         list = _oLandmark;
+    //         _lLandmark = state;
+    //     }
         
-        foreach (ILightable _o in list)
-        {
-            _o.ToggleLight(state);
-        }
+    //     foreach (ILightable _o in list)
+    //     {
+    //         _o.ToggleLight(state);
+    //     }
         
-        // Debug.Log($"Toggle: {type} {state} (N={list.Count})");
-    }
+    //     // Debug.Log($"Toggle: {type} {state} (N={list.Count})");
+    // }
 
-    public bool GetLightState(selfregister.objectType type)
-    {
-        bool state = type == selfregister.objectType.Orientation ? _lOrientation : _lLandmark;
+    // public bool GetLightState(selfregister.objectType type)
+    // {
+    //     bool state = type == selfregister.objectType.Orientation ? _lOrientation : _lLandmark;
 
-        return state;
-    }
+    //     return state;
+    // }
 }
