@@ -25,7 +25,8 @@ public class TrackPadInput : MonoBehaviour {
 
 	public SteamVR_Input_Sources handType;
 	public SteamVR_Action_Boolean sideButtonAction;
-	public SteamVR_Action_Boolean trackpadButtonAction;
+	public SteamVR_Action_Boolean trackpadClickAction;
+	public SteamVR_Action_Boolean trackpadTouchAction;
 
 	// public bool GetAction () {
 	// 	return sideButtonAction.GetState (handType);
@@ -76,13 +77,14 @@ public class TrackPadInput : MonoBehaviour {
 	}
 
 	public bool DisplayTouched () {
-		return _touchedPadL || _touchedPadR;
+		return trackpadTouchAction.GetState (handType);
+		// return _touchedPadL || _touchedPadR;
 	}
 
 	public bool DisplayPressed () {
 		
-		return trackpadButtonAction.GetState (handType);
-		return _pressedPadL || _pressedPadR;
+		return trackpadClickAction.GetState (handType);
+		// return _pressedPadL || _pressedPadR;
 	}
 
 	public void TriggerPressL (bool state) { TriggerPress (state, ExpeControl.lateralisation.left); }

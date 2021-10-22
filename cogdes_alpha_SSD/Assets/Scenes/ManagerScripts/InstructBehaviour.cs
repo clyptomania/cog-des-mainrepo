@@ -2,8 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InstructBehaviour : MonoBehaviour
-{
+public class InstructBehaviour : MonoBehaviour {
     private static InstructBehaviour instance;
     [SerializeField]
     private GameObject instructionGeneral;
@@ -14,43 +13,47 @@ public class InstructBehaviour : MonoBehaviour
 
     private List<Text> _texts;
     public bool isInstructGeneralDisplayed => instructionGeneral.activeSelf;
-    void OnEnable()
-    {
+
+
+    [SerializeField] private bool oneControllerOnly = true;
+
+    private bool deactivatedOtherController = false;
+
+    void OnEnable() {
         instance = this;
-        
+
         // Already turned off by the CameraRig
         instructionGeneral.SetActive(false);
-        instructionControllerL.SetActive(false);
-        instructionControllerR.SetActive(false);
-        
+        // instructionControllerL.SetActive(false);
+        // instructionControllerR.SetActive(false);
+
+        deactivatedOtherController = false;
+
         _texts = new List<Text>(3);
         _texts.Add(instructionGeneral.GetComponentInChildren<Text>());
         _texts.Add(instructionControllerL.GetComponentInChildren<Text>());
         _texts.Add(instructionControllerR.GetComponentInChildren<Text>());
-        
+
         TrackPadInput.touchCallbacks.Add("showCtrlInstruct",
-            (state, lat) =>
-            {
+            (state, lat) => {
                 if (lat == ExpeControl.lateralisation.left)
                     instructionControllerL.SetActive(state);
                 else
                     instructionControllerR.SetActive(state);
             }
         );
-        
+
         TrackPadInput.triggerCallbacks.Add("HideGeneralInstruct",
-            (state, lat) =>
-            {
+            (state, lat) => {
                 if (isInstructGeneralDisplayed)
                     instructionGeneral.SetActive(false);
             }
         );
     }
 
-    public void positionWorldInstruction(Transform start)
-    {
+    public void positionWorldInstruction(Transform start) {
         Transform tr = instructionGeneral.transform;
-        
+
         // Position and rotate on top of user
         tr.position = start.position;
         tr.rotation = start.rotation;
@@ -62,16 +65,30 @@ public class InstructBehaviour : MonoBehaviour
     }
 
     public bool isWorldInstructionShowing => instructionGeneral.activeSelf;
-    public void toggleWorldInstruction(bool state)
-    {
+    public void toggleWorldInstruction(bool state) {
         instructionGeneral.SetActive(state);
     }
 
-    public void setInstruction(string message)
-    {
-        foreach (var text in _texts)
-        {
+    public void setInstruction(string message) {
+        foreach (var text in _texts) {
             text.text = message;
+        }
+    }
+
+    public void DeactivateController(bool left) {
+        if (!oneControllerOnly) {
+            deactivatedOtherController = true;
+            return;
+        }
+        if (!deactivatedOtherController) {
+            if (left) {
+                instructionControllerL.transform.parent.gameObject.SetActive(false);
+                Debug.Log("Deactivated left controller");
+            } else {
+                instructionControllerR.transform.parent.gameObject.SetActive(false);
+                Debug.Log("Deactivated right controller");
+            }
+            deactivatedOtherController = true;
         }
     }
 }

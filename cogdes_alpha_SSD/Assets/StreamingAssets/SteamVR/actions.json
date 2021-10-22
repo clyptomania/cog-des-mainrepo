@@ -50,8 +50,20 @@
       "type": "boolean"
     },
     {
-      "name": "/actions/default/in/NewAction",
+      "name": "/actions/default/in/PadClick",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/PadTouch",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/SidePress",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/PadSwipe",
+      "type": "vector2"
     },
     {
       "name": "/actions/default/out/Haptic",

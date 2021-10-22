@@ -105,11 +105,35 @@ namespace Valve.VR
             }
         }
         
-        public virtual SteamVR_Action_Boolean NewAction
+        public virtual SteamVR_Action_Boolean PadClick
         {
             get
             {
-                return SteamVR_Actions.default_NewAction;
+                return SteamVR_Actions.default_PadClick;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean PadTouch
+        {
+            get
+            {
+                return SteamVR_Actions.default_PadTouch;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean SidePress
+        {
+            get
+            {
+                return SteamVR_Actions.default_SidePress;
+            }
+        }
+        
+        public virtual SteamVR_Action_Vector2 PadSwipe
+        {
+            get
+            {
+                return SteamVR_Actions.default_PadSwipe;
             }
         }
         
