@@ -13,15 +13,20 @@ public class ExpeControl : MonoBehaviour {
     public static ExpeControl instance { get; private set; }
 
     [SerializeField] private bool debugging;
+    [SerializeField] private bool resetExperiments = false;
     [SerializeField] private bool eyeTracking = true;
+
+    [SerializeField] private List<int> durations = new List<int>();
 
     // Playlist data
     private readonly List<playlistElement> playlist = new List<playlistElement>(90);
+    private readonly List<EmotPlaylistElement> emotPlaylist = new List<EmotPlaylistElement>(90);
     public int m_currentTrialIdx = 0;
     public int currentTrialIdx => m_currentTrialIdx;
+    public EmotPlaylistElement currentEmotTrial => emotPlaylist[currentTrialIdx];
     public playlistElement currentTrial => playlist[currentTrialIdx];
-    private string currentRoom => playlist[currentTrialIdx].room_name;
-    private int currentRoomIdx => playlist[currentTrialIdx].room_idx;
+    // private string currentRoom => playlist[currentTrialIdx].room_name;
+    // private int currentRoomIdx => playlist[currentTrialIdx].room_idx;
 
     private Transform cameraRig;
     public Camera mainCam;
@@ -139,15 +144,29 @@ public class ExpeControl : MonoBehaviour {
         m_userdataPath = m_basePath + "/Subj_" + m_userId;
         // If this user already exists: start after last trial
         if (Directory.Exists(m_userdataPath)) {
-            int count = Directory.GetFiles(m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
 
-            // Rename userdata file before creating a new one
-            if (File.Exists(m_userdataPath + "/UserData.txt")) {
-                File.Move(m_userdataPath + "/UserData.txt", m_userdataPath + $"/UserData_{getTimeStamp()}.txt");
-            }
+            if (resetExperiments) {
 
-            if (count > 1) {
-                m_currentTrialIdx = count / 2;
+                string[] oldFiles = Directory.GetFiles(m_userdataPath, "*.*", SearchOption.AllDirectories);
+
+                foreach (string file in oldFiles) {
+                    // Debug.Log(file);
+                    File.Delete(file);
+                }
+                Debug.Log("Deleted " + oldFiles.Length + " old files from " + m_userdataPath);
+
+            } else {
+
+                int count = Directory.GetFiles(m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
+
+                // Rename userdata file before creating a new one
+                if (File.Exists(m_userdataPath + "/UserData.txt")) {
+                    File.Move(m_userdataPath + "/UserData.txt", m_userdataPath + $"/UserData_{getTimeStamp()}.txt");
+                }
+
+                if (count > 1) {
+                    m_currentTrialIdx = count / 2;
+                }
             }
         }
 
@@ -158,14 +177,17 @@ public class ExpeControl : MonoBehaviour {
         m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt");
 
         // get playlist for user ID
-        setUserPlaylist(m_userId);
+        SetUserPlaylist(m_userId);
         setTaskList();
 
         // Record some protocol information
         writeInfo("User_ID: " + m_userId);
-        writeInfo("Stimuli order, room name, target idx, scotoma condition:");
-        foreach (playlistElement elp in playlist)
-            writeInfo($"{elp.expName} - quest_{elp.task_idx}");
+        // writeInfo("Stimuli order, room name, target idx, scotoma condition:");
+        writeInfo("Room name, Duration, Order:");
+        // foreach (playlistElement elp in playlist)
+        //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
+        foreach (EmotPlaylistElement ple in emotPlaylist)
+            writeInfo($"{ple.expName}");
         flushInfo();
     }
 
@@ -182,7 +204,8 @@ public class ExpeControl : MonoBehaviour {
 
     private IDictionary<string, string> tasks;
 
-    public string currentTaskString => tasks[$"{currentTrial.room_idx}.{currentTrial.task_idx}"];
+    // public string currentTaskString => tasks[$"{currentTrial.room_idx}.{currentTrial.task_idx}"];
+    public string currentTaskString => tasks[$"{currentEmotTrial.roomName}.{currentEmotTrial.task_idx}"];
 
     private void setTaskList() {
         tasks = new Dictionary<string, string>();
@@ -194,7 +217,64 @@ public class ExpeControl : MonoBehaviour {
             print(line);
         }
     }
-    private void setUserPlaylist(int idx) {
+
+    private void SetUserPlaylist(int idx) {
+        int max_idx = 100;
+        if (idx > max_idx) {
+            Debug.LogError($"User index cannot be over {max_idx}.", this);
+            Quit();
+        }
+
+        List<string> roomNames = RoomManager.instance.ListRooms();
+
+        // TEMPORARY, EASY PLAYLIST CREATION (NO RANDOMIZATION)
+        for (int i = 0; i < durations.Count; i++) {
+            for (int j = 0; j < roomNames.Count; j++) {
+                // Debug.Log(roomName + ", available: " + RoomManager.instance.isRoomAvailable(roomName));
+                int trial = i * roomNames.Count + j + 1;
+                emotPlaylist.Add(new EmotPlaylistElement(roomNames[j], durations[i], trial, trial));
+            }
+        }
+
+
+
+        // print($"playlist.Count: {emotPlaylist.Count}");
+
+        // StreamReader file = new StreamReader(Directory.GetParent(Application.dataPath) +
+        //     "/SubjectData/playlist.csv", Encoding.UTF8);
+
+        // int nrep = 14;
+        // int linesize = 104 + 1;
+        // // Number of characters per line plus line return
+
+        // // Read line according to the user ID number
+        // char[] lineChar = new char[linesize - 1];
+        // file.BaseStream.Position = idx * linesize;
+        // file.Read(lineChar, 0, lineChar.Length);
+        // file.Close();
+
+        // // Convert line from char[] to string
+        // string line = new string(lineChar);
+        // // Split line by commas
+        // string[] ell = line.Split(',');
+        // For all element in list
+        // for (int i = 0; i < ell.Length; i++) {
+        //     // Split by '-' 
+        //     string[] els = ell[i].Split('-');
+
+        //     // Debug.Log (ell[i]);
+
+        //     // 0: Scene, 1: light cond, 2: Task
+        //     int.TryParse(els[0], out var room_idx);
+        //     int.TryParse(els[1], out var light_cond);
+        //     int.TryParse(els[2], out var quest_idx);
+
+        //     // new playlistElement to insert in playlist
+        //     playlist.Add(new playlistElement(room_idx, light_cond, quest_idx, i));
+        // }
+        // print($"playlist.Count: {playlist.Count}");
+    }
+    private void setUserPlaylistErwan(int idx) {
         int max_idx = 100;
         if (idx > max_idx) {
             Debug.LogError($"User index cannot be over {max_idx}.", this);
@@ -253,7 +333,8 @@ public class ExpeControl : MonoBehaviour {
         instructionPanel.SetActive(true);
         pauseCanvas.SetActive(false);
         _progressBar.gameObject.SetActive(false);
-        // Wait for user ID
+
+        // Wait for user ID --- Setup() happens here!
         yield return new WaitUntil(() => !instructionPanel.activeSelf);
 
         // Test touchpad interaction
@@ -271,26 +352,26 @@ public class ExpeControl : MonoBehaviour {
         // yield return new WaitUntil(() => userPressedSpecial);
         // Debug.Log("Successfully clicked touchpad.");
 
-        print(m_currentTrialIdx);
-        print(playlist.Count);
+        Debug.Log("Currently playing trial " + m_currentTrialIdx + " out of " + emotPlaylist.Count);
 
-        while (m_currentTrialIdx < playlist.Count) {
+        while (m_currentTrialIdx < emotPlaylist.Count) {
             toggleMessage(true, "unloading");
 
             RoomManager.instance.UnloadScene();
             yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
             toggleMessage(false);
 
-            int trialidx = currentTrial.task_idx;
+            int trialidx = currentEmotTrial.task_idx;
 
             condObjects.Clear();
 
             // Skip trial if the station scene is not finished
-            if (!RoomManager.instance.isRoomAvailable(currentTrial.room_idx)) { m_currentTrialIdx++; continue; }
+            // if (!RoomManager.instance.isRoomAvailable(currentTrial.room_idx)) { m_currentTrialIdx++; continue; }
 
             long timeSpentLoading = getTimeStamp();
             toggleMessage(true, "loading");
-            RoomManager.instance.LoadScene(currentTrial.room_idx);
+            // RoomManager.instance.LoadScene(currentTrial.room_idx);
+            RoomManager.instance.LoadRoom(currentEmotTrial.roomName);
             writeInfo(RoomManager.instance.currSceneName);
             yield return new WaitUntil(() => !RoomManager.instance.actionInProgress &&
                RoomManager.instance.currentScene.isLoaded);
@@ -330,6 +411,10 @@ public class ExpeControl : MonoBehaviour {
             _instructBehaviour.positionWorldInstruction(startTr);
             // Set instruction panel visible
             _instructBehaviour.toggleWorldInstruction(false);
+
+
+            // WORKS UNTIL HERE SO FAR
+
             // Update all info panels with the new trial question (there can be more than one question for a same scene)
             _instructBehaviour.setInstruction(currentTaskString);
 
@@ -387,7 +472,9 @@ public class ExpeControl : MonoBehaviour {
         paused = state;
         pauseCanvas.SetActive(paused);
         Text msgHolder = pauseCanvas.transform.Find("ContentTxt").GetComponent<Text>();
-        msgHolder.text = messages[message];
+        string messageText = messages[message];
+        msgHolder.text = messageText;
+        Debug.Log(messageText);
     }
 
     private void setLights(LightStruct cond) {
