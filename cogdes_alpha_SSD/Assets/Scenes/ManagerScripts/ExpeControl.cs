@@ -255,6 +255,10 @@ public class ExpeControl : MonoBehaviour {
         // Wait for user ID
         yield return new WaitUntil (() => !instructionPanel.activeSelf);
 
+        // Test touchpad interaction
+        // yield return new WaitUntil (() => userPressed);
+        // Debug.Log("Successfully pressed touchpad");
+
         print (m_currentTrialIdx);
         print (playlist.Count);
 
@@ -282,8 +286,10 @@ public class ExpeControl : MonoBehaviour {
             toggleMessage (false);
 
             // Start new gaze record (record name = stimulus name)
-            if (eyeTracking)
+            if (eyeTracking) {
                 _eyeTrack.startNewRecord ();
+                Debug.Log("Started eye tracking.");
+            }
             // Start trial
             m_isPresenting = true;
             long start_time = getTimeStamp ();

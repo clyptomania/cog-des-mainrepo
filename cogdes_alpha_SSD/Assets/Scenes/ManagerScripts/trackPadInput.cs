@@ -12,6 +12,8 @@ public class TrackPadInput : MonoBehaviour {
 		Debug.Log ("Trackpad has awoken");
 	}
 
+	
+
 	public delegate void triggerCallback (bool b, ExpeControl.lateralisation l);
 	public static Dictionary<string, triggerCallback> triggerCallbacks = new Dictionary<string, triggerCallback> ();
 
@@ -22,13 +24,30 @@ public class TrackPadInput : MonoBehaviour {
 	public static Dictionary<string, pressCallback> pressCallbacks = new Dictionary<string, pressCallback> ();
 
 	public SteamVR_Input_Sources handType;
-	public SteamVR_Action_Boolean newAction;
+	public SteamVR_Action_Boolean sideButtonAction;
+	public SteamVR_Action_Boolean trackpadButtonAction;
 
-	public bool GetAction () {
-		return newAction.GetState (handType);
-	}
+	// public bool GetAction () {
+	// 	return sideButtonAction.GetState (handType);
+	// }
+
+	public void TestUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+        Debug.Log("Action up!");
+    }
+    public void TestDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+        Debug.Log("Action down!");
+    }
+
 
 	int counter = 0;
+
+	
+    void Start () {
+        sideButtonAction.AddOnStateDownListener(TestDown, handType);
+        sideButtonAction.AddOnStateUpListener(TestUp, handType);
+        Debug.Log("Added trackpad listener scripts");
+    }
+
 
 	/// <summary>
 	/// Update is called every frame, if the MonoBehaviour is enabled.
@@ -36,8 +55,8 @@ public class TrackPadInput : MonoBehaviour {
 	void Update () {
 		// if (counter++ < 10)
 		// 	Debug.Log ("Counting... " + counter);
-		if (GetAction ())
-			Debug.Log ("New action!");
+		// if (GetAction ())
+		// 	Debug.Log ("New action!");
 	}
 
 	public TrackPadInput () { }
@@ -52,7 +71,8 @@ public class TrackPadInput : MonoBehaviour {
 	private bool _pressedPadR;
 
 	public bool Pressed () {
-		return _pressedL || _pressedR;
+		return sideButtonAction.GetState (handType);
+		// return _pressedL || _pressedR;
 	}
 
 	public bool DisplayTouched () {
@@ -60,6 +80,8 @@ public class TrackPadInput : MonoBehaviour {
 	}
 
 	public bool DisplayPressed () {
+		
+		return trackpadButtonAction.GetState (handType);
 		return _pressedPadL || _pressedPadR;
 	}
 

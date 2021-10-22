@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 
-public class ActionTests : MonoBehaviour {
+public class SteamActions : MonoBehaviour {
 
     public SteamVR_Input_Sources handType;
     public SteamVR_Action_Boolean testAction;
