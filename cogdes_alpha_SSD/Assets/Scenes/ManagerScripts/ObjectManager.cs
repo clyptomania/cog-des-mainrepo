@@ -1,27 +1,23 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectManager
-{
+public class ObjectManager {
     private List<ILightable> _oOrientation;
     private List<ILightable> _oLandmark;
 
     private bool _lOrientation;
     private bool _lLandmark;
 
-    public ObjectManager()
-    {
+    public ObjectManager() {
         Clear();
     }
 
-    public void Clear()
-    {
+    public void Clear() {
         _oOrientation = new List<ILightable>(50);
         _oLandmark = new List<ILightable>(50);
     }
 
-    public void Add(selfregister _o)
-    {
+    public void Add(selfregister _o) {
         // if (_o.currentObjectType == selfregister.objectType.Orientation)
         // {
         //     _oOrientation.Add(_o);
@@ -45,12 +41,12 @@ public class ObjectManager
     //         list = _oLandmark;
     //         _lLandmark = state;
     //     }
-        
+
     //     foreach (ILightable _o in list)
     //     {
     //         _o.ToggleLight(state);
     //     }
-        
+
     //     // Debug.Log($"Toggle: {type} {state} (N={list.Count})");
     // }
 

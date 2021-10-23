@@ -35,15 +35,20 @@ public class RoomManager : MonoBehaviour {
     private int nLoadedScenes => SceneManager.sceneCount;
     private int nScenes => SceneManager.sceneCountInBuildSettings;
 
+    // public string currSceneNameErwan {
+    //     get {
+    //         if (isValidSceneIdx) {
+    //             return RoomNames[currentSceneIdx];
+    //         } else {
+    //             if (currentSceneIdx == -2) // loaded by roomName
+    //                 return currentRoomName;
+    //             return null;
+    //         }
+    //     }
+    // }
     public string currSceneName {
         get {
-            if (isValidSceneIdx) {
-                return RoomNames[currentSceneIdx];
-            } else {
-                if (currentSceneIdx == -2) // loaded by roomName
-                    return currentRoomName;
-                return null;
-            }
+            return currentRoomName;
         }
     }
 
@@ -65,7 +70,8 @@ public class RoomManager : MonoBehaviour {
         }
     }
 
-    private bool isValidSceneIdx => (currentSceneIdx >= 0 && currentSceneIdx < RoomNames.Length);
+    // private bool isValidSceneIdx => (currentSceneIdx == -2 || (currentSceneIdx >= 0 && currentSceneIdx < RoomNames.Length));
+    private bool isValidSceneIdx => (currentSceneIdx == -2 || (currentSceneIdx >= 0 && currentSceneIdx < rooms.Count));
     [SerializeField]
     public int currentSceneIdx = -1;
     [SerializeField]
@@ -156,6 +162,31 @@ public class RoomManager : MonoBehaviour {
         } else {
             // Write to debug file
             print($"Scene \"{currSceneName}\" is not loaded (id: {roomIdx})");
+        }
+    }
+
+
+    public void UnloadRoom(bool force = false) {
+        UnloadRoom(currentRoomName, force);
+    }
+    public void UnloadRoom(string roomName, bool force = false) {
+        if (actionInProgress && !force) {
+            // Write to debug file
+            print($"Couldn't unload scene: action in progress [l:{isLoading}, u:{isUnloading}]");
+            return;
+        }
+        if (nScenes < 2 && !force) {
+            // Write to debug file
+            print($"No scene to unload [nScene: {nScenes}]");
+            return;
+        }
+
+        if (isRoomLoaded) {
+            StartCoroutine(AsyncSceneUnloadMonitor(roomName));
+            currentSceneIdx = -1;
+        } else {
+            // Write to debug file
+            print($"Scene \"{currSceneName}\" is not loaded (id: {roomName})");
         }
     }
 

@@ -53,7 +53,7 @@ public class ExpeControl : MonoBehaviour {
     };
 
     // UI go
-    public GameObject instructionPanel;
+    public GameObject setupPanel;
 
     // User data
     private int m_userId = -1;
@@ -65,7 +65,7 @@ public class ExpeControl : MonoBehaviour {
     public StreamWriter m_recorder_HMD = StreamWriter.Null;
     private StreamWriter m_recorder_info = StreamWriter.Null;
 
-    public GameObject pauseCanvas;
+    public GameObject pausePanel;
 
     private readonly Dictionary<string, string> messages = new Dictionary<string, string> {
         {
@@ -102,7 +102,7 @@ public class ExpeControl : MonoBehaviour {
     private bool isTracking => (_eyeTrack.ready);
     private InstructBehaviour _instructBehaviour;
     public ObjectManager condObjects { get; private set; }
-    private TeleporterFacade _teleporter;
+    // private TeleporterFacade _teleporter;
 
     [Tooltip("Time in seconds needed to press touchpad ending trial")] public float DurationPressToLeave;
 
@@ -111,12 +111,14 @@ public class ExpeControl : MonoBehaviour {
         string[] RoomNames = RoomManager.RoomNames;
         cameraRig = transform.GetChild(0);
         _instructBehaviour = GetComponent<InstructBehaviour>();
-        condObjects = new ObjectManager();
-        _teleporter = gameObject.GetComponentInChildren<TeleporterFacade>();
+
+        // condObjects = new ObjectManager();
+
+        // _teleporter = gameObject.GetComponentInChildren<TeleporterFacade>();
 
         // Disable panels
-        instructionPanel.SetActive(false);
-        pauseCanvas.SetActive(false);
+        setupPanel.SetActive(false);
+        pausePanel.SetActive(false);
 
         // Get last user number
         m_basePath = Directory.GetParent(Application.dataPath) + "/SubjectData";
@@ -205,9 +207,21 @@ public class ExpeControl : MonoBehaviour {
     private IDictionary<string, string> tasks;
 
     // public string currentTaskString => tasks[$"{currentTrial.room_idx}.{currentTrial.task_idx}"];
-    public string currentTaskString => tasks[$"{currentEmotTrial.roomName}.{currentEmotTrial.task_idx}"];
+    // public string currentTaskString => tasks[$"{currentEmotTrial.roomName}.{currentEmotTrial.task_idx}"];
+
+    public string currentTaskString = "Example task string.";
 
     private void setTaskList() {
+        tasks = new Dictionary<string, string>();
+        var lines = File.ReadLines(
+            Directory.GetParent(Application.dataPath) + "/SubjectData/questions.csv");
+        foreach (var line in lines) {
+            string[] linesplit = line.Split(',');
+            tasks.Add(linesplit[0], linesplit[1]);
+            print(line);
+        }
+    }
+    private void setTaskListErwan() {
         tasks = new Dictionary<string, string>();
         var lines = File.ReadLines(
             Directory.GetParent(Application.dataPath) + "/SubjectData/questions.csv");
@@ -319,9 +333,9 @@ public class ExpeControl : MonoBehaviour {
 
     private bool m_isPresenting;
 
-    public bool userPressed => TrackPadInput.instance.Pressed();
-    public bool userTouched => TrackPadInput.instance.DisplayTouched();
-    public bool userPressedSpecial => TrackPadInput.instance.DisplayPressed();
+    public bool userGrippedControl => TrackPadInput.instance.Pressed();
+    public bool userTouchedPad => TrackPadInput.instance.DisplayTouched();
+    public bool userClickedPad => TrackPadInput.instance.DisplayPressed();
 
     IEnumerator Start() {
         if (eyeTracking)
@@ -330,40 +344,46 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSeconds(1);
 
         // Show SubjInfo panel
-        instructionPanel.SetActive(true);
-        pauseCanvas.SetActive(false);
+        setupPanel.SetActive(true);
+        pausePanel.SetActive(false);
         _progressBar.gameObject.SetActive(false);
 
         // Wait for user ID --- Setup() happens here!
-        yield return new WaitUntil(() => !instructionPanel.activeSelf);
+        yield return new WaitUntil(() => !setupPanel.activeSelf);
 
         // Test touchpad interaction
 
-        // _instructBehaviour.toggleWorldInstruction (false);
-        // _instructBehaviour.setInstruction("Press the controller's grip buttons.");
-        // yield return new WaitUntil(() => userPressed);
-        // Debug.Log("Successfully gripped.");
+        _instructBehaviour.toggleWorldInstruction(false);
+        _instructBehaviour.setInstruction("Press the controller's grip buttons.");
+        yield return new WaitUntil(() => userGrippedControl);
+        Debug.Log("Successfully gripped.");
 
-        // _instructBehaviour.setInstruction("Touch the controller's touch pad.");
-        // yield return new WaitUntil(() => userTouched);
-        // Debug.Log("Successfully touched touchpad.");
+        _instructBehaviour.setInstruction("Touch the controller's touch pad.");
+        yield return new WaitUntil(() => userTouchedPad);
+        Debug.Log("Successfully touched touchpad.");
 
-        // _instructBehaviour.setInstruction("Click the controller's touch pad.");
-        // yield return new WaitUntil(() => userPressedSpecial);
-        // Debug.Log("Successfully clicked touchpad.");
+        _instructBehaviour.setInstruction("Well done!");
+        yield return new WaitForSecondsRealtime(.5f);
 
-        Debug.Log("Currently playing trial " + m_currentTrialIdx + " out of " + emotPlaylist.Count);
+        _instructBehaviour.setInstruction("Click the controller's touch pad.");
+        yield return new WaitUntil(() => userClickedPad);
+        Debug.Log("Successfully clicked touchpad.");
+
+        Debug.Log("Currently playing trial " + (m_currentTrialIdx + 1) + " out of " + emotPlaylist.Count);
 
         while (m_currentTrialIdx < emotPlaylist.Count) {
             toggleMessage(true, "unloading");
+            Debug.Log("Starting room unload...");
 
-            RoomManager.instance.UnloadScene();
+            // RoomManager.instance.UnloadScene();
+            RoomManager.instance.UnloadRoom();
             yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
             toggleMessage(false);
+            Debug.Log("Room unload finished.");
 
             int trialidx = currentEmotTrial.task_idx;
 
-            condObjects.Clear();
+            // condObjects.Clear();
 
             // Skip trial if the station scene is not finished
             // if (!RoomManager.instance.isRoomAvailable(currentTrial.room_idx)) { m_currentTrialIdx++; continue; }
@@ -390,30 +410,27 @@ public class ExpeControl : MonoBehaviour {
             if (debugging) {
                 foreach (var lightCond in LightConditions) {
                     // yield return new WaitForSecondsRealtime(1);
-                    yield return new WaitUntil(() => userPressed || Input.GetKeyUp(KeyCode.Space));
+                    yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
                     yield return null; // Leave time for key up event to disappear
                     // setLights (lightCond);
                 }
-                yield return new WaitUntil(() => userPressed || Input.GetKeyUp(KeyCode.Space));
+                yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
             } else {
                 // setLights (LightConditions[currentTrial.light_cond]);
             }
 
             // Teleport user to starting position
-            Transform startTr = GameObject.Find("Start").transform;
-            _teleporter.Teleport(startTr);
-            startTr.gameObject.SetActive(false);
+            // Transform startTr = GameObject.Find("Start").transform;
+            // _teleporter.Teleport(startTr);
+            // startTr.gameObject.SetActive(false);
 
             // Give time to teleport before relocating world instruction panel
             yield return new WaitForSecondsRealtime(.5f);
 
             // Position instruction panel relative to new user location
-            _instructBehaviour.positionWorldInstruction(startTr);
+            // _instructBehaviour.positionWorldInstruction(startTr);
             // Set instruction panel visible
             _instructBehaviour.toggleWorldInstruction(false);
-
-
-            // WORKS UNTIL HERE SO FAR
 
             // Update all info panels with the new trial question (there can be more than one question for a same scene)
             _instructBehaviour.setInstruction(currentTaskString);
@@ -421,14 +438,14 @@ public class ExpeControl : MonoBehaviour {
             // if break room = do calibration
             if (RoomManager.instance.currSceneName == "BreakRoom") {
                 toggleMessage(true, "calibrate");
-                yield return new WaitUntil(() => userPressedSpecial || Input.GetKeyUp(KeyCode.Space));
+                yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
                 toggleMessage(false);
             }
 
             // Wait till user presses a special combination of inputs to stop the trial
             float padPressedTime = 0;
             while (padPressedTime < DurationPressToLeave) {
-                if (userPressedSpecial) {
+                if (userClickedPad) {
                     padPressedTime += Time.deltaTime;
 
                     _progressBar.gameObject.SetActive(true);
@@ -449,14 +466,16 @@ public class ExpeControl : MonoBehaviour {
             if (eyeTracking)
                 _eyeTrack.stopRecord(getTimeStamp() - start_time);
 
-            Debug.Log($"Finished: {currentTrial.expName} - {trialidx + 1}");
+            Debug.Log($"Finished: {currentEmotTrial.expName} - {trialidx}");
 
             m_currentTrialIdx++;
             flushInfo();
         }
 
+        Debug.Log("Experiment concluded. Quitting...");
+
         toggleMessage(true, "end");
-        yield return new WaitUntil(() => userPressed || Input.GetKeyUp(KeyCode.Space));
+        yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
         toggleMessage(false);
 
         flushInfo();
@@ -470,8 +489,8 @@ public class ExpeControl : MonoBehaviour {
             message = "pause";
         }
         paused = state;
-        pauseCanvas.SetActive(paused);
-        Text msgHolder = pauseCanvas.transform.Find("ContentTxt").GetComponent<Text>();
+        pausePanel.SetActive(paused);
+        Text msgHolder = pausePanel.transform.Find("ContentTxt").GetComponent<Text>();
         string messageText = messages[message];
         msgHolder.text = messageText;
         Debug.Log(messageText);
@@ -524,7 +543,7 @@ public class ExpeControl : MonoBehaviour {
         string txt = idTxt.text;
 
         if (!string.IsNullOrEmpty(txt)) {
-            instructionPanel.SetActive(false);
+            setupPanel.SetActive(false);
 
             m_userId = Int16.Parse(txt);
 

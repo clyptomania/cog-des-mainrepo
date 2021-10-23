@@ -33,6 +33,7 @@ public class EyeTrackingSampler : MonoBehaviour {
         SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)Callback));
 
         ready = true;
+        Debug.Log("Eye tracking ready.");
     }
 
     public bool isSampling { get; private set; }
@@ -139,7 +140,7 @@ public class EyeTrackingSampler : MonoBehaviour {
             m_recorder_HMD.Close();
 
         _expeControl.writeInfo($"Elapsed time: {elapsedtime}");
-        _expeControl.writeInfo($"Trial ended: {(_expeControl.userPressed ? "Pressed trigger" : "Ran out of time")}");
+        _expeControl.writeInfo($"Trial ended: {(_expeControl.userGrippedControl ? "Pressed trigger" : "Ran out of time")}");
     }
 
     private Vector3 cameraPosition;
