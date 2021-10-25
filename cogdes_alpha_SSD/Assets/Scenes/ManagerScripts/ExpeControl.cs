@@ -70,7 +70,8 @@ public class ExpeControl : MonoBehaviour {
     private readonly Dictionary<string, string> messages = new Dictionary<string, string> {
         {
         "calibrate",
-        "Bitte beginne mit der Eyetracker Kalibration.\nFrag einen Assistenten, sofern du Hilfe benötigst.\nDanach kannst du dich eine Weile ausruhen, bevor die nächste Aufgabe beginnt."
+        "Bitte beginne mit der Kalibrierung.\nFrage den Assistenten, sofern du Hilfe benötigst.\n\n"+
+        "Wenn du fertig bist, drücke bitte die Seitentaste um fortzufahren."
         },
         {
         "start",
@@ -95,6 +96,28 @@ public class ExpeControl : MonoBehaviour {
         "end",
         "This is the end of the experiment.\nThank you very much for your participation.\nYou can take off the headset."
         },
+        {
+        "beginWaiting",
+        "Die Wartezeit beginnt gleich.\n\n" +
+        "Halte das Touchpad gedrückt um damit loszulegen!"
+        },
+        {
+        "three",
+        "3..."
+        },
+        {
+        "two",
+        "2..."
+        },
+        {
+        "one",
+        "1..."
+        },
+        {
+        "beginQuestions",
+        "Die Wartezeit ist jetzt vorbei!\n\n" +
+        "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
+        },
     };
 
     private EyeTrackingSampler _eyeTrack => EyeTrackingSampler.instance;
@@ -104,7 +127,7 @@ public class ExpeControl : MonoBehaviour {
     public ObjectManager condObjects { get; private set; }
     // private TeleporterFacade _teleporter;
 
-    [Tooltip("Time in seconds needed to press touchpad ending trial")] public float DurationPressToLeave;
+    [Tooltip("Time in seconds needed to press touchpad ending trial")] public float durationPressToLeave;
 
     void Awake() {
         instance = this;
@@ -337,6 +360,7 @@ public class ExpeControl : MonoBehaviour {
     public bool userTouchedPad => TrackPadInput.instance.DisplayTouched();
     public bool userClickedPad => TrackPadInput.instance.DisplayPressed();
 
+
     IEnumerator Start() {
         if (eyeTracking)
             yield return new WaitUntil(() => _eyeTrack.ready);
@@ -379,6 +403,7 @@ public class ExpeControl : MonoBehaviour {
             RoomManager.instance.UnloadRoom();
             yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
             toggleMessage(false);
+            _instructBehaviour.toggleControllerInstruction(false);
             Debug.Log("Room unload finished.");
 
             int trialidx = currentEmotTrial.task_idx;
@@ -396,6 +421,48 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitUntil(() => !RoomManager.instance.actionInProgress &&
                RoomManager.instance.currentScene.isLoaded);
             yield return null;
+            toggleMessage(false);
+
+
+            _instructBehaviour.toggleWorldInstruction(false);
+
+            // Update all info panels with the new trial question (there can be more than one question for a same scene)
+            _instructBehaviour.setInstruction(currentTaskString);
+
+            // if break room = do calibration
+            if (RoomManager.instance.currSceneName == "BreakRoom" && eyeTracking) {
+                toggleMessage(true, "calibrate");
+                yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
+                toggleMessage(false);
+            }
+
+            toggleMessage(true, "beginWaiting");
+
+            float taskTime = 0;
+            float padPressedTime = 0;
+
+            // Wait till user presses a special combination of inputs to stop the trial
+            while (padPressedTime < durationPressToLeave) {
+                if (userClickedPad) {
+                    padPressedTime += Time.deltaTime;
+
+                    _progressBar.gameObject.SetActive(true);
+                    _progressBar.SetProgress(padPressedTime / durationPressToLeave);
+                } else {
+                    _progressBar.gameObject.SetActive(false);
+                    padPressedTime = 0;
+                }
+
+                yield return null;
+            }
+            _progressBar.gameObject.SetActive(false);
+
+            toggleMessage(true, "three");
+            yield return new WaitForSeconds(1);
+            toggleMessage(true, "two");
+            yield return new WaitForSeconds(1);
+            toggleMessage(true, "one");
+            yield return new WaitForSeconds(1);
             toggleMessage(false);
 
             // Start new gaze record (record name = stimulus name)
@@ -425,48 +492,52 @@ public class ExpeControl : MonoBehaviour {
             // startTr.gameObject.SetActive(false);
 
             // Give time to teleport before relocating world instruction panel
-            yield return new WaitForSecondsRealtime(.5f);
+            // yield return new WaitForSecondsRealtime(.5f);
 
             // Position instruction panel relative to new user location
             // _instructBehaviour.positionWorldInstruction(startTr);
             // Set instruction panel visible
-            _instructBehaviour.toggleWorldInstruction(false);
 
-            // Update all info panels with the new trial question (there can be more than one question for a same scene)
-            _instructBehaviour.setInstruction(currentTaskString);
 
-            // if break room = do calibration
-            if (RoomManager.instance.currSceneName == "BreakRoom") {
-                toggleMessage(true, "calibrate");
-                yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
-                toggleMessage(false);
-            }
+            // Wait until trial time runs out or touchpad pressed
+            padPressedTime = 0;
+            while (taskTime < currentEmotTrial.duration && padPressedTime < durationPressToLeave) {
+                taskTime += Time.deltaTime;
 
-            // Wait till user presses a special combination of inputs to stop the trial
-            float padPressedTime = 0;
-            while (padPressedTime < DurationPressToLeave) {
                 if (userClickedPad) {
                     padPressedTime += Time.deltaTime;
 
                     _progressBar.gameObject.SetActive(true);
-                    _progressBar.setProgress(padPressedTime / DurationPressToLeave);
+                    _progressBar.SetProgress(padPressedTime / durationPressToLeave);
                 } else {
                     _progressBar.gameObject.SetActive(false);
                     padPressedTime = 0;
                 }
-
                 yield return null;
             }
             _progressBar.gameObject.SetActive(false);
-            m_isPresenting = false;
 
-            _instructBehaviour.setInstruction("Please wait");
+            if (padPressedTime >= durationPressToLeave)
+                Debug.Log("Finished from pad press.");
+            else
+                Debug.Log("Finished from expired waiting duration.");
 
             // Stop recording gaze
             if (eyeTracking)
                 _eyeTrack.stopRecord(getTimeStamp() - start_time);
 
+            m_isPresenting = false;
+
+            _instructBehaviour.setInstruction("Please wait");
+
+
             Debug.Log($"Finished: {currentEmotTrial.expName} - {trialidx}");
+
+
+            toggleMessage(true, "beginQuestions");
+
+            yield return new WaitForSeconds(1);
+            yield return new WaitUntil(() => userGrippedControl);
 
             m_currentTrialIdx++;
             flushInfo();
