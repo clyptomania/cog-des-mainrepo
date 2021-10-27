@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -64,8 +64,10 @@ public class ExpeControl : MonoBehaviour {
     private StreamWriter m_recorder_ET = StreamWriter.Null;
     public StreamWriter m_recorder_HMD = StreamWriter.Null;
     private StreamWriter m_recorder_info = StreamWriter.Null;
+    private StreamWriter m_recorder_question = StreamWriter.Null;
 
     public GameObject pausePanel;
+    public GameObject questionPanel;
 
     private readonly Dictionary<string, string> messages = new Dictionary<string, string> {
         {
@@ -122,6 +124,7 @@ public class ExpeControl : MonoBehaviour {
 
     private EyeTrackingSampler _eyeTrack => EyeTrackingSampler.instance;
     private ProgressBar _progressBar => ProgressBar.instance;
+    private QuestionSlider _questionSlider => QuestionSlider.instance;
     private bool isTracking => (_eyeTrack.ready);
     private InstructBehaviour _instructBehaviour;
     public ObjectManager condObjects { get; private set; }
@@ -142,6 +145,7 @@ public class ExpeControl : MonoBehaviour {
         // Disable panels
         setupPanel.SetActive(false);
         pausePanel.SetActive(false);
+        // questionPanel.SetActive(false);
 
         // Get last user number
         m_basePath = Directory.GetParent(Application.dataPath) + "/SubjectData";
@@ -370,7 +374,22 @@ public class ExpeControl : MonoBehaviour {
         // Show SubjInfo panel
         setupPanel.SetActive(true);
         pausePanel.SetActive(false);
+        // questionPanel.SetActive(false);
         _progressBar.gameObject.SetActive(false);
+        _questionSlider.gameObject.SetActive(false);
+
+        // Testing slider interaction
+        ToggleQuestion(true, "This is a test question. Can you answer it?");
+        yield return new WaitUntil(() => _questionSlider.confirmed);
+        ToggleQuestion(true, "Turns out you can!");
+        Debug.Log("Aborted confirmation.");
+        ToggleQuestion(false);
+        yield return new WaitForSecondsRealtime(1.0f);
+        ToggleQuestion(true, "And how do you feel about this question?");
+        _questionSlider.UpdateSliderRange(1, 100, true, "bad", "indifferent", "good");
+
+        // _questionSlider.gameObject.SetActive(true);
+
 
         // Wait for user ID --- Setup() happens here!
         yield return new WaitUntil(() => !setupPanel.activeSelf);
@@ -565,6 +584,12 @@ public class ExpeControl : MonoBehaviour {
         string messageText = messages[message];
         msgHolder.text = messageText;
         Debug.Log(messageText);
+    }
+
+    private void ToggleQuestion(bool state, string question = "") {
+        _questionSlider.gameObject.SetActive(state);
+        _questionSlider.UpdateQuestionText(question);
+        _questionSlider.confirmed = false;
     }
 
     private void setLights(LightStruct cond) {
