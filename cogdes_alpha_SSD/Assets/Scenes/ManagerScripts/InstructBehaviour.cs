@@ -16,6 +16,7 @@ public class InstructBehaviour : MonoBehaviour {
 
 
     [SerializeField] private bool oneControllerOnly = true;
+    private bool leftControllerActive = true;
 
     private bool deactivatedOtherController = false;
 
@@ -65,6 +66,19 @@ public class InstructBehaviour : MonoBehaviour {
     }
 
     public bool isWorldInstructionShowing => instructionGeneral.activeSelf;
+
+    public void toggleControllerInstruction(bool state) {
+        if (oneControllerOnly)
+            if (leftControllerActive)
+                instructionControllerL.SetActive(state);
+            else
+                instructionControllerR.SetActive(state);
+        else {
+            instructionControllerL.SetActive(state);
+            instructionControllerR.SetActive(state);
+        }
+
+    }
     public void toggleWorldInstruction(bool state) {
         instructionGeneral.SetActive(state);
     }
@@ -83,9 +97,11 @@ public class InstructBehaviour : MonoBehaviour {
         if (!deactivatedOtherController) {
             if (left) {
                 instructionControllerL.transform.parent.gameObject.SetActive(false);
+                leftControllerActive = false;
                 Debug.Log("Deactivated left controller");
             } else {
                 instructionControllerR.transform.parent.gameObject.SetActive(false);
+                leftControllerActive = true;
                 Debug.Log("Deactivated right controller");
             }
             deactivatedOtherController = true;

@@ -140,7 +140,7 @@ public class EyeTrackingSampler : MonoBehaviour {
             m_recorder_HMD.Close();
 
         _expeControl.writeInfo($"Elapsed time: {elapsedtime}");
-        _expeControl.writeInfo($"Trial ended: {(_expeControl.userGrippedControl ? "Pressed trigger" : "Ran out of time")}");
+        // _expeControl.writeInfo($"Trial ended: {(_expeControl.userGrippedControl ? "Pressed trigger" : "Ran out of time")}");
     }
 
     private Vector3 cameraPosition;
