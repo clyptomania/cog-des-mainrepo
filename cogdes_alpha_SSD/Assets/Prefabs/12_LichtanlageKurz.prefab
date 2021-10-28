@@ -300,11 +300,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4969282619296496876, guid: 4a5f741ca5103134980a261fa1a8857b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 5455672270893529091, guid: 4a5f741ca5103134980a261fa1a8857b,
         type: 3}
       propertyPath: m_Name
       value: Lichtanlage_Abschnitt (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6864348476936347278, guid: 4a5f741ca5103134980a261fa1a8857b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 7159932271670780168, guid: 4a5f741ca5103134980a261fa1a8857b,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -477,6 +487,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Segment
       objectReference: {fileID: 0}
+    - target: {fileID: 8204979247464675534, guid: 041d05956ec6e0e439569b5862c485b7,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 041d05956ec6e0e439569b5862c485b7, type: 3}
 --- !u!4 &2467452194934301740 stripped
@@ -634,11 +649,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4969282619296496876, guid: 4a5f741ca5103134980a261fa1a8857b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 5455672270893529091, guid: 4a5f741ca5103134980a261fa1a8857b,
         type: 3}
       propertyPath: m_Name
       value: Lichtanlage_Abschnitt (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6864348476936347278, guid: 4a5f741ca5103134980a261fa1a8857b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 7159932271670780168, guid: 4a5f741ca5103134980a261fa1a8857b,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -922,11 +947,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4969282619296496876, guid: 4a5f741ca5103134980a261fa1a8857b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 5455672270893529091, guid: 4a5f741ca5103134980a261fa1a8857b,
         type: 3}
       propertyPath: m_Name
       value: Lichtanlage_Abschnitt (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6864348476936347278, guid: 4a5f741ca5103134980a261fa1a8857b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 7159932271670780168, guid: 4a5f741ca5103134980a261fa1a8857b,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1400,11 +1435,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4969282619296496876, guid: 4a5f741ca5103134980a261fa1a8857b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 5455672270893529091, guid: 4a5f741ca5103134980a261fa1a8857b,
         type: 3}
       propertyPath: m_Name
       value: Lichtanlage_Abschnitt
       objectReference: {fileID: 0}
+    - target: {fileID: 6864348476936347278, guid: 4a5f741ca5103134980a261fa1a8857b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 7159932271670780168, guid: 4a5f741ca5103134980a261fa1a8857b,
         type: 3}
       propertyPath: m_fontAsset
