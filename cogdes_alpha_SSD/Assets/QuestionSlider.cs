@@ -120,10 +120,10 @@ public class QuestionSlider : MonoBehaviour {
             midText.text = "";
             maxText.text = "";
             if (valAro == "v") {
-                valencePanel.SetActive(true);
+                valencePanel.SetActive(true); arousalPanel.SetActive(false);
             }
             if (valAro == "a") {
-                arousalPanel.SetActive(true);
+                arousalPanel.SetActive(true); valencePanel.SetActive(false);
             }
         } else {
             SAM = false;
