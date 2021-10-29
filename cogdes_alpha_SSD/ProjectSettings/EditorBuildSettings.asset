@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Manager.unity
     guid: 0dd9415a1fa78a344961cf067fc75e4d
   - enabled: 1
@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Version 2.unity
     guid: 0de2e5fb91b71423dbf4d7e0ba3df4f5
   - enabled: 0
@@ -23,25 +23,25 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Version 5.unity
     guid: 763a9693e3b62ac459eced42abb8a0cf
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Version 6.unity
     guid: ccbbdcc4f291c46a6bc8afe8f3b1ec41
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Version 7.unity
     guid: 439d65ce056044ef9a2d1f3ba36b8fb3
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Version 8.unity
     guid: b9ddc97c9cad94fcba5ff14f1bcce1d8
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Version 9.unity
     guid: 5f01e77f4a92c48908933748678d3cc0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/BreakRoom.unity
     guid: cdcc6b015ce8f4eafa0b97f227e563f7
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Tutorial.unity
     guid: 1a134ee2a555d4ee09ae346427e16cc4
   m_configObjects: {}
