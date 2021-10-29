@@ -22,8 +22,8 @@ public class RoomManager : MonoBehaviour {
         "BreakRoom"
     };
     [SerializeField] private List<int> availableRooms = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    [SerializeField] private List<string> rooms = new List<string>();
-    [SerializeField] private string breakRoomName = "BreakRoom";
+    [SerializeField] public List<string> rooms = new List<string>();
+    [SerializeField] public string breakRoomName = "BreakRoom";
 
     public static RoomManager instance { get; private set; }
 
@@ -115,6 +115,10 @@ public class RoomManager : MonoBehaviour {
             // Write to debug file
             print($"Wrong scene build index: {roomIdx}");
         }
+    }
+
+    public void LoadBreakRoom() {
+        LoadRoom(rooms[0]);
     }
 
     public void LoadRoom(string roomName, bool force = false) {

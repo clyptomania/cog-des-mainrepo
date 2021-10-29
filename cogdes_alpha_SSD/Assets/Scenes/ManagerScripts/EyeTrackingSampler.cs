@@ -128,7 +128,7 @@ public class EyeTrackingSampler : MonoBehaviour {
 
         // _expeControl.writeInfo($"Started: [{_expeControl.currentTrial.task_idx + 1}] " +
         //                        $"{_expeControl.currentTrial.expName}");
-        _expeControl.writeInfo($"Started: [{_expeControl.currentEmotTrial.task_idx + 1}] " +
+        _expeControl.WriteInfo($"Started: [{_expeControl.currentEmotTrial.task_idx + 1}] " +
                                $"{_expeControl.currentEmotTrial.expName}");
     }
 
@@ -139,7 +139,7 @@ public class EyeTrackingSampler : MonoBehaviour {
         if (m_recorder_HMD != null && m_recorder_HMD.BaseStream.CanWrite)
             m_recorder_HMD.Close();
 
-        _expeControl.writeInfo($"Elapsed time: {elapsedtime}");
+        _expeControl.WriteInfo($"Elapsed time: {elapsedtime}");
         // _expeControl.writeInfo($"Trial ended: {(_expeControl.userGrippedControl ? "Pressed trigger" : "Ran out of time")}");
     }
 

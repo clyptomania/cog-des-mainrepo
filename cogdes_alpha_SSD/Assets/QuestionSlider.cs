@@ -6,9 +6,10 @@ using Valve.VR;
 
 public class QuestionSlider : MonoBehaviour {
     public static QuestionSlider instance;
+    static private ExpeControl _expeControl;
     private Slider slider;
     public Text questionTextField, sliderText;
-    public string questionText;
+    public string questionText { get; private set; }
     public float sliderValue { get; private set; }
     public Text minText, midText, maxText;
     private float minVal, maxVal;
@@ -27,13 +28,18 @@ public class QuestionSlider : MonoBehaviour {
 
     public bool confirmed = false;
     private bool confirming = false;
+    private bool visualAnalog = false;
+    private bool SAM = false;
+
+    public GameObject valencePanel, arousalPanel;
 
 
     float deltaX, range, divisor, rounder, discreteVal;
     bool nonSwipe = true;
 
-    [SerializeField] private string confirmationText = "\n\n\nPress the side button to confirm your answer, or continue sliding to change it.";
-    [SerializeField] private string confirmingText = "\n\n\nPress the side button to confirm your answer, or continue sliding to change it.";
+    private string confirmationText = "\n\n\nSwipe the trackpad to set the slider as you like, and confirm your answer by pressing the side button.";
+    private string confirmingText = "\n\n\n\nPress the side button again to confirm your answer, or swipe again to change it.";
+    private string confirmedText = "\n\n\n\nAnswer confirmed!";
 
 
     /// <summary>
@@ -45,6 +51,9 @@ public class QuestionSlider : MonoBehaviour {
         slider = GetComponentInChildren<Slider>();
 
         UpdateSliderRange(30, 300f);
+
+        valencePanel.SetActive(false);
+        arousalPanel.SetActive(false);
         // Debug.Log("Slider found with value: " + sliderValue);
     }
 
@@ -69,9 +78,12 @@ public class QuestionSlider : MonoBehaviour {
         UpdateSlider();
     }
 
-    public void UpdateSliderRange(float min, float max, bool visualAnalog = false, string minLabel = "", string midLabel = "", string maxLabel = "") {
+    public void UpdateSliderRange(float min, float max, bool vA = false, bool tF = false,
+    string minLabel = "", string midLabel = "", string maxLabel = "", string valAro = "") {
         minVal = min;
         maxVal = max;
+        visualAnalog = vA;
+        timeFormat = tF;
         if (maxVal >= 5.0f) rounder = 1.0f;
         else rounder = 10.0f;
         range = max - min;
@@ -86,7 +98,7 @@ public class QuestionSlider : MonoBehaviour {
             maxText.text = Mathf.RoundToInt(maxVal).ToString();
         }
         if (minLabel != "") {
-            midText.text = minLabel;
+            minText.text = minLabel;
         }
         if (midLabel != "") {
             midText.text = midLabel;
@@ -95,7 +107,31 @@ public class QuestionSlider : MonoBehaviour {
             maxText.text = maxLabel;
         }
         sliderValue = minVal + range / 2f;
-        UpdateSlider(visualAnalog);
+
+        if (valAro != "") {
+            SAM = true;
+            visualAnalog = true;
+            minVal = 1;
+            maxVal = 5;
+            rounder = 1.0f;
+            range = maxVal - minVal;
+            divisor = 1 / range;
+            minText.text = "";
+            midText.text = "";
+            maxText.text = "";
+            if (valAro == "v") {
+                valencePanel.SetActive(true);
+            }
+            if (valAro == "a") {
+                arousalPanel.SetActive(true);
+            }
+        } else {
+            SAM = false;
+            arousalPanel.SetActive(false);
+            valencePanel.SetActive(false);
+        }
+
+        UpdateSlider();
     }
 
     public string SecondsToTime(float totalSeconds) {
@@ -104,7 +140,7 @@ public class QuestionSlider : MonoBehaviour {
         return string.Format("{0:0}:{1:00}", minutes, seconds);
     }
 
-    private void UpdateSlider(bool visualAnalog = false) {
+    private void UpdateSlider() {
         slider.value = (sliderValue - minVal) * divisor;
         discreteVal = Mathf.Round(sliderValue * rounder) / rounder;
 
@@ -128,46 +164,60 @@ public class QuestionSlider : MonoBehaviour {
             questionTextField.text = questionText + confirmationText;
             confirming = false;
             Debug.Log("Aborted confirmation from touch start.");
+
+            slider.interactable = true;
         }
     }
     public void PadTouchEnd(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         // Debug.Log("Ended Touch");
         nonSwipe = true;
-        if (confirming) {
-            questionTextField.text = questionText + confirmationText;
-            confirming = false;
-            Debug.Log("Aborted confirmation from touch end.");
-        }
     }
 
     public void UpdateQuestionText(string text) {
         questionText = text;
         questionTextField.text = questionText + confirmationText;
+
+        slider.interactable = true;
     }
 
     private float timeConfirming = 0.0f;
     public void StartConfirmation() {
         confirming = true;
+        Debug.Log("Started confirmation");
         timeConfirming = Time.time;
+        slider.interactable = false;
+        // yield return new WaitForSeconds(0.25f);
         questionTextField.text = questionText + confirmingText;
+    }
+
+    public void ConfirmAnswer() {
+        if (Time.time - timeConfirming > 0.5) {
+            confirmed = true;
+            confirming = false;
+            Debug.Log("Successfully confirmed answer: " + sliderValue);
+            questionTextField.text = confirmedText;
+
+            string answerString = discreteVal.ToString();
+            if (timeFormat)
+                answerString += "s";
+
+            _expeControl.WriteAnswer(questionText + ";" + answerString);
+        } else {
+            Debug.Log("Confirmation click happened too fast.");
+        }
     }
     public void SideButtonGrip(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         if (!confirming) {
             StartConfirmation();
-        }
-        if (confirming) {
-            if (Time.time - timeConfirming > 0.5) {
-                confirmed = true;
-                confirming = false;
-                Debug.Log("Successfully confirmed answer: " + sliderValue);
-            } else {
-                Debug.Log("Confirmation click happened too fast.");
-            }
+        } else {
+            ConfirmAnswer();
         }
     }
 
     // Start is called before the first frame update
     void Start() {
+        _expeControl = ExpeControl.instance;
+
         trackpadVector.AddOnChangeListener(PadSwipe, anyHand);
         trackpadTouchAction.AddOnStateDownListener(PadTouchStart, anyHand);
         trackpadTouchAction.AddOnStateUpListener(PadTouchEnd, anyHand);
