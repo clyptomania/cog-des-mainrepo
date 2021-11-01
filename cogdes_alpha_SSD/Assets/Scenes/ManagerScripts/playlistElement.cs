@@ -1,7 +1,5 @@
-﻿public struct playlistElement
-{
-    public playlistElement(int room_idx, int light_cond, int task_idx, int order_idx)
-    {
+﻿public struct playlistElement {
+    public playlistElement(int room_idx, int light_cond, int task_idx, int order_idx) {
         this.room_idx = room_idx;
         this.light_cond = light_cond;
         this.task_idx = task_idx;

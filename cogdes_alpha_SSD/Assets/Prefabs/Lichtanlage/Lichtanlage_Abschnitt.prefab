@@ -234,7 +234,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f920595a91d588041b83396fe9e380f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentObjectType: 0
 --- !u!1001 &3831297821867623458
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -491,7 +490,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 4b6ca00bf4d0aa940989e4075fb67a47, type: 2}
+      objectReference: {fileID: 2100000, guid: 6d4fd2266df3d6542b81adef340d6adc, type: 2}
     - target: {fileID: 8861860237480976892, guid: 041d05956ec6e0e439569b5862c485b7,
         type: 3}
       propertyPath: m_StaticEditorFlags

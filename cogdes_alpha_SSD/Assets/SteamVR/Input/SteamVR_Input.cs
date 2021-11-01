@@ -50,7 +50,7 @@ namespace Valve.VR
         {
             get
             {
-                return Time.frameCount >= (startupFrame - 1) && Time.frameCount <= (startupFrame + 1);
+                return Time.frameCount >= (startupFrame-1) && Time.frameCount <= (startupFrame+1);
             }
         }
 
@@ -381,59 +381,6 @@ namespace Valve.VR
                 onNonVisualActionsUpdated();
         }
 
-        private static uint sizeVRActiveActionSet_t = 0;
-        protected static void ShowBindingHintsForSets(VRActiveActionSet_t[] sets, ulong highlightAction = 0)
-        {
-            if (sizeVRActiveActionSet_t == 0)
-                sizeVRActiveActionSet_t = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(VRActiveActionSet_t));
-
-            OpenVR.Input.ShowBindingsForActionSet(sets, sizeVRActiveActionSet_t, highlightAction);
-        }
-
-        private static VRActiveActionSet_t[] setCache = new VRActiveActionSet_t[1];
-
-        /// <summary>
-        /// Shows all the bindings for the actions in the action's set.
-        /// </summary>
-        /// <param name="originToHighlight">Highlights the binding of the passed in action (must be in an active set)</param>
-        public static bool ShowBindingHints(ISteamVR_Action_In originToHighlight)
-        {
-            if (originToHighlight != null)
-            {
-                setCache[0].ulActionSet = originToHighlight.actionSet.handle;
-                ShowBindingHintsForSets(setCache, originToHighlight.activeOrigin);
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Shows all the bindings for the actions in the action set.
-        /// </summary>
-        public static bool ShowBindingHints(ISteamVR_ActionSet setToShow)
-        {
-            if (setToShow != null)
-            {
-                setCache[0].ulActionSet = setToShow.handle;
-                ShowBindingHintsForSets(setCache, 0);
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Shows all the bindings for the actions in the active sets.
-        /// </summary>
-        /// <param name="originToHighlight">Highlights the binding of the passed in action (must be in an active set)</param>
-        public static void ShowBindingHintsForActiveActionSets(ulong highlightAction = 0)
-        {
-            if (sizeVRActiveActionSet_t == 0)
-                sizeVRActiveActionSet_t = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(VRActiveActionSet_t));
-
-            OpenVR.Input.ShowBindingsForActionSet(SteamVR_ActionSet_Manager.rawActiveActionSetArray, sizeVRActiveActionSet_t, highlightAction);
-        }
 
         #region String accessor helpers
 
@@ -1518,14 +1465,7 @@ namespace Valve.VR
         public static string GetActionsFilePath(bool fullPath = true)
         {
             string streamingAssets_SteamVR = GetActionsFileFolder(fullPath);
-            string path = Path.Combine(streamingAssets_SteamVR, SteamVR_Settings.instance.actionsFilePath);
-
-            return SteamVR_Utils.SanitizePath(path);
-        }
-
-        public static string GetActionsFileName()
-        {
-            return SteamVR_Settings.instance.actionsFilePath;
+            return Path.Combine(streamingAssets_SteamVR, SteamVR_Settings.instance.actionsFilePath);
         }
 
 
@@ -1562,22 +1502,6 @@ namespace Valve.VR
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Open the binding UI in the HMD. Can open to a specific controller's binding and to a specific action set.
-        /// </summary>
-        /// <param name="actionSetToEdit">Optional. The action set to highlight (will default to the first set)</param>
-        /// <param name="deviceBindingToEdit">Optional. The device's binding to open (will default to right hand)</param>
-        public static void OpenBindingUI(SteamVR_ActionSet actionSetToEdit = null, SteamVR_Input_Sources deviceBindingToEdit = SteamVR_Input_Sources.Any)
-        {
-            ulong deviceHandle = SteamVR_Input_Source.GetHandle(deviceBindingToEdit);
-            ulong actionSetHandle = 0;
-
-            if (actionSetToEdit != null)
-                actionSetHandle = actionSetToEdit.handle;
-
-            OpenVR.Input.OpenBindingUI(null, actionSetHandle, deviceHandle, false);
         }
 
 #if UNITY_EDITOR
@@ -1627,7 +1551,7 @@ namespace Valve.VR
                 {
                     openingSetup = true;
                     UnityEditor.EditorApplication.isPlaying = false;
-                    Type editorWindowType = SteamVR_Utils.FindType("Valve.VR.SteamVR_Input_EditorWindow");
+                    Type editorWindowType = FindType("Valve.VR.SteamVR_Input_EditorWindow");
                     if (editorWindowType != null)
                     {
                         var window = UnityEditor.EditorWindow.GetWindow(editorWindowType, false, "SteamVR Input", true);
@@ -1643,9 +1567,17 @@ namespace Valve.VR
             }
         }
 
-        public static string GetEditorAppKey()
+        private static Type FindType(string typeName)
         {
-            return SteamVR_Settings.instance.editorAppKey;
+            var type = Type.GetType(typeName);
+            if (type != null) return type;
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = a.GetType(typeName);
+                if (type != null)
+                    return type;
+            }
+            return null;
         }
 #endif
     }

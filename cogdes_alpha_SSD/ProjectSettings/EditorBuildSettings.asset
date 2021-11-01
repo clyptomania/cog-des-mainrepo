@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Manager.unity
     guid: 0dd9415a1fa78a344961cf067fc75e4d
   - enabled: 1
-    path: Assets/Scenes/Version 0.unity
+    path: Assets/Scenes/Version 0.1 schwarzer Tunnel.unity
     guid: df5e784e771cd4978a65267e51b54cf9
   - enabled: 0
     path: 
@@ -44,4 +44,31 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Tutorial.unity
     guid: 1a134ee2a555d4ee09ae346427e16cc4
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/Version zero (Backup Dont touch).unity
+    guid: aa42dbc0f0e86e543a2b3f59b6e163e4
+  - enabled: 1
+    path: Assets/Scenes/Version 1 (Mesh Bank).unity
+    guid: 0f97ada6ed310c64286bb3d6bdbdd45f
+  - enabled: 1
+    path: Assets/Scenes/Version 1 (Wood Bank).unity
+    guid: 1544596365321d049be9eefbfc40c33f
+  - enabled: 1
+    path: Assets/Scenes/Version 1 (Cussion Bank).unity
+    guid: 2f72b2549ab12b547895c5e025b1f4c0
+  - enabled: 1
+    path: "Assets/Scenes/Version 0.2 wei\xDFer Tunnel.unity"
+    guid: 3617e5abd7e30f14798bca2b0e246f85
+  - enabled: 1
+    path: Assets/Scenes/Version 0.3 kaltes Licht.unity
+    guid: 9c336f25d84fee445a90fcbc86084817
+  - enabled: 1
+    path: Assets/Scenes/Version 0.4 warmes Licht.unity
+    guid: 66720be751be2c74cb20c0ab77e0d177
+  - enabled: 1
+    path: Assets/Scenes/Version 0.5 blauer Tunnel.unity
+    guid: 496ad012910bef3429274489bbbe7d7a
   m_configObjects: {}

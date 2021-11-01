@@ -362,6 +362,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6551254149688695892}
     m_Modifications:
+    - target: {fileID: 4932485526471136517, guid: 0c6b851426969ca4cbd865138f3a0f33,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6248494417410138459, guid: 0c6b851426969ca4cbd865138f3a0f33,
         type: 3}
       propertyPath: m_Name
