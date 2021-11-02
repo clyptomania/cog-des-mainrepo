@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1031065495055600069
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 361629607482610559}
+  m_Layer: 0
+  m_Name: LM_Geldautomat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
+--- !u!4 &361629607482610559
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031065495055600069}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0.7071068, w: 0}
+  m_LocalPosition: {x: 38.15, y: 1.1, z: 9.99}
+  m_LocalScale: {x: 0.35493007, y: 0.35650873, z: 0.9718311}
+  m_Children:
+  - {fileID: 8148695970444939826}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -90.00001, y: 0, z: 180}
+--- !u!1001 &4764504269221931109
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 361629607482610559}
+    m_Modifications:
+    - target: {fileID: 2421229928765504168, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.24
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.707042
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.009608996
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.009609622
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.707041
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -268.443
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 89.996994
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 89.996994
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 281.74548
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 102.89851
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 280.498
+      objectReference: {fileID: 0}
+    - target: {fileID: 3739919537115199024, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00086
+      objectReference: {fileID: 0}
+    - target: {fileID: 4053450773390516461, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_Name
+      value: 21_Geldautomat_PF
+      objectReference: {fileID: 0}
+    - target: {fileID: 4053450773390516461, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 5808266705825442818, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 6178345608037445986, guid: 87534b419c10a3d4f92e370d872dac62,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 87534b419c10a3d4f92e370d872dac62, type: 3}
+--- !u!4 &8148695970444939826 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3678051851813075543, guid: 87534b419c10a3d4f92e370d872dac62,
+    type: 3}
+  m_PrefabInstance: {fileID: 4764504269221931109}
+  m_PrefabAsset: {fileID: 0}

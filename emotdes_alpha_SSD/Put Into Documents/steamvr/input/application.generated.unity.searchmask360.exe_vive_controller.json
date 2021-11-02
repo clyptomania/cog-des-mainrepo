@@ -1,0 +1,215 @@
+{
+   "action_manifest_version" : 0,
+   "alias_info" : {},
+   "app_key" : "application.generated.unity.searchmask360.exe",
+   "bindings" : {
+      "/actions/buggy" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : [
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/buggy/in/throttle"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/buggy/in/throttle"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/buggy/in/brake"
+                  },
+                  "position" : {
+                     "output" : "/actions/buggy/in/steering"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/buggy/in/brake"
+                  },
+                  "position" : {
+                     "output" : "/actions/buggy/in/steering"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/right/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/buggy/in/reset"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/buggy/in/reset"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/application_menu"
+            }
+         ]
+      },
+      "/actions/default" : {
+         "chords" : [],
+         "haptics" : [
+            {
+               "output" : "/actions/default/out/haptic",
+               "path" : "/user/hand/left/output/haptic"
+            },
+            {
+               "output" : "/actions/default/out/haptic",
+               "path" : "/user/hand/right/output/haptic"
+            }
+         ],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : []
+      },
+      "/actions/mask360" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "center" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  },
+                  "east" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  },
+                  "north" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  },
+                  "south" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  },
+                  "west" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  }
+               },
+               "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "click"
+               },
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "center" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  },
+                  "east" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  },
+                  "north" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  },
+                  "south" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  },
+                  "west" : {
+                     "output" : "/actions/mask360/in/pointtarget"
+                  }
+               },
+               "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "click"
+               },
+               "path" : "/user/hand/right/input/trackpad"
+            }
+         ]
+      },
+      "/actions/platformer" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/platformer/in/jump"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/platformer/in/jump"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/platformer/in/move"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/platformer/in/move"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/right/input/trackpad"
+            }
+         ]
+      }
+   },
+   "category" : "steamvr_input",
+   "controller_type" : "vive_controller",
+   "description" : "",
+   "name" : "Saved SearchMask360 [Testing] configuration for Vive Controller",
+   "options" : {},
+   "simulated_actions" : []
+}
