@@ -73,7 +73,7 @@ LightmapSettings:
     m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 0
-    m_BakeBackend: 2
+    m_BakeBackend: 1
     m_PVRSampling: 1
     m_PVRDirectSampleCount: 64
     m_PVRSampleCount: 64
@@ -3507,7 +3507,7 @@ Transform:
   m_LocalScale: {x: 2.3833, y: 2.3833, z: 0.11176247}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 106
+  m_RootOrder: 108
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &228810606
 GameObject:
@@ -15883,7 +15883,7 @@ Transform:
   - {fileID: 878967158}
   - {fileID: 1226216110}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: -89.928, z: 0}
 --- !u!1 &1083119841
 GameObject:
