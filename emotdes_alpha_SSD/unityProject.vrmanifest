@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.cognitiondesign.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "E:\\cognition_design_main\\emot-des-master-branch\\cog-des-mainrepo\\emotdes_alpha_SSD\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "Cognition Design [Testing]"
+        }
+      }
+    }
+  ]
+}
