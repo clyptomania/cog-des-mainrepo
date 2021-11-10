@@ -21,9 +21,10 @@ public class RoomManager : MonoBehaviour {
         "Tutorial",
         "BreakRoom"
     };
-    [SerializeField] private List<int> availableRooms = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    // [SerializeField] private List<int> availableRooms = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     [SerializeField] public List<string> rooms = new List<string>();
     [SerializeField] public string breakRoomName = "BreakRoom";
+
 
     public static RoomManager instance { get; private set; }
 
@@ -52,9 +53,9 @@ public class RoomManager : MonoBehaviour {
         }
     }
 
-    public bool isRoomAvailable(int roomIdx) {
-        return availableRooms.Contains(roomIdx);
-    }
+    // public bool isRoomAvailable(int roomIdx) {
+    //     return availableRooms.Contains(roomIdx);
+    // }
 
     public bool isRoomAvailable(string roomName) {
         return rooms.Contains(roomName);
