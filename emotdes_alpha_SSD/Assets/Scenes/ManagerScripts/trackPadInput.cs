@@ -29,6 +29,9 @@ public class TrackPadInput : MonoBehaviour {
     public SteamVR_Action_Boolean sideButtonAction;
     public SteamVR_Action_Boolean trackpadClickAction;
     public SteamVR_Action_Boolean trackpadTouchAction;
+    public SteamVR_Action_Boolean triggerClickAction;
+
+    public SteamVR_Action_Pose controllerPose, controllerBase;
 
 
     private InstructBehaviour _instructBehaviour;
@@ -38,10 +41,11 @@ public class TrackPadInput : MonoBehaviour {
     // }
 
     public void TestUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
-        Debug.Log("Action up!");
+        // Debug.Log("Action up!");
     }
     public void TestDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
-        Debug.Log("Action down!");
+        // Debug.Log("Action down!");
+        // Debug.Log("Position: " + ControllerPose());
     }
 
     public void DisableRightController(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
@@ -60,11 +64,11 @@ public class TrackPadInput : MonoBehaviour {
 
         _instructBehaviour = GetComponent<InstructBehaviour>();
 
-        sideButtonAction.AddOnStateDownListener(TestDown, anyHand);
+        // sideButtonAction.AddOnStateDownListener(TestDown, anyHand);
+        // sideButtonAction.AddOnStateUpListener(TestUp, anyHand);
 
         sideButtonAction.AddOnStateDownListener(DisableLeftController, rightHand);
         sideButtonAction.AddOnStateDownListener(DisableRightController, leftHand);
-        sideButtonAction.AddOnStateUpListener(TestUp, anyHand);
         Debug.Log("Added trackpad listener scripts");
     }
 
@@ -90,20 +94,32 @@ public class TrackPadInput : MonoBehaviour {
     private bool _pressedPadL;
     private bool _pressedPadR;
 
-    public bool Pressed() {
+    public bool SideGripped() {
         return sideButtonAction.GetState(anyHand);
         // return _pressedL || _pressedR;
     }
 
-    public bool DisplayTouched() {
+    public bool TrackpadTouched() {
         return trackpadTouchAction.GetState(anyHand);
         // return _touchedPadL || _touchedPadR;
     }
 
-    public bool DisplayPressed() {
+    public bool TrackpadClicked() {
 
         return trackpadClickAction.GetState(anyHand);
         // return _pressedPadL || _pressedPadR;
+    }
+    public bool TriggerClicked() {
+
+        return triggerClickAction.GetState(anyHand);
+        // return _pressedPadL || _pressedPadR;
+    }
+
+    public Vector3 ControllerPose() {
+        return controllerPose.localPosition;
+    }
+    public Vector3 ControllerBase() {
+        return controllerBase.localPosition;
     }
 
     public void TriggerPressL(bool state) { TriggerPress(state, ExpeControl.lateralisation.left); }

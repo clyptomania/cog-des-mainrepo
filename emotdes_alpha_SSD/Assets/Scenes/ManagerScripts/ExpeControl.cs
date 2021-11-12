@@ -16,6 +16,8 @@ public class ExpeControl : MonoBehaviour {
     [SerializeField] private bool resetExperiments = false;
     [SerializeField] private bool eyeTracking = true;
 
+    [SerializeField] private Button controllerCalButton, trackerCalButton;
+
     [SerializeField] private List<int> durations = new List<int>();
 
     // Playlist data
@@ -157,7 +159,16 @@ public class ExpeControl : MonoBehaviour {
         instance = this;
         string[] RoomNames = RoomManager.RoomNames;
         cameraRig = transform.GetChild(0);
+        Debug.Log("Found camera rig: " + cameraRig.name);
+        Debug.Log("CamRig pos: " + cameraRig.position + " CamRig rot: " + cameraRig.rotation);
         _instructBehaviour = GetComponent<InstructBehaviour>();
+
+        if (_instructBehaviour.leftControllerActive)
+            controllerBasePoint = GameObject.Find("BasePointL");
+        else
+            controllerBasePoint = GameObject.Find("BasePointR");
+
+        controllerBasePoint.SetActive(false);
 
         // condObjects = new ObjectManager();
 
@@ -241,6 +252,138 @@ public class ExpeControl : MonoBehaviour {
         FlushInfo();
 
         m_recorder_question = new StreamWriter(m_userdataPath + "/Answers_" + m_userId + ".txt");
+    }
+
+    private bool calibrating = false;
+    private bool conCal = false;
+    private bool trackCal = false;
+
+    public void CalibrateByController() {
+        if (!trackCal) {
+            conCal = !conCal;
+            controllerCalButton.colors = SwapColors(controllerCalButton.colors);
+            calibrating = conCal ? true : false;
+            if (conCal && calibrating) {
+                StartCoroutine(ControllerPositioning());
+            }
+            // if (conCal) calibrating = true; else calibrating = false;
+        }
+        // SaveCamRigCal();
+        Debug.Log("Calibrating: " + calibrating);
+    }
+    public void CalibrateByTracker() {
+        if (!conCal) {
+            trackCal = !trackCal;
+            trackerCalButton.colors = SwapColors(trackerCalButton.colors);
+            calibrating = trackCal ? true : false;
+        }
+        // LoadCamRigCal();
+        Debug.Log("Calibrating: " + calibrating);
+    }
+
+    private GameObject calPointA, calPointB, calPointF;
+    private GameObject controllerBasePoint;
+
+    IEnumerator ControllerPositioning() {
+
+        if (calPointA != null) calPointA.SetActive(true); else calPointA = GameObject.Find("CalPointA");
+        if (calPointB != null) calPointB.SetActive(true); else calPointB = GameObject.Find("CalPointB");
+        if (calPointF != null) calPointF.SetActive(true); else calPointF = GameObject.Find("CalPointF");
+
+        controllerBasePoint.SetActive(true);
+
+        Vector3 newPos = new Vector3();
+
+        // Get first point: floor
+        while (!userClickedTrigger && calibrating) {
+            newPos = cameraRig.position;
+            newPos.y = newPos.y - (controllerBasePoint.transform.position.y - calPointF.transform.position.y);
+            cameraRig.position = newPos;
+            yield return null;
+        }
+        Debug.Log("Calibrated floor!");
+        calPointF.SetActive(false);
+
+        // Wait for trigger release
+        yield return new WaitUntil(() => !userClickedTrigger);
+
+        // Get second point: corner A
+        while (!userClickedTrigger && calibrating) {
+            newPos = cameraRig.position;
+            newPos = newPos - (controllerBasePoint.transform.position - calPointA.transform.position);
+            newPos.y = cameraRig.position.y;
+            cameraRig.position = newPos;
+            yield return null;
+        }
+        Debug.Log("Calibrated first corner!");
+        float angleBetween;
+        Vector3 firstCornerPos = calPointA.transform.position;
+        Vector3 horizontalControllerPos = controllerBasePoint.transform.position;
+        calPointA.SetActive(false);
+
+        // Wait for trigger release
+        yield return new WaitUntil(() => !userClickedTrigger);
+
+        // Get final point: corner B
+        while (!userClickedTrigger && calibrating) {
+            newPos = cameraRig.position;
+
+            horizontalControllerPos = controllerBasePoint.transform.position;
+            horizontalControllerPos.y = 0;
+            firstCornerPos.y = 0;
+
+            angleBetween = Vector3.SignedAngle(Vector3.right, horizontalControllerPos - firstCornerPos, Vector3.up);
+
+            Debug.Log("Signed angle: " + angleBetween);
+
+            cameraRig.transform.RotateAround(firstCornerPos, Vector3.up, -angleBetween);
+
+
+            // newPos = newPos - (controllerBasePoint.transform.position - calPointA.transform.position);
+            // newPos.y = cameraRig.position.y;
+            // cameraRig.position = newPos;
+            yield return null;
+        }
+        Debug.Log("Calibrated first corner!");
+        calPointA.SetActive(false);
+
+        yield return new WaitUntil(() => !calibrating);
+        controllerBasePoint.SetActive(false);
+        Debug.Log("Done calibrating!");
+        SaveCamRigCal();
+    }
+
+    private void SaveCamRigCal() {
+        PlayerPrefs.SetFloat("pX", cameraRig.position.x);
+        PlayerPrefs.SetFloat("pY", cameraRig.position.y);
+        PlayerPrefs.SetFloat("pZ", cameraRig.position.z);
+        // PlayerPrefs.SetFloat("rW", cameraRig.rotation.w);
+        PlayerPrefs.SetFloat("rX", cameraRig.eulerAngles.x);
+        PlayerPrefs.SetFloat("rY", cameraRig.eulerAngles.y);
+        PlayerPrefs.SetFloat("rZ", cameraRig.eulerAngles.z);
+        Debug.Log("Saved Camera Rig calibration.");
+    }
+
+    private void LoadCamRigCal() {
+        float pX = PlayerPrefs.GetFloat("pX");
+        float pY = PlayerPrefs.GetFloat("pY");
+        float pZ = PlayerPrefs.GetFloat("pZ");
+        // float rW = PlayerPrefs.GetFloat("rW");
+        float rX = PlayerPrefs.GetFloat("rX");
+        float rY = PlayerPrefs.GetFloat("rY");
+        float rZ = PlayerPrefs.GetFloat("rZ");
+        cameraRig.position = new Vector3(pX, pY, pZ);
+        cameraRig.eulerAngles = new Vector3(rX, rY, rZ);
+    }
+
+    private ColorBlock SwapColors(ColorBlock colors) {
+        Color normal = colors.normalColor;
+        Color pressed = colors.pressedColor;
+        colors.normalColor = pressed;
+        colors.selectedColor = pressed;
+        colors.highlightedColor = pressed;
+        colors.pressedColor = normal;
+        return colors;
     }
 
     public void WriteInfo(string txt) {
@@ -392,9 +535,10 @@ public class ExpeControl : MonoBehaviour {
 
     private bool m_isPresenting;
 
-    public bool userGrippedControl => TrackPadInput.instance.Pressed();
-    public bool userTouchedPad => TrackPadInput.instance.DisplayTouched();
-    public bool userClickedPad => TrackPadInput.instance.DisplayPressed();
+    public bool userGrippedControl => TrackPadInput.instance.SideGripped();
+    public bool userTouchedPad => TrackPadInput.instance.TrackpadTouched();
+    public bool userClickedPad => TrackPadInput.instance.TrackpadClicked();
+    public bool userClickedTrigger => TrackPadInput.instance.TriggerClicked();
 
 
     float taskTime = 0;
@@ -421,8 +565,14 @@ public class ExpeControl : MonoBehaviour {
         _questionSlider.gameObject.SetActive(false);
 
         // _questionSlider.gameObject.SetActive(true);
+        RoomManager.instance.SaveManagerSceneNum();
         RoomManager.instance.LoadBreakRoom();
         yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
+
+
+        LoadCamRigCal();
+
+
 
 
         // Wait for user ID --- Setup() happens here!
@@ -437,6 +587,16 @@ public class ExpeControl : MonoBehaviour {
 
         // Introduce Interaction
         // _instructBehaviour.toggleWorldInstruction(false);
+
+
+        _instructBehaviour.setInstruction("Clickt the controller's trigger.");
+        yield return new WaitUntil(() => userClickedTrigger);
+        Debug.Log("Successfully triggered.");
+        _instructBehaviour.setInstruction("You did it!");
+        yield return new WaitForSecondsRealtime(1f);
+        _instructBehaviour.toggleControllerInstruction(false);
+        yield return new WaitForSecondsRealtime(0.25f);
+
         _instructBehaviour.setInstruction("Press the controller's side buttons.");
         yield return new WaitUntil(() => userGrippedControl);
         Debug.Log("Successfully gripped.");
@@ -840,6 +1000,7 @@ public class ExpeControl : MonoBehaviour {
     private void ToggleQuestion(bool state, string question = "") {
         _questionSlider.gameObject.SetActive(state);
         _questionSlider.UpdateQuestionText(question);
+        _questionSlider.RequestConfirmation();
         _questionSlider.confirmed = false;
     }
 
@@ -892,7 +1053,7 @@ public class ExpeControl : MonoBehaviour {
     public void validateDataInput() {
         string txt = idTxt.text;
 
-        if (!string.IsNullOrEmpty(txt)) {
+        if (!string.IsNullOrEmpty(txt) && !calibrating) {
             setupPanel.SetActive(false);
 
             m_userId = Int16.Parse(txt);

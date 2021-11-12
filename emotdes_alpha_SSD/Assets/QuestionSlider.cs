@@ -28,6 +28,7 @@ public class QuestionSlider : MonoBehaviour {
 
     public bool confirmed = false;
     private bool confirming = false;
+    private bool requesting = false;
     private bool visualAnalog = false;
     private bool SAM = false;
 
@@ -180,6 +181,10 @@ public class QuestionSlider : MonoBehaviour {
         slider.interactable = true;
     }
 
+    public void RequestConfirmation() {
+        requesting = true;
+    }
+
     private float timeConfirming = 0.0f;
     public void StartConfirmation() {
         confirming = true;
@@ -202,15 +207,19 @@ public class QuestionSlider : MonoBehaviour {
                 answerString += "s";
 
             _expeControl.WriteAnswer(questionText + ";" + answerString);
+
+            requesting = false;
         } else {
             Debug.Log("Confirmation click happened too fast.");
         }
     }
     public void SideButtonGrip(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
-        if (!confirming) {
-            StartConfirmation();
-        } else {
-            ConfirmAnswer();
+        if (requesting) {
+            if (!confirming) {
+                StartConfirmation();
+            } else {
+                ConfirmAnswer();
+            }
         }
     }
 

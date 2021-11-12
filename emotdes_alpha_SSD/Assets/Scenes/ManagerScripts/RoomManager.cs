@@ -36,6 +36,8 @@ public class RoomManager : MonoBehaviour {
     private int nLoadedScenes => SceneManager.sceneCount;
     private int nScenes => SceneManager.sceneCountInBuildSettings;
 
+    private int managerSceneIdx = -3;
+
     // public string currSceneNameErwan {
     //     get {
     //         if (isValidSceneIdx) {
@@ -51,6 +53,10 @@ public class RoomManager : MonoBehaviour {
         get {
             return currentRoomName;
         }
+    }
+
+    public void SaveManagerSceneNum() {
+        managerSceneIdx = SceneManager.GetActiveScene().buildIndex;
     }
 
     // public bool isRoomAvailable(int roomIdx) {
@@ -236,7 +242,10 @@ public class RoomManager : MonoBehaviour {
         //        print($"[{currentScene.name}] Loading time: {getTimeStamp() - t1}");
 
         yield return new WaitForEndOfFrame();
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
         isLoading = false;
+
+
     }
 
     IEnumerator AsyncSceneUnloadMonitor(int sceneBuildIndex) {
@@ -256,6 +265,10 @@ public class RoomManager : MonoBehaviour {
         //        print($"Unloading time: {getTimeStamp() - t1}");
     }
     IEnumerator AsyncSceneUnloadMonitor(string sceneName) {
+
+
+        SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(managerSceneIdx));
+
         long t1 = getTimeStamp();
         //        ExpeControl.instance.writeInfo($"Unloading {sceneBuildIndex} {RoomNames[sceneBuildIndex]}");
         print($"Unloading {sceneName}");

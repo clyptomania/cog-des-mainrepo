@@ -66,6 +66,14 @@
       "type": "vector2"
     },
     {
+      "name": "/actions/default/in/TriggerClick",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/Base",
+      "type": "pose"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },

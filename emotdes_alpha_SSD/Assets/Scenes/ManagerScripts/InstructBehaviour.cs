@@ -16,7 +16,7 @@ public class InstructBehaviour : MonoBehaviour {
 
 
     [SerializeField] private bool oneControllerOnly = true;
-    private bool leftControllerActive = true;
+    public bool leftControllerActive { get; private set; }
 
     private bool deactivatedOtherController = false;
 
