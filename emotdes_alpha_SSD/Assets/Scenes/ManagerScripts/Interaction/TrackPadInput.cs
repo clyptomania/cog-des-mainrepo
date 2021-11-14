@@ -29,6 +29,7 @@ public class TrackPadInput : MonoBehaviour {
     public SteamVR_Action_Boolean sideButtonAction;
     public SteamVR_Action_Boolean trackpadClickAction;
     public SteamVR_Action_Boolean trackpadTouchAction;
+    public SteamVR_Action_Boolean triggerTouchAction;
     public SteamVR_Action_Boolean triggerClickAction;
 
     public SteamVR_Action_Pose controllerPose, controllerBase;
@@ -41,10 +42,10 @@ public class TrackPadInput : MonoBehaviour {
     // }
 
     public void TestUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
-        // Debug.Log("Action up!");
+        Debug.Log("Action up!");
     }
     public void TestDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
-        // Debug.Log("Action down!");
+        Debug.Log("Action down!");
         // Debug.Log("Position: " + ControllerPose());
     }
 
@@ -69,6 +70,15 @@ public class TrackPadInput : MonoBehaviour {
 
         sideButtonAction.AddOnStateDownListener(DisableLeftController, rightHand);
         sideButtonAction.AddOnStateDownListener(DisableRightController, leftHand);
+
+        triggerTouchAction.AddOnStateDownListener(TestDown, anyHand);
+        triggerTouchAction.AddOnStateUpListener(TestUp, anyHand);
+
+        triggerClickAction.AddOnStateDownListener(DisableLeftController, rightHand);
+        triggerClickAction.AddOnStateDownListener(DisableRightController, leftHand);
+
+        trackpadTouchAction.AddOnStateDownListener(DisableLeftController, rightHand);
+        trackpadTouchAction.AddOnStateDownListener(DisableRightController, leftHand);
         Debug.Log("Added trackpad listener scripts");
     }
 
@@ -107,6 +117,11 @@ public class TrackPadInput : MonoBehaviour {
     public bool TrackpadClicked() {
 
         return trackpadClickAction.GetState(anyHand);
+        // return _pressedPadL || _pressedPadR;
+    }
+    public bool TriggerTouched() {
+
+        return triggerTouchAction.GetState(anyHand);
         // return _pressedPadL || _pressedPadR;
     }
     public bool TriggerClicked() {

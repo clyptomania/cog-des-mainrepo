@@ -147,13 +147,14 @@ public class ExpeControl : MonoBehaviour {
 
     private EyeTrackingSampler _eyeTrack => EyeTrackingSampler.instance;
     private ProgressBar _progressBar => ProgressBar.instance;
+    private RadialProgress _radialProgress => RadialProgress.instance;
     private QuestionSlider _questionSlider => QuestionSlider.instance;
     private bool isTracking => (_eyeTrack.ready);
     private InstructBehaviour _instructBehaviour;
     public ObjectManager condObjects { get; private set; }
     // private TeleporterFacade _teleporter;
 
-    [Tooltip("Time in seconds needed to press touchpad ending trial")] public float durationPressToLeave;
+    [Tooltip("Time in seconds needed to click trigger to continue")] public float durationToContinue;
 
     void Awake() {
         instance = this;
@@ -286,71 +287,143 @@ public class ExpeControl : MonoBehaviour {
 
     IEnumerator ControllerPositioning() {
 
-        if (calPointA != null) calPointA.SetActive(true); else calPointA = GameObject.Find("CalPointA");
-        if (calPointB != null) calPointB.SetActive(true); else calPointB = GameObject.Find("CalPointB");
-        if (calPointF != null) calPointF.SetActive(true); else calPointF = GameObject.Find("CalPointF");
+        if (calPointF != null) calPointF.SetActive(true);
 
         controllerBasePoint.SetActive(true);
 
         Vector3 newPos = new Vector3();
 
+        bool positioned = false;
+
+        _instructBehaviour.toggleControllerInstruction(true);
+        _instructBehaviour.setInstruction("Using the trigger, place the controller's base on the floor.\n\n" + "Confirm with the touchpad.");
+
         // Get first point: floor
-        while (!userClickedTrigger && calibrating) {
-            newPos = cameraRig.position;
-            newPos.y = newPos.y - (controllerBasePoint.transform.position.y - calPointF.transform.position.y);
-            cameraRig.position = newPos;
-            yield return null;
+        while (!positioned && calibrating) {
+            if (userClickedPad) {
+                positioned = true;
+                break;
+            }
+            while (!userClickedTrigger && userTouchedTrigger) {
+                // if (userTouchedTrigger) {
+                newPos = cameraRig.position;
+                newPos.y = newPos.y - (controllerBasePoint.transform.position.y - calPointF.transform.position.y);
+                cameraRig.position = newPos;
+                // }
+                yield return null;
+            }
+            yield return new WaitUntil(() => !userTouchedTrigger || userClickedPad);
         }
         Debug.Log("Calibrated floor!");
+        _instructBehaviour.setInstruction("The floor is set!");
         calPointF.SetActive(false);
+        positioned = false;
 
-        // Wait for trigger release
-        yield return new WaitUntil(() => !userClickedTrigger);
+        // Wait for trigger and pad release
+        yield return new WaitUntil(() => !userTouchedTrigger && !userClickedPad);
+        // _instructBehaviour.setInstruction("Position calibration.\n\n" + "Place the controller's base to the front right corner of the seat, then click the trigger.");
+        _instructBehaviour.setInstruction("Using the trigger, place the controller's base on the seat's front right corner.\n\n" + "Confirm with the touchpad.");
+
+        if (calPointA != null) calPointA.SetActive(true);
 
         // Get second point: corner A
-        while (!userClickedTrigger && calibrating) {
-            newPos = cameraRig.position;
-            newPos = newPos - (controllerBasePoint.transform.position - calPointA.transform.position);
-            newPos.y = cameraRig.position.y;
-            cameraRig.position = newPos;
-            yield return null;
+        while (!positioned && calibrating) {
+            if (userClickedPad) {
+                positioned = true;
+                break;
+            }
+            while (!userClickedTrigger && userTouchedTrigger) {
+                newPos = cameraRig.position;
+                newPos = newPos - (controllerBasePoint.transform.position - calPointA.transform.position);
+                newPos.y = cameraRig.position.y;
+                cameraRig.position = newPos;
+                yield return null;
+            }
+            yield return new WaitUntil(() => !userTouchedTrigger || userClickedPad);
         }
         Debug.Log("Calibrated first corner!");
+        _instructBehaviour.setInstruction("The seat's position is set!");
+        calPointA.SetActive(false);
+        positioned = false;
+
+        // Wait for trigger and pad release
+        yield return new WaitUntil(() => !userTouchedTrigger && !userClickedPad);
+        // _instructBehaviour.setInstruction("Rotation calibration.\n\n" + "Place the controller's base to the front left corner of the seat, then click the trigger.");
+        _instructBehaviour.setInstruction("Using the trigger, place the controller's base on the seat's front left corner.\n\n" + "Confirm with the touchpad.");
+
+        if (calPointB != null) calPointB.SetActive(true);
+
         float angleBetween;
         Vector3 firstCornerPos = calPointA.transform.position;
         Vector3 horizontalControllerPos = controllerBasePoint.transform.position;
-        calPointA.SetActive(false);
-
-        // Wait for trigger release
-        yield return new WaitUntil(() => !userClickedTrigger);
-
         // Get final point: corner B
-        while (!userClickedTrigger && calibrating) {
-            newPos = cameraRig.position;
+        while (!positioned && calibrating) {
+            if (userClickedPad) {
+                positioned = true;
+                break;
+            }
+            while (!userClickedTrigger && userTouchedTrigger) {
+                newPos = cameraRig.position;
 
-            horizontalControllerPos = controllerBasePoint.transform.position;
-            horizontalControllerPos.y = 0;
-            firstCornerPos.y = 0;
+                horizontalControllerPos = controllerBasePoint.transform.position;
+                horizontalControllerPos.y = 0;
+                firstCornerPos.y = 0;
 
-            angleBetween = Vector3.SignedAngle(Vector3.right, horizontalControllerPos - firstCornerPos, Vector3.up);
+                angleBetween = Vector3.SignedAngle(Vector3.right, horizontalControllerPos - firstCornerPos, Vector3.up);
+                // Debug.Log("Signed angle: " + angleBetween);
+                cameraRig.transform.RotateAround(firstCornerPos, Vector3.up, -angleBetween);
+                yield return null;
+            }
+            yield return new WaitUntil(() => !userTouchedTrigger || userClickedPad);
+        }
+        Debug.Log("Calibrated second corner!");
+        _instructBehaviour.setInstruction("The seat's rotation is set!");
+        calPointB.SetActive(false);
+        positioned = false;
 
-            Debug.Log("Signed angle: " + angleBetween);
+        // Wait for trigger and pad release
+        yield return new WaitUntil(() => !userTouchedTrigger && !userClickedPad);
+        controllerBasePoint.SetActive(false);
 
-            cameraRig.transform.RotateAround(firstCornerPos, Vector3.up, -angleBetween);
+        float triggerClickTime = 0.0f;
 
-
-            // newPos = newPos - (controllerBasePoint.transform.position - calPointA.transform.position);
-            // newPos.y = cameraRig.position.y;
-            // cameraRig.position = newPos;
+        _instructBehaviour.setInstruction("Click and hold the trigger to save the calibration, or click the touchpad to abort.");
+        // _radialProgress.gameObject.SetActive(true);
+        while (triggerClickTime < durationToContinue) {
+            if (userClickedPad) {
+                _instructBehaviour.setInstruction("Aborting!\n\n" + "Loading previous calibration.");
+                yield return new WaitUntil(() => !userClickedPad);
+                LoadCamRigCal();
+                _instructBehaviour.ResetRadialProgresses();
+                _instructBehaviour.toggleControllerInstruction(false);
+                yield break;
+            }
+            if (userClickedTrigger) {
+                triggerClickTime += Time.deltaTime;
+                _instructBehaviour.SetRadialProgresses(triggerClickTime / durationToContinue);
+            } else {
+                _instructBehaviour.ResetRadialProgresses();
+                triggerClickTime = 0;
+            }
             yield return null;
         }
-        Debug.Log("Calibrated first corner!");
-        calPointA.SetActive(false);
 
-        yield return new WaitUntil(() => !calibrating);
-        controllerBasePoint.SetActive(false);
-        Debug.Log("Done calibrating!");
+
         SaveCamRigCal();
+
+        _radialProgress.SetProgress(1);
+        _instructBehaviour.setInstruction("Calibration saved!");
+
+        yield return new WaitUntil(() => !userTouchedTrigger);
+        _instructBehaviour.ResetRadialProgresses();
+        // _radialProgress.gameObject.SetActive(false);
+        _instructBehaviour.toggleControllerInstruction(false);
+        toggleMessage(false);
+
+        CalibrateByController();
+
+        // yield return new WaitUntil(() => !calibrating);
+        Debug.Log("Done calibrating!");
     }
 
     private void SaveCamRigCal() {
@@ -538,6 +611,7 @@ public class ExpeControl : MonoBehaviour {
     public bool userGrippedControl => TrackPadInput.instance.SideGripped();
     public bool userTouchedPad => TrackPadInput.instance.TrackpadTouched();
     public bool userClickedPad => TrackPadInput.instance.TrackpadClicked();
+    public bool userTouchedTrigger => TrackPadInput.instance.TriggerTouched();
     public bool userClickedTrigger => TrackPadInput.instance.TriggerClicked();
 
 
@@ -562,6 +636,7 @@ public class ExpeControl : MonoBehaviour {
         pausePanel.SetActive(false);
         // questionPanel.SetActive(false);
         _progressBar.gameObject.SetActive(false);
+        _radialProgress.gameObject.SetActive(false);
         _questionSlider.gameObject.SetActive(false);
 
         // _questionSlider.gameObject.SetActive(true);
@@ -569,76 +644,104 @@ public class ExpeControl : MonoBehaviour {
         RoomManager.instance.LoadBreakRoom();
         yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
 
+        calPointA = GameObject.Find("CalPointA");
+        calPointB = GameObject.Find("CalPointB");
+        calPointF = GameObject.Find("CalPointF");
+
+        if (calPointA != null) {
+            calPointA.SetActive(false);
+            calPointB.SetActive(false);
+            calPointF.SetActive(false);
+        }
+
 
         LoadCamRigCal();
 
+        _instructBehaviour.toggleControllerInstruction(true);
+        _instructBehaviour.setInstruction("Press any button on this controller (trigger, side button, or trackpad).");
+        yield return new WaitUntil(() => _instructBehaviour.deactivatedOtherController);
+        _instructBehaviour.setInstruction("The other controller has been disabled!");
+        if (userClickedPad)
+            yield return new WaitUntil(() => !userClickedPad);
+        if (userClickedTrigger)
+            yield return new WaitUntil(() => !userTouchedTrigger);
+        if (userGrippedControl)
+            yield return new WaitUntil(() => !userGrippedControl);
+        _instructBehaviour.toggleControllerInstruction(false);
 
 
 
         // Wait for user ID --- Setup() happens here!
         yield return new WaitUntil(() => !setupPanel.activeSelf);
-
-        // toggleMessage(false);
-        yield return new WaitForSecondsRealtime(0.5f);
-        toggleMessage(true, "Let's learn the VR controls.\n\nTake a look at your controller.");
-        yield return new WaitForSecondsRealtime(5.0f);
+        _instructBehaviour.toggleControllerInstruction(false);
 
 
 
         // Introduce Interaction
-        // _instructBehaviour.toggleWorldInstruction(false);
+
+        // toggleMessage(false);
+        yield return new WaitForSecondsRealtime(0.5f);
+        toggleMessage(true, "Let's learn the VR controls.\n\nTake a look at your controller, and pull its trigger.");
+        yield return new WaitForSecondsRealtime(1.0f);
 
 
-        _instructBehaviour.setInstruction("Clickt the controller's trigger.");
+        // _instructBehaviour.setInstruction("Click the controller's trigger, then release it.");
         yield return new WaitUntil(() => userClickedTrigger);
         Debug.Log("Successfully triggered.");
+        _instructBehaviour.setInstruction("Good!\n\nNow fully release the trigger.");
+        yield return new WaitUntil(() => !userTouchedTrigger);
         _instructBehaviour.setInstruction("You did it!");
         yield return new WaitForSecondsRealtime(1f);
-        _instructBehaviour.toggleControllerInstruction(false);
+        // _instructBehaviour.toggleControllerInstruction(false);
+        _instructBehaviour.toggleWorldInstruction(false);
         yield return new WaitForSecondsRealtime(0.25f);
 
-        _instructBehaviour.setInstruction("Press the controller's side buttons.");
-        yield return new WaitUntil(() => userGrippedControl);
-        Debug.Log("Successfully gripped.");
-        _instructBehaviour.setInstruction("You did it!");
-        yield return new WaitForSecondsRealtime(1f);
-        _instructBehaviour.toggleControllerInstruction(false);
-        yield return new WaitForSecondsRealtime(0.25f);
+        // _instructBehaviour.setInstruction("Press the controller's side buttons.");
+        // yield return new WaitUntil(() => userGrippedControl);
+        // Debug.Log("Successfully gripped.");
+        // _instructBehaviour.setInstruction("You did it!");
+        // yield return new WaitForSecondsRealtime(1f);
+        // _instructBehaviour.toggleControllerInstruction(false);
+        // yield return new WaitForSecondsRealtime(0.25f);
 
-        _instructBehaviour.toggleControllerInstruction(true);
-        _instructBehaviour.setInstruction("Touch the controller's touch pad.");
-        yield return new WaitUntil(() => userTouchedPad);
-        Debug.Log("Successfully touched touchpad.");
-        _instructBehaviour.setInstruction("Well done!");
-        yield return new WaitForSecondsRealtime(1f);
-        _instructBehaviour.toggleControllerInstruction(false);
-        yield return new WaitForSecondsRealtime(0.25f);
+        // _instructBehaviour.toggleControllerInstruction(true);
+        // _instructBehaviour.setInstruction("Touch the controller's touch pad.");
+        // yield return new WaitUntil(() => userTouchedPad);
+        // Debug.Log("Successfully touched touchpad.");
+        // _instructBehaviour.setInstruction("Well done!");
+        // yield return new WaitForSecondsRealtime(1f);
+        // _instructBehaviour.toggleControllerInstruction(false);
+        // yield return new WaitForSecondsRealtime(0.25f);
 
-        _instructBehaviour.toggleControllerInstruction(true);
-        _instructBehaviour.setInstruction("Click the controller's touch pad.");
+        // _instructBehaviour.toggleControllerInstruction(true);
+        toggleMessage(true, "Click the controller's touch pad, then release it.");
         yield return new WaitUntil(() => userClickedPad);
         Debug.Log("Successfully clicked touchpad.");
-        _instructBehaviour.setInstruction("Good job!");
+        _instructBehaviour.setInstruction("Good!\n\nNow let go of the touchpad.");
+        yield return new WaitUntil(() => !userTouchedPad);
+        _instructBehaviour.setInstruction("Well done!");
         yield return new WaitForSecondsRealtime(1f);
-        _instructBehaviour.toggleControllerInstruction(false);
+        _instructBehaviour.toggleWorldInstruction(false);
+        // _instructBehaviour.toggleControllerInstruction(false);
 
         yield return new WaitForSecondsRealtime(0.25f);
 
-        _instructBehaviour.toggleControllerInstruction(true);
-        _instructBehaviour.setInstruction("Press and hold the touch pad until the bar fills.");
-        while (padPressedTime < durationPressToLeave) {
+        // _instructBehaviour.toggleControllerInstruction(true);
+        toggleMessage(true, "Press and hold the touch pad until the bar fills, then release it.");
+        while (padPressedTime < durationToContinue) {
             if (userClickedPad) {
                 padPressedTime += Time.deltaTime;
                 _progressBar.gameObject.SetActive(true);
-                _progressBar.SetProgress(padPressedTime / durationPressToLeave);
+                _progressBar.SetProgress(padPressedTime / durationToContinue);
             } else {
                 _progressBar.gameObject.SetActive(false);
                 padPressedTime = 0;
             }
             yield return null;
         }
+        yield return new WaitUntil(() => !userTouchedPad);
         _progressBar.gameObject.SetActive(false);
-        _instructBehaviour.toggleControllerInstruction(false);
+        // _instructBehaviour.toggleControllerInstruction(false);
         toggleMessage(false);
 
 
@@ -646,9 +749,9 @@ public class ExpeControl : MonoBehaviour {
 
         toggleMessage(false);
         yield return new WaitForSecondsRealtime(0.5f);
-        toggleMessage(true, "Now let's practice the questionnaires.\n\nPress the side button again to continue.");
+        toggleMessage(true, "Now let's practice the questionnaires.\n\nPress the touch pad again to continue.");
         yield return new WaitForSecondsRealtime(0.25f);
-        yield return new WaitUntil(() => userGrippedControl);
+        yield return new WaitUntil(() => userClickedPad);
         toggleMessage(false);
         yield return new WaitForSecondsRealtime(0.5f);
 
@@ -745,11 +848,11 @@ public class ExpeControl : MonoBehaviour {
                 // yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
 
                 // Wait till user presses a special combination of inputs to stop the trial
-                while (padPressedTime < durationPressToLeave) {
+                while (padPressedTime < durationToContinue) {
                     if (userClickedPad) {
                         padPressedTime += Time.deltaTime;
                         _progressBar.gameObject.SetActive(true);
-                        _progressBar.SetProgress(padPressedTime / durationPressToLeave);
+                        _progressBar.SetProgress(padPressedTime / durationToContinue);
                     } else {
                         _progressBar.gameObject.SetActive(false);
                         padPressedTime = 0;
@@ -773,11 +876,11 @@ public class ExpeControl : MonoBehaviour {
                 toggleMessage(true, "beginWaitingSit");
 
                 // Wait till user presses a special combination of inputs to stop the trial
-                while (padPressedTime < durationPressToLeave) {
+                while (padPressedTime < durationToContinue) {
                     if (userClickedPad) {
                         padPressedTime += Time.deltaTime;
                         _progressBar.gameObject.SetActive(true);
-                        _progressBar.SetProgress(padPressedTime / durationPressToLeave);
+                        _progressBar.SetProgress(padPressedTime / durationToContinue);
                     } else {
                         _progressBar.gameObject.SetActive(false);
                         padPressedTime = 0;
@@ -830,7 +933,7 @@ public class ExpeControl : MonoBehaviour {
 
                 // Wait until trial time runs out or touchpad pressed
                 padPressedTime = 0;
-                while (taskTime < currentEmotTrial.duration && padPressedTime < durationPressToLeave) {
+                while (taskTime < currentEmotTrial.duration && padPressedTime < durationToContinue) {
                     taskTime += Time.deltaTime;
 
                     // if (userClickedPad) {
@@ -846,7 +949,7 @@ public class ExpeControl : MonoBehaviour {
                 }
                 _progressBar.gameObject.SetActive(false);
 
-                if (padPressedTime >= durationPressToLeave)
+                if (padPressedTime >= durationToContinue)
                     Debug.Log("Finished from pad press.");
                 else
                     Debug.Log("Finished from expired waiting duration.");

@@ -74,6 +74,10 @@
       "type": "pose"
     },
     {
+      "name": "/actions/default/in/TriggerTouch",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },

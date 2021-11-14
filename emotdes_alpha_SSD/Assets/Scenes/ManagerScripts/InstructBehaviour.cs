@@ -12,13 +12,15 @@ public class InstructBehaviour : MonoBehaviour {
     private GameObject instructionControllerR;
 
     private List<Text> _texts;
+
+    private RadialProgress[] _radialProgresses;
     public bool isInstructGeneralDisplayed => instructionGeneral.activeSelf;
 
 
     [SerializeField] private bool oneControllerOnly = true;
     public bool leftControllerActive { get; private set; }
 
-    private bool deactivatedOtherController = false;
+    public bool deactivatedOtherController { get; private set; }
 
     void OnEnable() {
         instance = this;
@@ -29,6 +31,8 @@ public class InstructBehaviour : MonoBehaviour {
         // instructionControllerR.SetActive(false);
 
         deactivatedOtherController = false;
+
+        _radialProgresses = FindObjectsOfType<RadialProgress>();
 
         _texts = new List<Text>(3);
         _texts.Add(instructionGeneral.GetComponentInChildren<Text>());
@@ -50,6 +54,17 @@ public class InstructBehaviour : MonoBehaviour {
                     instructionGeneral.SetActive(false);
             }
         );
+    }
+
+    public void SetRadialProgresses(float fill) {
+        foreach (var rP in _radialProgresses) {
+            rP.SetProgress(fill);
+        }
+    }
+    public void ResetRadialProgresses() {
+        foreach (var rP in _radialProgresses) {
+            rP.ResetFill();
+        }
     }
 
     public void positionWorldInstruction(Transform start) {
