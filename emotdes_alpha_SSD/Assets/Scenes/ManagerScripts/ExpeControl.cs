@@ -13,6 +13,7 @@ public class ExpeControl : MonoBehaviour {
     public static ExpeControl instance { get; private set; }
 
     [SerializeField] private bool debugging;
+    [SerializeField] private bool controllerTutorial;
     [SerializeField] private bool resetExperiments = false;
     [SerializeField] private bool eyeTracking = true;
 
@@ -164,12 +165,16 @@ public class ExpeControl : MonoBehaviour {
         Debug.Log("CamRig pos: " + cameraRig.position + " CamRig rot: " + cameraRig.rotation);
         _instructBehaviour = GetComponent<InstructBehaviour>();
 
-        if (_instructBehaviour.leftControllerActive)
+        if (_instructBehaviour.leftControllerActive) {
             controllerBasePoint = GameObject.Find("BasePointL");
-        else
+            _questionSlider.controllerMainPoint = GameObject.Find("ControlPointL");
+        } else {
             controllerBasePoint = GameObject.Find("BasePointR");
+            _questionSlider.controllerMainPoint = GameObject.Find("ControlPointR");
+        }
 
         controllerBasePoint.SetActive(false);
+        _questionSlider.controllerMainPoint.SetActive(false);
 
         // condObjects = new ObjectManager();
 
@@ -283,7 +288,7 @@ public class ExpeControl : MonoBehaviour {
     }
 
     private GameObject calPointA, calPointB, calPointF;
-    private GameObject controllerBasePoint;
+    private GameObject controllerBasePoint, controllerMainPoint;
 
     IEnumerator ControllerPositioning() {
 
@@ -636,7 +641,7 @@ public class ExpeControl : MonoBehaviour {
         pausePanel.SetActive(false);
         // questionPanel.SetActive(false);
         _progressBar.gameObject.SetActive(false);
-        _radialProgress.gameObject.SetActive(false);
+        // _radialProgress.gameObject.SetActive(false);
         _questionSlider.gameObject.SetActive(false);
 
         // _questionSlider.gameObject.SetActive(true);
@@ -678,82 +683,82 @@ public class ExpeControl : MonoBehaviour {
 
 
         // Introduce Interaction
+        if (controllerTutorial) {
 
-        // toggleMessage(false);
-        yield return new WaitForSecondsRealtime(0.5f);
-        toggleMessage(true, "Let's learn the VR controls.\n\nTake a look at your controller, and pull its trigger.");
-        yield return new WaitForSecondsRealtime(1.0f);
+            // toggleMessage(false);
+            yield return new WaitForSecondsRealtime(0.5f);
+            toggleMessage(true, "Let's learn the VR controls.\n\nTake a look at your controller, and pull its trigger.");
+            yield return new WaitForSecondsRealtime(1.0f);
 
 
-        // _instructBehaviour.setInstruction("Click the controller's trigger, then release it.");
-        yield return new WaitUntil(() => userClickedTrigger);
-        Debug.Log("Successfully triggered.");
-        _instructBehaviour.setInstruction("Good!\n\nNow fully release the trigger.");
-        yield return new WaitUntil(() => !userTouchedTrigger);
-        _instructBehaviour.setInstruction("You did it!");
-        yield return new WaitForSecondsRealtime(1f);
-        // _instructBehaviour.toggleControllerInstruction(false);
-        _instructBehaviour.toggleWorldInstruction(false);
-        yield return new WaitForSecondsRealtime(0.25f);
+            // _instructBehaviour.setInstruction("Click the controller's trigger, then release it.");
+            yield return new WaitUntil(() => userClickedTrigger);
+            Debug.Log("Successfully triggered.");
+            _instructBehaviour.setInstruction("Good!\n\nNow fully release the trigger.");
+            yield return new WaitUntil(() => !userTouchedTrigger);
+            _instructBehaviour.setInstruction("You did it!");
+            yield return new WaitForSecondsRealtime(1f);
+            // _instructBehaviour.toggleControllerInstruction(false);
+            _instructBehaviour.toggleWorldInstruction(false);
+            yield return new WaitForSecondsRealtime(0.25f);
 
-        // _instructBehaviour.setInstruction("Press the controller's side buttons.");
-        // yield return new WaitUntil(() => userGrippedControl);
-        // Debug.Log("Successfully gripped.");
-        // _instructBehaviour.setInstruction("You did it!");
-        // yield return new WaitForSecondsRealtime(1f);
-        // _instructBehaviour.toggleControllerInstruction(false);
-        // yield return new WaitForSecondsRealtime(0.25f);
+            // _instructBehaviour.setInstruction("Press the controller's side buttons.");
+            // yield return new WaitUntil(() => userGrippedControl);
+            // Debug.Log("Successfully gripped.");
+            // _instructBehaviour.setInstruction("You did it!");
+            // yield return new WaitForSecondsRealtime(1f);
+            // _instructBehaviour.toggleControllerInstruction(false);
+            // yield return new WaitForSecondsRealtime(0.25f);
 
-        // _instructBehaviour.toggleControllerInstruction(true);
-        // _instructBehaviour.setInstruction("Touch the controller's touch pad.");
-        // yield return new WaitUntil(() => userTouchedPad);
-        // Debug.Log("Successfully touched touchpad.");
-        // _instructBehaviour.setInstruction("Well done!");
-        // yield return new WaitForSecondsRealtime(1f);
-        // _instructBehaviour.toggleControllerInstruction(false);
-        // yield return new WaitForSecondsRealtime(0.25f);
+            // _instructBehaviour.toggleControllerInstruction(true);
+            // _instructBehaviour.setInstruction("Touch the controller's touch pad.");
+            // yield return new WaitUntil(() => userTouchedPad);
+            // Debug.Log("Successfully touched touchpad.");
+            // _instructBehaviour.setInstruction("Well done!");
+            // yield return new WaitForSecondsRealtime(1f);
+            // _instructBehaviour.toggleControllerInstruction(false);
+            // yield return new WaitForSecondsRealtime(0.25f);
 
-        // _instructBehaviour.toggleControllerInstruction(true);
-        toggleMessage(true, "Click the controller's touch pad, then release it.");
-        yield return new WaitUntil(() => userClickedPad);
-        Debug.Log("Successfully clicked touchpad.");
-        _instructBehaviour.setInstruction("Good!\n\nNow let go of the touchpad.");
-        yield return new WaitUntil(() => !userTouchedPad);
-        _instructBehaviour.setInstruction("Well done!");
-        yield return new WaitForSecondsRealtime(1f);
-        _instructBehaviour.toggleWorldInstruction(false);
-        // _instructBehaviour.toggleControllerInstruction(false);
+            // _instructBehaviour.toggleControllerInstruction(true);
+            toggleMessage(true, "Click the controller's touch pad, then release it.");
+            yield return new WaitUntil(() => userClickedPad);
+            Debug.Log("Successfully clicked touchpad.");
+            _instructBehaviour.setInstruction("Good!\n\nNow let go of the touchpad.");
+            yield return new WaitUntil(() => !userTouchedPad);
+            _instructBehaviour.setInstruction("Well done!");
+            yield return new WaitForSecondsRealtime(1f);
+            _instructBehaviour.toggleWorldInstruction(false);
+            // _instructBehaviour.toggleControllerInstruction(false);
 
-        yield return new WaitForSecondsRealtime(0.25f);
+            yield return new WaitForSecondsRealtime(0.25f);
 
-        // _instructBehaviour.toggleControllerInstruction(true);
-        toggleMessage(true, "Press and hold the touch pad until the bar fills, then release it.");
-        while (padPressedTime < durationToContinue) {
-            if (userClickedPad) {
-                padPressedTime += Time.deltaTime;
-                _progressBar.gameObject.SetActive(true);
-                _progressBar.SetProgress(padPressedTime / durationToContinue);
-            } else {
-                _progressBar.gameObject.SetActive(false);
-                padPressedTime = 0;
+            // _instructBehaviour.toggleControllerInstruction(true);
+            toggleMessage(true, "Press and hold the touch pad until the bar fills, then release it.");
+            while (padPressedTime < durationToContinue) {
+                if (userClickedPad) {
+                    padPressedTime += Time.deltaTime;
+                    _progressBar.gameObject.SetActive(true);
+                    _progressBar.SetProgress(padPressedTime / durationToContinue);
+                } else {
+                    _progressBar.gameObject.SetActive(false);
+                    padPressedTime = 0;
+                }
+                yield return null;
             }
-            yield return null;
+            yield return new WaitUntil(() => !userTouchedPad);
+            _progressBar.gameObject.SetActive(false);
+            // _instructBehaviour.toggleControllerInstruction(false);
+            toggleMessage(false);
+
+            toggleMessage(false);
+            yield return new WaitForSecondsRealtime(0.5f);
+            toggleMessage(true, "Now let's practice the questionnaires.\n\nPress the touch pad again to continue.");
+            yield return new WaitForSecondsRealtime(0.25f);
+            yield return new WaitUntil(() => userClickedPad);
+            toggleMessage(false);
+            yield return new WaitForSecondsRealtime(0.5f);
         }
-        yield return new WaitUntil(() => !userTouchedPad);
-        _progressBar.gameObject.SetActive(false);
-        // _instructBehaviour.toggleControllerInstruction(false);
-        toggleMessage(false);
 
-
-
-
-        toggleMessage(false);
-        yield return new WaitForSecondsRealtime(0.5f);
-        toggleMessage(true, "Now let's practice the questionnaires.\n\nPress the touch pad again to continue.");
-        yield return new WaitForSecondsRealtime(0.25f);
-        yield return new WaitUntil(() => userClickedPad);
-        toggleMessage(false);
-        yield return new WaitForSecondsRealtime(0.5f);
 
         // Introduce slider interaction
 

@@ -7,6 +7,8 @@ using Valve.VR;
 public class QuestionSlider : MonoBehaviour {
     public static QuestionSlider instance;
     static private ExpeControl _expeControl;
+    private InstructBehaviour _instructBehaviour;
+    public GameObject controllerMainPoint;
     private Slider slider;
     public Text questionTextField, sliderText;
     public string questionText { get; private set; }
@@ -24,6 +26,9 @@ public class QuestionSlider : MonoBehaviour {
     public SteamVR_Action_Boolean trackpadClickAction;
     public SteamVR_Action_Boolean trackpadTouchAction;
 
+    public SteamVR_Action_Boolean triggerTouchAction;
+    public SteamVR_Action_Boolean triggerClickAction;
+
     public SteamVR_Action_Vector2 trackpadVector;
 
     public bool confirmed = false;
@@ -38,7 +43,8 @@ public class QuestionSlider : MonoBehaviour {
     float deltaX, range, divisor, rounder, discreteVal;
     bool nonSwipe = true;
 
-    private string confirmationText = "\n\n\nSwipe the trackpad to set the slider as you like, and confirm your answer by pressing the side button.";
+    // private string confirmationText = "\n\n\nSwipe the trackpad to set the slider as you like, and confirm your answer by pressing the side button.";
+    private string confirmationText = "\n\n\nSwipe the trackpad to set the slider as you like, and confirm your answer by holding the trigger.";
     private string confirmingText = "\n\n\n\nPress the side button again to confirm your answer, or swipe again to change it.";
     private string confirmedText = "\n\n\n\nAnswer confirmed!";
 
@@ -59,6 +65,10 @@ public class QuestionSlider : MonoBehaviour {
     }
 
     public void PadSwipe(SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta) {
+
+        if (_expeControl.userTouchedTrigger || confirmed)
+            return;
+
         // Debug.Log("Swiped the pad by: " + deltaX + " : " + delta.y);
         if (nonSwipe) {
             deltaX = 0;
@@ -107,7 +117,6 @@ public class QuestionSlider : MonoBehaviour {
         if (maxLabel != "") {
             maxText.text = maxLabel;
         }
-        sliderValue = minVal + range / 2f;
 
         if (valAro != "") {
             SAM = true;
@@ -131,6 +140,8 @@ public class QuestionSlider : MonoBehaviour {
             arousalPanel.SetActive(false);
             valencePanel.SetActive(false);
         }
+
+        sliderValue = minVal + range / 2f;
 
         UpdateSlider();
     }
@@ -161,6 +172,7 @@ public class QuestionSlider : MonoBehaviour {
     public void PadTouchStart(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         // Debug.Log("Began Touch");
         nonSwipe = true;
+        controllerMainPoint.SetActive(false);
         if (confirming) {
             questionTextField.text = questionText + confirmationText;
             confirming = false;
@@ -172,17 +184,23 @@ public class QuestionSlider : MonoBehaviour {
     public void PadTouchEnd(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         // Debug.Log("Ended Touch");
         nonSwipe = true;
+        if (!confirmed && !_expeControl.userTouchedTrigger)
+            controllerMainPoint.SetActive(true);
     }
 
     public void UpdateQuestionText(string text) {
         questionText = text;
         questionTextField.text = questionText + confirmationText;
 
-        slider.interactable = true;
+        if (!_expeControl.userTouchedTrigger)
+            slider.interactable = true;
+        _instructBehaviour.ResetRadialProgresses();
     }
 
     public void RequestConfirmation() {
         requesting = true;
+        confirmed = false;
+        controllerMainPoint.SetActive(true);
     }
 
     private float timeConfirming = 0.0f;
@@ -223,14 +241,70 @@ public class QuestionSlider : MonoBehaviour {
         }
     }
 
+    public void TriggerPress(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+        slider.interactable = false;
+    }
+    public void TriggerRelease(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+        if (!confirmed)
+            slider.interactable = true;
+    }
+
+    float triggerClickTime;
+
+    public void TriggerClick(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+        if (requesting) {
+            controllerMainPoint.SetActive(false);
+            Vector3[] fourCorners = new Vector3[4];
+            slider.fillRect.GetWorldCorners(fourCorners);
+            Debug.Log("Slider's world position: " + fourCorners[0]);
+            triggerClickTime = 0.0f;
+            StartCoroutine(HoldTrigger());
+        }
+    }
+
+    public void TriggerUnClick(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+        // StopCoroutine(HoldTrigger());
+        if (!confirmed) {
+            StopAllCoroutines();
+            _instructBehaviour.ResetRadialProgresses();
+            triggerClickTime = 0.0f;
+            controllerMainPoint.SetActive(true);
+        }
+    }
+
+
+    IEnumerator HoldTrigger() {
+        while (triggerClickTime < _expeControl.durationToContinue) {
+            triggerClickTime += Time.deltaTime;
+            _instructBehaviour.SetRadialProgresses(triggerClickTime / _expeControl.durationToContinue);
+            yield return null;
+        }
+        Debug.Log("Successfully confirmed answer: " + sliderValue);
+
+        string answerString = discreteVal.ToString();
+        if (timeFormat)
+            answerString += "s";
+
+        _expeControl.WriteAnswer(questionText + ";" + answerString);
+
+        triggerClickTime = 0;
+        confirmed = true;
+        requesting = false;
+    }
+
     // Start is called before the first frame update
     void Start() {
         _expeControl = ExpeControl.instance;
+        _instructBehaviour = InstructBehaviour.instance;
 
         trackpadVector.AddOnChangeListener(PadSwipe, anyHand);
         trackpadTouchAction.AddOnStateDownListener(PadTouchStart, anyHand);
         trackpadTouchAction.AddOnStateUpListener(PadTouchEnd, anyHand);
-        sideButtonAction.AddOnStateDownListener(SideButtonGrip, anyHand);
+        // sideButtonAction.AddOnStateDownListener(SideButtonGrip, anyHand);
+        triggerTouchAction.AddOnStateDownListener(TriggerPress, anyHand);
+        triggerTouchAction.AddOnStateUpListener(TriggerRelease, anyHand);
+        triggerClickAction.AddOnStateDownListener(TriggerClick, anyHand);
+        triggerClickAction.AddOnStateUpListener(TriggerUnClick, anyHand);
     }
 
     // Update is called once per frame

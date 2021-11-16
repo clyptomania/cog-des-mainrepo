@@ -31,7 +31,7 @@ public class RadialProgress : MonoBehaviour {
                 checkMark.gameObject.SetActive(true);
         }
         fillImage.fillAmount = fill;
-        Debug.Log("Setting radial progress to " + fill);
+        // Debug.Log("Setting radial progress to " + fill);
     }
 
     public void ResetFill() {

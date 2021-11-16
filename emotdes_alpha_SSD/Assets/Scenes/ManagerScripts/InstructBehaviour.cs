@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class InstructBehaviour : MonoBehaviour {
-    private static InstructBehaviour instance;
+    public static InstructBehaviour instance;
     [SerializeField]
     private GameObject instructionGeneral;
     [SerializeField]

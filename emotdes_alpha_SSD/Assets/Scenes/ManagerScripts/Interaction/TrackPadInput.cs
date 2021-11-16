@@ -71,8 +71,8 @@ public class TrackPadInput : MonoBehaviour {
         sideButtonAction.AddOnStateDownListener(DisableLeftController, rightHand);
         sideButtonAction.AddOnStateDownListener(DisableRightController, leftHand);
 
-        triggerTouchAction.AddOnStateDownListener(TestDown, anyHand);
-        triggerTouchAction.AddOnStateUpListener(TestUp, anyHand);
+        // triggerTouchAction.AddOnStateDownListener(TestDown, anyHand);
+        // triggerTouchAction.AddOnStateUpListener(TestUp, anyHand);
 
         triggerClickAction.AddOnStateDownListener(DisableLeftController, rightHand);
         triggerClickAction.AddOnStateDownListener(DisableRightController, leftHand);
