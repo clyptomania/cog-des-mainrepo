@@ -73,6 +73,8 @@ public class ExpeControl : MonoBehaviour {
     public GameObject pausePanel;
     public GameObject questionPanel;
 
+    private TrainSpawner trainSpawner;
+
     private readonly Dictionary<string, string> messages = new Dictionary<string, string> {
         {
         "calibrate",
@@ -141,6 +143,13 @@ public class ExpeControl : MonoBehaviour {
         "The waiting time is now over!\n\n"+
         "Please stand up now and step a way a bit from the chairs.\n\n"+
         "Press the side button to continue with the questionnaires."
+        // "Die Wartezeit ist jetzt vorbei!\n\n" +
+        // "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
+        },
+        {
+        "endQuestions",
+        "Thank you!\n\n"+
+        "The questionnaire is now finished. Get ready for the next trial!"
         // "Die Wartezeit ist jetzt vorbei!\n\n" +
         // "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
         },
@@ -260,31 +269,46 @@ public class ExpeControl : MonoBehaviour {
         m_recorder_question = new StreamWriter(m_userdataPath + "/Answers_" + m_userId + ".txt");
     }
 
-    private bool calibrating = false;
+    // private bool calibrating = false;
     private bool conCal = false;
     private bool trackCal = false;
+    Coroutine runningRoutine;
 
     public void CalibrateByController() {
         if (!trackCal) {
-            conCal = !conCal;
-            controllerCalButton.colors = SwapColors(controllerCalButton.colors);
-            calibrating = conCal ? true : false;
-            if (conCal && calibrating) {
-                StartCoroutine(ControllerPositioning());
+
+            if (!conCal) {
+                conCal = true;
+                controllerCalButton.colors = SwapColors(controllerCalButton.colors);
+                runningRoutine = StartCoroutine(ControllerPositioning());
+            } else {
+                StopCoroutine(runningRoutine);
+                _instructBehaviour.ResetRadialProgresses();
+                _instructBehaviour.toggleControllerInstruction(false);
+                controllerCalButton.colors = SwapColors(controllerCalButton.colors);
+                conCal = false;
+                LoadCamRigCal();
             }
+
+            // conCal = !conCal;
+            // controllerCalButton.colors = SwapColors(controllerCalButton.colors);
+            // calibrating = conCal ? true : false;
+            // if (conCal && calibrating) {
+            //     StartCoroutine(ControllerPositioning());
+            // }
             // if (conCal) calibrating = true; else calibrating = false;
         }
         // SaveCamRigCal();
-        Debug.Log("Calibrating: " + calibrating);
+        // Debug.Log("Calibrating: " + conCal);
     }
     public void CalibrateByTracker() {
-        if (!conCal) {
-            trackCal = !trackCal;
-            trackerCalButton.colors = SwapColors(trackerCalButton.colors);
-            calibrating = trackCal ? true : false;
-        }
-        // LoadCamRigCal();
-        Debug.Log("Calibrating: " + calibrating);
+        // if (!conCal) {
+        //     trackCal = !trackCal;
+        //     trackerCalButton.colors = SwapColors(trackerCalButton.colors);
+        //     calibrating = trackCal ? true : false;
+        // }
+        // // LoadCamRigCal();
+        // Debug.Log("Calibrating: " + calibrating);
     }
 
     private GameObject calPointA, calPointB, calPointF;
@@ -304,7 +328,7 @@ public class ExpeControl : MonoBehaviour {
         _instructBehaviour.setInstruction("Using the trigger, place the controller's base on the floor.\n\n" + "Confirm with the touchpad.");
 
         // Get first point: floor
-        while (!positioned && calibrating) {
+        while (!positioned) {
             if (userClickedPad) {
                 positioned = true;
                 break;
@@ -332,7 +356,7 @@ public class ExpeControl : MonoBehaviour {
         if (calPointA != null) calPointA.SetActive(true);
 
         // Get second point: corner A
-        while (!positioned && calibrating) {
+        while (!positioned) {
             if (userClickedPad) {
                 positioned = true;
                 break;
@@ -362,7 +386,7 @@ public class ExpeControl : MonoBehaviour {
         Vector3 firstCornerPos = calPointA.transform.position;
         Vector3 horizontalControllerPos = controllerBasePoint.transform.position;
         // Get final point: corner B
-        while (!positioned && calibrating) {
+        while (!positioned) {
             if (userClickedPad) {
                 positioned = true;
                 break;
@@ -659,6 +683,11 @@ public class ExpeControl : MonoBehaviour {
             calPointF.SetActive(false);
         }
 
+        trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
+        if (trainSpawner != null) {
+            // trainSpawner.SpawnTrain();
+        }
+
 
         LoadCamRigCal();
 
@@ -839,6 +868,8 @@ public class ExpeControl : MonoBehaviour {
             toggleMessage(false);
 
 
+            trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
+
 
 
             taskTime = 0;
@@ -852,7 +883,7 @@ public class ExpeControl : MonoBehaviour {
                 toggleMessage(true, "takeBreak");
                 // yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
 
-                // Wait till user presses a special combination of inputs to stop the trial
+                // Wait until the user presses a special combination of inputs to stop the trial
                 while (padPressedTime < durationToContinue) {
                     if (userClickedPad) {
                         padPressedTime += Time.deltaTime;
@@ -934,7 +965,8 @@ public class ExpeControl : MonoBehaviour {
                 // Position instruction panel relative to new user location
                 // _instructBehaviour.positionWorldInstruction(startTr);
                 // Set instruction panel visible
-
+                if (trainSpawner)
+                    trainSpawner.Invoke("SpawnTrain", currentEmotTrial.duration - trainSpawner.DelayToOpenDoors());
 
                 // Wait until trial time runs out or touchpad pressed
                 padPressedTime = 0;
@@ -950,6 +982,8 @@ public class ExpeControl : MonoBehaviour {
                     //     _progressBar.gameObject.SetActive(false);
                     //     padPressedTime = 0;
                     // }
+
+                    // trainSpawner.SpawnTrain();
                     yield return null;
                 }
                 _progressBar.gameObject.SetActive(false);
@@ -1062,11 +1096,16 @@ public class ExpeControl : MonoBehaviour {
                 yield return new WaitUntil(() => _questionSlider.confirmed);
                 yield return new WaitForSecondsRealtime(1.0f);
                 ToggleQuestion(false);
-                yield return new WaitForSecondsRealtime(1.0f);
-
-
 
                 // THIS IS THE END OF THE QUESTION BLOCK
+
+                trainSpawner.DepartTrain();
+                yield return new WaitForSecondsRealtime(2.0f);
+
+
+
+                toggleMessage(true, "endQuestions");
+                yield return new WaitForSecondsRealtime(3.0f);
 
             }
 
@@ -1161,7 +1200,7 @@ public class ExpeControl : MonoBehaviour {
     public void validateDataInput() {
         string txt = idTxt.text;
 
-        if (!string.IsNullOrEmpty(txt) && !calibrating) {
+        if (!string.IsNullOrEmpty(txt) && !conCal && !trackCal) {
             setupPanel.SetActive(false);
 
             m_userId = Int16.Parse(txt);

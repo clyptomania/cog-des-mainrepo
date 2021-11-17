@@ -43,38 +43,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 347138a2db1ac334a978e3d6a44d604e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnAtIntervals: 0
   firstSpawnDelay: 0
-  spawnIntervall: 20
+  spawnInterval: 0
   spawnOnBEnabled: 1
   trainModel: {fileID: 6744247655250327442, guid: 139844abb4fdeb149b2863f0c750c8ac,
     type: 3}
+  automaticDeparture: 0
   stopLocation: {x: 0, y: 0, z: 0}
   despawnLocation: {x: 0, y: 0, z: 0}
   spawnRotation: {x: 0, y: 0, z: 0}
   totalStopTime: 0
-  travelTime: 0
-  doorDelay: 0
+  travelTime: 15
+  doorDelay: 2
   positionCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 3.1416416
+      outSlope: 3.1416416
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.028373694
     - serializedVersion: 3
-      time: 0.5
-      value: 0.5
-      inSlope: 2.5669992
-      outSlope: 2.5669992
+      time: 0.495176
+      value: 0.93328255
+      inSlope: 0.39237323
+      outSlope: 0.39237323
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.03571427
-      outWeight: 0.33333334
+      inWeight: 0.062937826
+      outWeight: 0.051505268
     - serializedVersion: 3
       time: 1
       value: 1
