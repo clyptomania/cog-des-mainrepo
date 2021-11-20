@@ -9,6 +9,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
 
+using Tobii.Research;
+using Tobii.Research.Unity;
+using System.Threading;
+
 public class ExpeControl : MonoBehaviour {
     public static ExpeControl instance { get; private set; }
 
@@ -17,7 +21,7 @@ public class ExpeControl : MonoBehaviour {
     [SerializeField] private bool resetExperiments = false;
     [SerializeField] private bool eyeTracking = true;
 
-    [SerializeField] private Button controllerCalButton, trackerCalButton;
+    [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton;
 
     [SerializeField] private List<int> durations = new List<int>();
 
@@ -167,7 +171,22 @@ public class ExpeControl : MonoBehaviour {
     [Tooltip("Time in seconds needed to click trigger to continue")] public float durationToContinue;
 
     void Awake() {
+
         instance = this;
+
+        if (mainCam == null)
+            mainCam = Camera.main;
+
+        tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
+
+        // if (tobiiTracking) {
+        //     Debug.Log("Adding Tobii callback");
+        //     shB.validationCallback = (success) => {
+        //         this.m_validationSuccess = success;
+        //         this.m_validationDone = true;
+        //     };
+        // }
+
         string[] RoomNames = RoomManager.RoomNames;
         cameraRig = transform.GetChild(0);
         Debug.Log("Found camera rig: " + cameraRig.name);
@@ -398,7 +417,8 @@ public class ExpeControl : MonoBehaviour {
                 horizontalControllerPos.y = 0;
                 firstCornerPos.y = 0;
 
-                angleBetween = Vector3.SignedAngle(Vector3.right, horizontalControllerPos - firstCornerPos, Vector3.up);
+                // angleBetween = Vector3.SignedAngle(Vector3.right, horizontalControllerPos - firstCornerPos, Vector3.up);
+                angleBetween = Vector3.SignedAngle(Vector3.left, horizontalControllerPos - firstCornerPos, Vector3.up);
                 // Debug.Log("Signed angle: " + angleBetween);
                 cameraRig.transform.RotateAround(firstCornerPos, Vector3.up, -angleBetween);
                 yield return null;
@@ -647,6 +667,25 @@ public class ExpeControl : MonoBehaviour {
     float taskTime = 0;
     float padPressedTime = 0;
 
+    public void SetTobiiTracking(bool tobTrack) {
+
+        Debug.Log("Requesting Lab change. SGL? " + tobTrack);
+
+        if (tobiiTracking == tobTrack) {
+            Debug.Log("Pressed already active Lab button");
+            return;
+        }
+
+
+
+        tobiiTracking = tobTrack;
+        sglButton.colors = SwapColors(sglButton.colors);
+        hfgButton.colors = SwapColors(hfgButton.colors);
+        PlayerPrefs.SetInt("tobii", (tobiiTracking ? 1 : 0));
+    }
+
+
+
 
     // THE ACTUAL GAME LOOP!
 
@@ -655,10 +694,25 @@ public class ExpeControl : MonoBehaviour {
         taskTime = 0;
         padPressedTime = 0;
 
+        tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
+
+        Debug.Log("Read from prefs: Tobii Tracking = " + tobiiTracking);
+
+        if (tobiiTracking) {
+            sglButton.colors = SwapColors(sglButton.colors);
+            Debug.Log("Swapped SGL Button");
+        } else {
+            hfgButton.colors = SwapColors(hfgButton.colors);
+            Debug.Log("Swapped HFG Button");
+        }
+
+
         if (eyeTracking)
             yield return new WaitUntil(() => _eyeTrack.ready);
         else
             yield return new WaitForSeconds(1);
+
+        // Debug.Log("Passed _eyeTrack.ready check");
 
         // Show SubjInfo panel
         setupPanel.SetActive(true);
@@ -691,6 +745,8 @@ public class ExpeControl : MonoBehaviour {
 
         LoadCamRigCal();
 
+        Debug.Log("Loaded Camera Rig Position");
+
         _instructBehaviour.toggleControllerInstruction(true);
         _instructBehaviour.setInstruction("Press any button on this controller (trigger, side button, or trackpad).");
         yield return new WaitUntil(() => _instructBehaviour.deactivatedOtherController);
@@ -708,6 +764,83 @@ public class ExpeControl : MonoBehaviour {
         // Wait for user ID --- Setup() happens here!
         yield return new WaitUntil(() => !setupPanel.activeSelf);
         _instructBehaviour.toggleControllerInstruction(false);
+
+
+        // Tobii Eye Tracking Setup
+
+        if (!tobiiTracking) {
+            shaderBehavior.gameObject.SetActive(false);
+
+        } else {
+
+            Debug.Log("Adding Tobii callback");
+            shaderBehavior.validationCallback = (success) => {
+                this.m_validationSuccess = success;
+                this.m_validationDone = true;
+            };
+
+
+            print("Waiting for the eyetracker to start");
+            // Wait for ET server to start
+            yield return new WaitUntil(() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
+            print("_eyeTrackerTobii != null");
+
+            yield return new WaitForEndOfFrame();
+            _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
+
+            m_ETsubscribed = true;
+            print("Eyetracker started and subscribed to");
+
+            shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+            m_calibrationSuccess = false;
+
+            int calCount = 0;
+            while (!m_calibrationSuccess) {
+
+                print("BEFORE CALIBRATION");
+                print("Press space to begin calibration routine!");
+
+                yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+
+                m_calibrationDone = false;
+                yield return null;
+                startCalibration();
+                yield return new WaitUntil(() => m_calibrationDone);
+                print("AFTER CALIBRATION");
+
+                if (b_validate && m_calibrationSuccess) {
+                    calCount = 0;
+                    // Validation procedure - only if calibration was successful
+                    m_validationSuccess = false;
+                    // If fails: new calibration
+                    m_validationDone = false;
+                    yield return null;
+                    shaderBehavior.phase = ShaderBehaviour.shaderPhase.validation;
+                    yield return new WaitUntil(() => m_validationDone);
+                    shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+                    m_calibrationSuccess = m_validationSuccess;
+
+                    if (!m_validationSuccess) {
+                        print("failedVal");
+                        yield return new WaitForSecondsRealtime(3f);
+                    } else {
+                        print("succeededVal");
+                    }
+                }
+                // TODO: log calibration and validation success and precision
+
+                if (++calCount >= 3) {
+                    print("failedCal");
+                    yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                    calCount = 0;
+                }
+            }
+
+            // End of Tobii Calibration
+
+        }
 
 
 
@@ -935,7 +1068,10 @@ public class ExpeControl : MonoBehaviour {
 
                 // Start new gaze record (record name = stimulus name)
                 if (eyeTracking) {
-                    _eyeTrack.startNewRecord();
+                    if (tobiiTracking)
+                        startNewRecord();
+                    else
+                        _eyeTrack.startNewRecord();
                     Debug.Log("Started eye tracking.");
                 }
                 // Start trial
@@ -995,7 +1131,10 @@ public class ExpeControl : MonoBehaviour {
 
                 // Stop recording gaze
                 if (eyeTracking)
-                    _eyeTrack.stopRecord(getTimeStamp() - start_time);
+                    if (tobiiTracking)
+                        stopRecord(getTimeStamp() - start_time);
+                    else
+                        _eyeTrack.stopRecord(getTimeStamp() - start_time);
 
                 m_isPresenting = false;
 
@@ -1169,7 +1308,10 @@ public class ExpeControl : MonoBehaviour {
 
     private void OnApplicationQuit() {
         if (eyeTracking)
-            _eyeTrack.stopRecord(-1);
+            if (tobiiTracking)
+                stopRecord(-1);
+            else
+                _eyeTrack.stopRecord(-1);
 
         if (m_recorder_info.BaseStream.CanWrite)
             m_recorder_info.Close();
@@ -1186,6 +1328,8 @@ public class ExpeControl : MonoBehaviour {
 
     public static void Quit() {
         print("Quitting gracefully");
+        if (instance.tobiiTracking)
+            EyeTrackingOperations.Terminate();
         Application.Quit();
 
 #if UNITY_EDITOR
@@ -1210,4 +1354,302 @@ public class ExpeControl : MonoBehaviour {
             SetUp();
         }
     }
+
+
+    // SGL Tobii Eyetracker Additions
+
+    private bool tobiiTracking = false;
+
+    public class GazePoint {
+        public GazePoint() // Empty ctor
+        {
+            LeftGaze = new VRGazeDataEye();
+            RightGaze = new VRGazeDataEye();
+            data = new VRGazeData();
+        }
+
+        public GazePoint(IVRGazeData gaze) {
+            LeftGaze = gaze.Left;
+            RightGaze = gaze.Right;
+            data = gaze;
+
+            LeftCollide = null;
+            RightCollide = null;
+
+            LeftWorldRay = getGazeRay(lateralisation.left);
+            RightWorldRay = getGazeRay(lateralisation.right);
+
+            LeftLocalRay = new Ray(LeftGaze.GazeOrigin, LeftGaze.GazeDirection);
+            RightLocalRay = new Ray(RightGaze.GazeOrigin, RightGaze.GazeDirection);
+
+            LeftViewportPos = getViewportPos(lateralisation.left);
+            RightViewportPos = getViewportPos(lateralisation.right);
+        }
+
+        public readonly IVRGazeData data;
+        public readonly IVRGazeDataEye LeftGaze;
+        public readonly IVRGazeDataEye RightGaze;
+        public readonly Vector2 LeftViewportPos;
+        public readonly Vector2 RightViewportPos;
+
+        public readonly Ray LeftWorldRay;
+        public readonly Ray RightWorldRay;
+
+        public readonly Ray LeftLocalRay;
+        public readonly Ray RightLocalRay;
+
+        public Transform LeftCollide;
+        public Transform RightCollide;
+
+        public bool valid(lateralisation later) {
+            return later == lateralisation.left ? LeftGaze != null && LeftGaze.GazeRayWorldValid : RightGaze != null && RightGaze.GazeRayWorldValid;
+        }
+
+        public Vector2 getPor(lateralisation later) {
+            return lateralisation.left == later ? LeftViewportPos : RightViewportPos;
+        }
+
+        public Ray getGazeRay(lateralisation later) {
+            IVRGazeDataEye gp = later == lateralisation.left ? LeftGaze : RightGaze;
+
+            return new Ray(data.Pose.Position + gp.GazeOrigin, data.Pose.Rotation * gp.GazeDirection);
+        }
+
+        public Vector2 getViewportPos(lateralisation later) {
+            IVRGazeDataEye gaze = later == lateralisation.left ? LeftGaze : RightGaze;
+
+            if (!gaze.GazeDirectionValid) return new Vector2(Single.NaN, Single.NaN);
+
+
+            Vector3 worldPosition = (later == lateralisation.left ? LeftWorldRay : RightWorldRay).GetPoint(FillCamFoV.m_distance * 20);
+
+            Vector2 screenPos;
+            if (Thread.CurrentThread != mainThread) {
+                screenPos = WorldToVP(worldPosition,
+                    later == lateralisation.left ? Camera.StereoscopicEye.Left : Camera.StereoscopicEye.Right);
+            } else {
+                screenPos = ExpeControl.instance.mainCam.WorldToViewportPoint(worldPosition,
+                    later == lateralisation.left ? Camera.MonoOrStereoscopicEye.Left : Camera.MonoOrStereoscopicEye.Right);
+            }
+
+            return new Vector2(screenPos.x, screenPos.y);
+        }
+
+        private static Vector2 WorldToVP(Vector3 worldpos, Camera.StereoscopicEye eye) {
+            Matrix4x4 proj = eye == Camera.StereoscopicEye.Left ? ExpeControl.instance.camStereoProjLeft : ExpeControl.instance.camStereoProjRight;
+
+            Vector4 worldPos = new Vector4(worldpos.x, worldpos.y, worldpos.z, 1.0f);
+            Vector4 viewPos = ExpeControl.instance.camViewMat * worldPos;
+            Vector4 projPos = proj * viewPos; // ExpeControl.instance.mainCam.projectionMatrix * viewPos;
+            Vector3 ndcPos = new Vector3(projPos.x / projPos.w, projPos.y / projPos.w, projPos.z / projPos.w);
+            Vector3 viewportPos = new Vector3(ndcPos.x * 0.5f + 0.5f, ndcPos.y * 0.5f + 0.5f, -viewPos.z);
+
+            return viewportPos;
+        }
+    }
+
+    public GazePoint gazePoint = new GazePoint();
+    public ShaderBehaviour shaderBehavior;
+    public delegate void samplingCallback(GazePoint gaze);
+    public Dictionary<string, samplingCallback> SamplingCallbacks = new Dictionary<string, samplingCallback>();
+
+    private VREyeTracker _eyeTrackerTobii => (VREyeTracker.Instance);
+    private bool isTobiiTracking => (_eyeTrackerTobii.isActiveAndEnabled);
+
+    private VRCalibration _calibration => (VRCalibration.Instance);
+    private bool m_validationSuccess;
+    private bool m_validationDone;
+
+    private bool m_calibrationSuccess;
+    private bool m_calibrationDone;
+    // private bool m_isPresenting;
+
+    [SerializeField]
+    private bool b_validate = true;
+    [SerializeField]
+    private bool b_calibrate = true;
+
+    private bool m_ETsubscribed = false;
+
+    // CALIBRATION BEG
+    private void startCalibration() {
+        _calibration.StartCalibration(null, CalibrationCallback);
+    }
+
+    private void CalibrationCallback(bool calibrationResult) {
+        m_calibrationSuccess = calibrationResult;
+        m_calibrationDone = true;
+    }
+    // CALIBRATION END
+
+    // GAZE TRACKING SAMPLING
+    private Vector3 cameraRotation;
+    private Vector3 cameraPosition;
+    private Vector3 cameraLocalScale;
+    private Quaternion cameraQuaternion;
+    private Matrix4x4 camStereoProjLeft;
+    private Matrix4x4 camStereoProjRight;
+    private Matrix4x4 camViewMat;
+
+    private Vector3 torsoPosition;
+    private Quaternion torsoRotation;
+    public long UnityTimeStamp;
+
+    private static readonly Thread mainThread = Thread.CurrentThread;
+    private void Update() {
+        // To be used in this component - Coroutines are called back between "Update" and "LateUpdate"
+        if (tobiiTracking)
+            RetrieveCameraData();
+
+    }
+    public Vector2[] validationHit = new Vector2[2];
+
+    public void RetrieveCameraData() {
+        Transform camTrans = mainCam.transform;
+
+        cameraRotation = camTrans.eulerAngles;
+        cameraQuaternion = camTrans.rotation;
+        cameraPosition = camTrans.position;
+        cameraLocalScale = camTrans.localScale;
+
+        camStereoProjLeft = mainCam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left);
+        camStereoProjRight = mainCam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Right);
+
+        gazePoint.LeftCollide = Physics.Raycast(gazePoint.LeftWorldRay, out RaycastHit hitL) ? hitL.transform : null;
+        gazePoint.RightCollide = Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit hitR) ? hitR.transform : null;
+
+        if (Physics.Raycast(gazePoint.LeftWorldRay, out RaycastHit vL)) {
+            validationHit[0] = shaderBehavior.transform.InverseTransformPoint(vL.point);
+            validationHit[0].x = (validationHit[0].x + .5f) * Utils.Cam_FOV_hori;
+            validationHit[0].y = (validationHit[0].y + .5f) * Utils.Cam_FOV_vert;
+
+            //            Vector3 aa = shB.transform.InverseTransformPoint(vL.point);
+            //            print($"{aa.x},{aa.y},{aa.z} -- {validationHit[0].x},{validationHit[0].y}");
+        } else {
+            validationHit[0] = new Vector2(float.NaN, float.NaN);
+        }
+        if (Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit vR)) {
+            validationHit[1] = shaderBehavior.transform.InverseTransformPoint(vR.point);
+            validationHit[1].x = (validationHit[1].x + .5f) * Utils.Cam_FOV_hori;
+            validationHit[1].y = (validationHit[1].y + .5f) * Utils.Cam_FOV_vert;
+        } else {
+            validationHit[1] = new Vector2(float.NaN, float.NaN);
+        }
+
+        camViewMat = mainCam.worldToCameraMatrix;
+
+        UnityTimeStamp = getTimeStamp();
+    }
+
+    // Record data
+    // private StreamWriter m_recorder_ET = StreamWriter.Null;
+    // public StreamWriter m_recorder_HMD = StreamWriter.Null;
+    // private StreamWriter m_recorder_info = StreamWriter.Null;
+
+    public bool isSampling;
+    public long lastOcuTS;
+
+    private void HMDGazeDataReceivedCallback(object sender, HMDGazeDataEventArgs rawGazeData) {
+        long OcutimeStamp = EyeTrackingOperations.GetSystemTimeStamp();
+        print("in");
+
+        lastOcuTS = OcutimeStamp;
+
+        EyeTrackerOriginPose bestMatchingPose = new EyeTrackerOriginPose(OcutimeStamp, cameraPosition, cameraQuaternion);
+
+        VRGazeData gazeData = new VRGazeData(rawGazeData, bestMatchingPose);
+        gazePoint = new GazePoint(gazeData);
+
+        // Viewport positions
+        Vector2 leftPor = gazePoint.getPor(lateralisation.left);
+        Vector2 rightPor = gazePoint.getPor(lateralisation.right);
+        // 3D gaze vector
+        Vector3 leftBasePoint = gazeData.Left.GazeOrigin;
+        Vector3 rightBasePoint = gazeData.Right.GazeOrigin;
+        Vector3 leftGazeDirection = gazeData.Left.GazeDirection;
+        Vector3 rightGazeDirection = gazeData.Right.GazeDirection;
+        // Cyclops 3D gaze vector
+        Vector3 meanBasePoint = gazeData.CombinedGazeRayWorld.origin;
+        Vector3 meanGazeDirection = gazeData.CombinedGazeRayWorld.direction;
+        // Validity
+        bool valL = gazeData.Left.GazeDirectionValid;
+        bool valR = gazeData.Right.GazeDirectionValid;
+
+        // TODO: add back func startNewRecord - unblock below
+        if (false && isSampling) {
+            m_recorder_ET.WriteLine(
+                $"{OcutimeStamp},{UnityTimeStamp}," +
+                $"{leftPor.x},{leftPor.y}," +
+                $"{rightPor.x},{rightPor.y}," +
+                $"{cameraPosition.x},{cameraPosition.y},{cameraPosition.z}," +
+                $"{cameraQuaternion.x},{cameraQuaternion.y},{cameraQuaternion.z},{cameraQuaternion.w}," +
+                $"{torsoPosition.x},{torsoPosition.y},{torsoPosition.z}," +
+                $"{torsoRotation.x},{torsoRotation.y},{torsoRotation.z},{torsoRotation.w}," +
+                $"{meanBasePoint.x},{meanBasePoint.y},{meanBasePoint.z}," +
+                $"{meanGazeDirection.x},{meanGazeDirection.y},{meanGazeDirection.z}," +
+                $"{leftBasePoint.x},{leftBasePoint.y},{leftBasePoint.z}," +
+                $"{rightBasePoint.x},{rightBasePoint.y},{rightBasePoint.z}," +
+                $"{leftGazeDirection.x},{leftGazeDirection.y},{leftGazeDirection.z}," +
+                $"{rightGazeDirection.x},{rightGazeDirection.y},{rightGazeDirection.z}," +
+                $"{valL},{valR}"
+             );
+        }
+
+        foreach (samplingCallback func in SamplingCallbacks.Values) {
+            func(gazePoint);
+        }
+    }
+
+    // TODO: remove/uncommment, qdd right m_userdataPath back
+    // string m_userdataPath = "./test/"
+
+    private void startNewRecord() {
+        // m_recorder_ET = new StreamWriter(m_userdataPath + "/TESTname_ET.csv");
+        // m_recorder_ET = new StreamWriter(m_userdataPath + "/" + currentTrial.expName + "_ET.csv");
+        m_recorder_ET = new StreamWriter(m_userdataPath + "/" +
+                                         currentEmotTrial.expName + "_ET.csv");
+        m_recorder_ET.WriteLine(
+            "OcutimeStamp,UnityTimeStamp," +
+            "leftPor.x,leftPor.y," +
+            "rightPor.x,rightPor.y," +
+            "cameraPosition.x,cameraPosition.y,cameraPosition.z," +
+            "cameraRotation.x,cameraRotation.y,cameraRotation.z,cameraRotation.w," +
+            "torsoPosition.x,torsoPosition.y,torsoPosition.z," +
+            "torsoRotation.x,torsoRotation.y,torsoRotation.z,torsoRotation.w," +
+            "meanBasePoint.x,meanBasePoint.y,meanBasePoint.z," +
+            "meanGazeDirection.x,meanGazeDirection.y,meanGazeDirection.z," +
+            "leftBasePoint.x,leftBasePoint.y,leftBasePoint.z," +
+            "rightBasePoint.x,rightBasePoint.y,rightBasePoint.z," +
+            "leftEyeDirection.x,leftEyeDirection.y,leftEyeDirection.z," +
+            "rightEyeDirection.x,rightEyeDirection.y,rightEyeDirection.z," +
+            "valL,valR");
+
+        // m_recorder_HMD = new StreamWriter(m_userdataPath + "/TESTname_HMD.csv");
+        // m_recorder_HMD = new StreamWriter(m_userdataPath + "/" + currentTrial.expName + "_HMD.csv");
+        m_recorder_HMD = new StreamWriter(m_userdataPath + "/" +
+                                   currentEmotTrial.expName + "_HMD.csv");
+        m_recorder_HMD.WriteLine(
+            "OcutimeStamp,UnityTimeStamp," +
+            "LeftCollide,RightCollide");
+
+        isSampling = true;
+
+        // writeInfo($"Started: [{currentTrial.exp_idx + 1}] {currentTrial.expName}");
+    }
+
+    private void stopRecord(long elapsedtime) {
+        isSampling = false;
+        if (m_recorder_ET != null && m_recorder_ET.BaseStream.CanWrite)
+            m_recorder_ET.Close();
+        if (m_recorder_HMD != null && m_recorder_HMD.BaseStream.CanWrite)
+            m_recorder_HMD.Close();
+
+        // writeInfo($"Elapsed time: {elapsedtime}");
+        // writeInfo($"Trial ended: {(userPressed ? "Pressed trigger" : "Ran out of time")}");
+    }
+
+    // GAZE TRACKING SAMPLING
+
+    // bool paused;
+
 }
