@@ -772,6 +772,7 @@ public class ExpeControl : MonoBehaviour {
             shaderBehavior.gameObject.SetActive(false);
 
         } else {
+            shaderBehavior.gameObject.SetActive(true);
 
             Debug.Log("Adding Tobii callback");
             shaderBehavior.validationCallback = (success) => {
@@ -1498,9 +1499,17 @@ public class ExpeControl : MonoBehaviour {
     private static readonly Thread mainThread = Thread.CurrentThread;
     private void Update() {
         // To be used in this component - Coroutines are called back between "Update" and "LateUpdate"
-        if (tobiiTracking)
+        if (tobiiTracking) {
             RetrieveCameraData();
-
+            if (isSampling) {
+                m_recorder_HMD.WriteLine(
+                    $"{gazePoint.data.TimeStamp},{UnityTimeStamp}," +
+                    $"{(gazePoint.LeftCollide != null ? gazePoint.LeftCollide.name : "None")}," +
+                    $"{(gazePoint.RightCollide != null ? gazePoint.RightCollide.name : "None")}");
+                // $"{(gazePoint.CombinedCollide != null ? gazePoint.CombinedCollide.name : "None")}");
+                // m_recorder_HMD.Flush();
+            }
+        }
     }
     public Vector2[] validationHit = new Vector2[2];
 
@@ -1517,6 +1526,12 @@ public class ExpeControl : MonoBehaviour {
 
         gazePoint.LeftCollide = Physics.Raycast(gazePoint.LeftWorldRay, out RaycastHit hitL) ? hitL.transform : null;
         gazePoint.RightCollide = Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit hitR) ? hitR.transform : null;
+
+
+        if (gazePoint.LeftCollide != null && gazePoint.LeftCollide.name.Contains("mesh"))
+            gazePoint.LeftCollide = gazePoint.LeftCollide.parent;
+        if (gazePoint.RightCollide != null && gazePoint.RightCollide.name.Contains("mesh"))
+            gazePoint.RightCollide = gazePoint.RightCollide.parent;
 
         if (Physics.Raycast(gazePoint.LeftWorldRay, out RaycastHit vL)) {
             validationHit[0] = shaderBehavior.transform.InverseTransformPoint(vL.point);

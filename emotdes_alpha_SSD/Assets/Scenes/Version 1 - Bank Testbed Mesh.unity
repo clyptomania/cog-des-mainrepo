@@ -190,6 +190,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4714512211977598916, guid: ad063e258888a6b4cadf4637d7484aa2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9220678904758202232, guid: ad063e258888a6b4cadf4637d7484aa2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad063e258888a6b4cadf4637d7484aa2, type: 3}
 --- !u!1001 &13473390
@@ -16953,6 +16963,26 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1191538200}
   m_Mesh: {fileID: -3099183463934272234, guid: f51de93fa9b533246a3fc47776f26bfb, type: 3}
+--- !u!1 &1195541826 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 219770676944002807, guid: ad063e258888a6b4cadf4637d7484aa2,
+    type: 3}
+  m_PrefabInstance: {fileID: 5001200}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1195541828
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1195541826}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -7676251268795185082, guid: 366d5a1e694580242938dee600444c80, type: 3}
 --- !u!1 &1208652372
 GameObject:
   m_ObjectHideFlags: 0

@@ -169,6 +169,16 @@ public class EyeTrackingSampler : MonoBehaviour {
         gazePoint.RightCollide = Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit hitR) ? hitR.transform : null;
         gazePoint.CombinedCollide = Physics.Raycast(gazePoint.CombWorldRay, out RaycastHit hitC) ? hitC.transform : null;
 
+        if (gazePoint.LeftCollide != null && gazePoint.LeftCollide.name.Contains("mesh"))
+            gazePoint.LeftCollide = gazePoint.LeftCollide.parent;
+        if (gazePoint.RightCollide != null && gazePoint.RightCollide.name.Contains("mesh"))
+            gazePoint.RightCollide = gazePoint.RightCollide.parent;
+        if (gazePoint.CombinedCollide != null && gazePoint.CombinedCollide.name.Contains("mesh")) {
+            gazePoint.CombinedCollide = gazePoint.CombinedCollide.parent;
+            Debug.Log("Looking at: " + gazePoint.CombinedCollide.name);
+        }
+
+
         UnityTimeStamp = ExpeControl.getTimeStamp();
     }
 
