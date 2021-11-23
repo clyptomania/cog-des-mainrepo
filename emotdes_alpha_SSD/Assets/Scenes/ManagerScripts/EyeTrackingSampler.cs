@@ -88,8 +88,8 @@ public class EyeTrackingSampler : MonoBehaviour {
     // }
 
     private void Update() {
-        RetrieveCameraData();
         if (isSampling) {
+            RetrieveCameraData();
             m_recorder_HMD.WriteLine(
                 $"{gazePoint.data.timestamp},{UnityTimeStamp}," +
                 $"{(gazePoint.LeftCollide != null ? gazePoint.LeftCollide.name : "None")}," +

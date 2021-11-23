@@ -206,13 +206,13 @@ public class ExpeControl : MonoBehaviour {
 
         tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
 
-        // if (tobiiTracking) {
-        //     Debug.Log("Adding Tobii callback");
-        //     shB.validationCallback = (success) => {
-        //         this.m_validationSuccess = success;
-        //         this.m_validationDone = true;
-        //     };
-        // }
+        if (tobiiTracking) {
+            Debug.Log("Adding Tobii callback");
+            shaderBehavior.validationCallback = (success) => {
+                this.m_validationSuccess = success;
+                this.m_validationDone = true;
+            };
+        }
 
         string[] RoomNames = RoomManager.RoomNames;
         cameraRig = transform.GetChild(0);
@@ -722,6 +722,8 @@ public class ExpeControl : MonoBehaviour {
         taskTime = 0;
         padPressedTime = 0;
 
+        shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
         tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
 
         Debug.Log("Read from prefs: Tobii Tracking = " + tobiiTracking);
@@ -855,6 +857,7 @@ public class ExpeControl : MonoBehaviour {
         // Eye Tracking Setup
 
         if (!tobiiTracking) {
+            shaderBehavior.gameObject.SetActive(false);
             // shaderBehavior.gameObject.SetActive(false);
 
             toggleMessage(true, "pleaseCalibrateVive");
@@ -876,15 +879,15 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(1.0f);
 
 
-            shaderBehavior.gameObject.SetActive(true);
+            // shaderBehavior.gameObject.SetActive(true);
 
-            Debug.Log("Adding Tobii callback");
-            shaderBehavior.validationCallback = (success) => {
-                this.m_validationSuccess = success;
-                this.m_validationDone = true;
-            };
+            // Debug.Log("Adding Tobii callback");
+            // shaderBehavior.validationCallback = (success) => {
+            //     this.m_validationSuccess = success;
+            //     this.m_validationDone = true;
+            // };
 
-            shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+            // shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
 
 
             print("Waiting for the eyetracker to start");
@@ -901,7 +904,7 @@ public class ExpeControl : MonoBehaviour {
 
             // Tobii calibration routine
 
-            shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+            // shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
 
             m_calibrationSuccess = false;
 
@@ -1606,6 +1609,7 @@ public class ExpeControl : MonoBehaviour {
 
     private static readonly Thread mainThread = Thread.CurrentThread;
     private void Update() {
+        // return;
         // To be used in this component - Coroutines are called back between "Update" and "LateUpdate"
         if (tobiiTracking) {
             RetrieveCameraData();
