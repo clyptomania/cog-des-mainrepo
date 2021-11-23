@@ -13,8 +13,9 @@ public class QuestionSlider : MonoBehaviour {
     public Text questionTextField, sliderText;
     public string questionText { get; private set; }
     public float sliderValue { get; private set; }
-    public Text minText, midText, maxText;
+    public Text minText, midText, maxText, twoText, fourText;
     private float minVal, maxVal;
+    [SerializeField] private bool directInteract = false;
     // private int minutes, seconds;
     [SerializeField] private bool discrete = true;
     [SerializeField] private bool timeFormat = true;
@@ -90,12 +91,13 @@ public class QuestionSlider : MonoBehaviour {
     }
 
     public void UpdateSliderRange(float min, float max, bool vA = false, bool tF = false,
-    string minLabel = "", string midLabel = "", string maxLabel = "", string valAro = "") {
+    string minLabel = "", string midLabel = "", string maxLabel = "", string valAro = "",
+    string twoLabel = "", string fourLabel = "") {
         minVal = min;
         maxVal = max;
         visualAnalog = vA;
         timeFormat = tF;
-        if (maxVal >= 5.0f) rounder = 1.0f;
+        if (maxVal >= 4.0f) rounder = 1.0f;
         else rounder = 10.0f;
         range = max - min;
         divisor = 1 / range;
@@ -117,6 +119,12 @@ public class QuestionSlider : MonoBehaviour {
         if (maxLabel != "") {
             maxText.text = maxLabel;
         }
+        if (twoLabel != "") {
+            twoText.text = twoLabel;
+        }
+        if (fourLabel != "") {
+            fourText.text = fourLabel;
+        }
 
         if (valAro != "") {
             SAM = true;
@@ -129,6 +137,8 @@ public class QuestionSlider : MonoBehaviour {
             minText.text = "";
             midText.text = "";
             maxText.text = "";
+            fourText.text = "";
+            twoText.text = "";
             if (valAro == "v") {
                 valencePanel.SetActive(true); arousalPanel.SetActive(false);
             }
@@ -184,13 +194,19 @@ public class QuestionSlider : MonoBehaviour {
     public void PadTouchEnd(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         // Debug.Log("Ended Touch");
         nonSwipe = true;
-        if (!confirmed && !_expeControl.userTouchedTrigger)
+        if (directInteract && !confirmed && !_expeControl.userTouchedTrigger)
             controllerMainPoint.SetActive(true);
     }
 
     public void UpdateQuestionText(string text) {
         questionText = text;
         questionTextField.text = questionText + confirmationText;
+
+        minText.text = "";
+        midText.text = "";
+        maxText.text = "";
+        fourText.text = "";
+        twoText.text = "";
 
         if (!_expeControl.userTouchedTrigger)
             slider.interactable = true;
@@ -200,7 +216,8 @@ public class QuestionSlider : MonoBehaviour {
     public void RequestConfirmation() {
         requesting = true;
         confirmed = false;
-        controllerMainPoint.SetActive(true);
+        if (directInteract)
+            controllerMainPoint.SetActive(true);
     }
 
     private float timeConfirming = 0.0f;
@@ -253,12 +270,15 @@ public class QuestionSlider : MonoBehaviour {
 
     public void TriggerClick(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         if (requesting) {
-            controllerMainPoint.SetActive(false);
-            Vector3[] fourCorners = new Vector3[4];
-            slider.fillRect.GetWorldCorners(fourCorners);
-            Debug.Log("Slider's world position: " + fourCorners[0]);
+            if (directInteract) {
+                controllerMainPoint.SetActive(false);
+                Vector3[] fourCorners = new Vector3[4];
+                slider.fillRect.GetWorldCorners(fourCorners);
+                Debug.Log("Slider's world position: " + fourCorners[0]);
+            }
             triggerClickTime = 0.0f;
-            StartCoroutine(HoldTrigger());
+            if (transform.gameObject.activeSelf)
+                StartCoroutine(HoldTrigger());
         }
     }
 
@@ -268,7 +288,8 @@ public class QuestionSlider : MonoBehaviour {
             StopAllCoroutines();
             _instructBehaviour.ResetRadialProgresses();
             triggerClickTime = 0.0f;
-            controllerMainPoint.SetActive(true);
+            if (directInteract)
+                controllerMainPoint.SetActive(true);
         }
     }
 
@@ -294,6 +315,9 @@ public class QuestionSlider : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+
+        requesting = false;
+
         _expeControl = ExpeControl.instance;
         _instructBehaviour = InstructBehaviour.instance;
 

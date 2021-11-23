@@ -18,7 +18,7 @@ public class RadialProgress : MonoBehaviour {
 
         fillImage.fillAmount = 0;
 
-        Debug.Log("Found image: " + fillImage.name);
+        // Debug.Log("Found image: " + fillImage.name);
 
         if (checkMark != null)
             checkMark.gameObject.SetActive(false);

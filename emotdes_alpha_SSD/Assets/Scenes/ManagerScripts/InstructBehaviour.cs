@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class InstructBehaviour : MonoBehaviour {
     public static InstructBehaviour instance;
+    static private ExpeControl _expeControl;
     [SerializeField]
     private GameObject instructionGeneral;
     [SerializeField]
@@ -16,6 +18,8 @@ public class InstructBehaviour : MonoBehaviour {
     private RadialProgress[] _radialProgresses;
     public bool isInstructGeneralDisplayed => instructionGeneral.activeSelf;
 
+    public bool requested { get; private set; }
+
 
     [SerializeField] private bool oneControllerOnly = true;
     public bool leftControllerActive { get; private set; }
@@ -24,6 +28,10 @@ public class InstructBehaviour : MonoBehaviour {
 
     void OnEnable() {
         instance = this;
+        requested = false;
+
+        _radialProgresses = FindObjectsOfType<RadialProgress>();
+        ResetRadialProgresses();
 
         // Already turned off by the CameraRig
         instructionGeneral.SetActive(false);
@@ -31,8 +39,6 @@ public class InstructBehaviour : MonoBehaviour {
         // instructionControllerR.SetActive(false);
 
         deactivatedOtherController = false;
-
-        _radialProgresses = FindObjectsOfType<RadialProgress>();
 
         _texts = new List<Text>(3);
         _texts.Add(instructionGeneral.GetComponentInChildren<Text>());
@@ -56,6 +62,39 @@ public class InstructBehaviour : MonoBehaviour {
         );
     }
 
+
+    private float holdTime = 0;
+    private float requestTime = 0;
+
+    public void RequestConfirmation(float time) {
+        ResetRadialProgresses();
+        holdTime = 0;
+        requestTime = time;
+        requested = true;
+        StartCoroutine(Request());
+    }
+
+    IEnumerator Request() {
+        // wait for user to release previously held trigger to start filling process
+        while (_expeControl.userClickedTrigger)
+            yield return null;
+        while (holdTime < requestTime) {
+            if (_expeControl.userClickedTrigger) {
+                holdTime += Time.deltaTime;
+                SetRadialProgresses(holdTime / requestTime);
+            } else {
+                holdTime = 0;
+                ResetRadialProgresses();
+            }
+            yield return null;
+        }
+        SetRadialProgresses(1);
+        requested = false;
+
+        yield return new WaitUntil(() => !_expeControl.userTouchedTrigger);
+        ResetRadialProgresses();
+    }
+
     public void SetRadialProgresses(float fill) {
         foreach (var rP in _radialProgresses) {
             rP.SetProgress(fill);
@@ -64,7 +103,16 @@ public class InstructBehaviour : MonoBehaviour {
     public void ResetRadialProgresses() {
         foreach (var rP in _radialProgresses) {
             rP.ResetFill();
+            // Debug.Log("Reset radials of: " + rP.gameObject.name);
         }
+    }
+
+    /// <summary>
+    /// Start is called on the frame when a script is enabled just before
+    /// any of the Update methods is called the first time.
+    /// </summary>
+    void Start() {
+        _expeControl = ExpeControl.instance;
     }
 
     public void positionWorldInstruction(Transform start) {
@@ -82,7 +130,7 @@ public class InstructBehaviour : MonoBehaviour {
 
     public bool isWorldInstructionShowing => instructionGeneral.activeSelf;
 
-    public void toggleControllerInstruction(bool state) {
+    public void toggleControllerInstruction(bool state, string message = "") {
         if (oneControllerOnly)
             if (leftControllerActive)
                 instructionControllerL.SetActive(state);
@@ -92,10 +140,13 @@ public class InstructBehaviour : MonoBehaviour {
             instructionControllerL.SetActive(state);
             instructionControllerR.SetActive(state);
         }
-
+        if (message != "")
+            setInstruction(message);
     }
-    public void toggleWorldInstruction(bool state) {
+    public void toggleWorldInstruction(bool state, string message = "") {
         instructionGeneral.SetActive(state);
+        if (message != "")
+            setInstruction(message);
     }
 
     public void setInstruction(string message) {

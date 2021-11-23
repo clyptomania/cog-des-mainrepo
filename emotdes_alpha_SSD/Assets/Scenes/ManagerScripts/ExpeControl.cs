@@ -97,6 +97,33 @@ public class ExpeControl : MonoBehaviour {
         // "Wenn du fertig bist, drücke bitte die Seitentaste um fortzufahren."
         },
         {
+            "pleaseLean",
+        "Please lean on the high bench.\n\n" +
+        "Once you're seated, hold the trigger to continue."
+        },
+        {
+            "pleaseSit",
+        "Please sit down on the low bench.\n\n" +
+        "Once you're seated, hold the trigger to continue."
+        },
+        {
+            "pleaseStand",
+        "Please stand up and take one step forward, away from the bench.\n\n" +
+        "Once you're standing, hold the trigger to continue."
+        },
+        {
+            "pleaseCalibrateTobii",
+        "To begin, we need to calibrate the eye tracker.\n" +
+        "With your eyes, follow the red dot, then the gray disks as closely as you can.\n\n" +
+        "Hold the trigger to continue."
+        },
+        {
+            "pleaseCalibrateVive",
+        "To begin, we need to calibrate the eye tracker.\n" +
+        "Press the MENU button on your controller and select the eye-tracking procedure.\n\n" +
+        "Hold the trigger ONLY when you've completed it to continue."
+        },
+        {
         "start",
         "The training phase has ended.\n\n" +
         "Press the trigger to start the experiment."
@@ -442,9 +469,10 @@ public class ExpeControl : MonoBehaviour {
             if (userClickedPad) {
                 _instructBehaviour.setInstruction("Aborting!\n\n" + "Loading previous calibration.");
                 yield return new WaitUntil(() => !userClickedPad);
-                LoadCamRigCal();
-                _instructBehaviour.ResetRadialProgresses();
-                _instructBehaviour.toggleControllerInstruction(false);
+                // LoadCamRigCal();
+                // _instructBehaviour.ResetRadialProgresses();
+                // _instructBehaviour.toggleControllerInstruction(false);
+                CalibrateByController();
                 yield break;
             }
             if (userClickedTrigger) {
@@ -765,13 +793,89 @@ public class ExpeControl : MonoBehaviour {
         yield return new WaitUntil(() => !setupPanel.activeSelf);
         _instructBehaviour.toggleControllerInstruction(false);
 
+        // Settings from the setup panel have been submitted: start of the trial
 
-        // Tobii Eye Tracking Setup
+        // TO DO: Integrate this with generated / read conditions of the playlist
+        // HfG: Request to stand or lean depending on user ID
+        // SGL: Request to stand or sit depending on user ID (tobiiTracking means SGL)
+        if (m_userId % 2 != 0) {
+            Debug.Log("Odd user ID (" + m_userId + ").");
+            if (tobiiTracking)
+                toggleMessage(true, "pleaseStand");
+            else
+                toggleMessage(true, "pleaseLean");
+            // _instructBehaviour.toggleWorldInstruction(true, "Please lean on the bench.");
+        } else {
+            Debug.Log("Even user ID (" + m_userId + ").");
+            toggleMessage(true, "pleaseSit");
+        }
+        // _instructBehaviour.toggleWorldInstruction(true, "This is a test instruction.\n\nPress trigger.");
+        _instructBehaviour.RequestConfirmation(durationToContinue);
+        yield return new WaitUntil(() => !_instructBehaviour.requested);
+        yield return new WaitForSecondsRealtime(1.0f);
+        _instructBehaviour.toggleWorldInstruction(false);
+        yield return new WaitForSecondsRealtime(1.0f);
+
+        // First questions: demographics
+
+        ToggleQuestion(true, "How many hours have you spent in VR so far in your life?");
+        _questionSlider.UpdateSliderRange(0, 4, true, false, "0", "1--5h", ">20h", "",
+                                                                "<1h", "5--20h");
+        yield return new WaitUntil(() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime(1.0f);
+        ToggleQuestion(false);
+        yield return new WaitForSecondsRealtime(1.0f);
+
+        ToggleQuestion(true, "How often do you normally use public transport?");
+        _questionSlider.UpdateSliderRange(0, 4, true, false, "never", "monthly", "daily", "",
+                                                                "yearly", "weekly");
+        yield return new WaitUntil(() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime(1.0f);
+        ToggleQuestion(false);
+        yield return new WaitForSecondsRealtime(1.0f);
+
+        ToggleQuestion(true, "How patient would you consider yourself?");
+        _questionSlider.UpdateSliderRange(0, 99, true, false, "not at all", " ", "very patient");
+        yield return new WaitUntil(() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime(1.0f);
+        ToggleQuestion(false);
+        yield return new WaitForSecondsRealtime(1.0f);
+
+        toggleMessage(true, "pleaseStand");
+        _instructBehaviour.RequestConfirmation(durationToContinue);
+        yield return new WaitUntil(() => !_instructBehaviour.requested);
+        yield return new WaitForSecondsRealtime(1.0f);
+        _instructBehaviour.toggleWorldInstruction(false);
+        yield return new WaitForSecondsRealtime(1.0f);
+
+
+
+
+
+        // Eye Tracking Setup
 
         if (!tobiiTracking) {
-            shaderBehavior.gameObject.SetActive(false);
+            // shaderBehavior.gameObject.SetActive(false);
 
+            toggleMessage(true, "pleaseCalibrateVive");
+            yield return new WaitForSeconds(7);
+            _instructBehaviour.RequestConfirmation(durationToContinue);
+            yield return new WaitUntil(() => !_instructBehaviour.requested);
+            yield return new WaitForSecondsRealtime(1.0f);
+            _instructBehaviour.toggleWorldInstruction(false);
+            yield return new WaitForSecondsRealtime(1.0f);
+
+            // Tobii eye tracker
         } else {
+
+            toggleMessage(true, "pleaseCalibrateTobii");
+            _instructBehaviour.RequestConfirmation(durationToContinue);
+            yield return new WaitUntil(() => !_instructBehaviour.requested);
+            yield return new WaitForSecondsRealtime(1.0f);
+            _instructBehaviour.toggleWorldInstruction(false);
+            yield return new WaitForSecondsRealtime(1.0f);
+
+
             shaderBehavior.gameObject.SetActive(true);
 
             Debug.Log("Adding Tobii callback");
@@ -779,6 +883,8 @@ public class ExpeControl : MonoBehaviour {
                 this.m_validationSuccess = success;
                 this.m_validationDone = true;
             };
+
+            shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
 
 
             print("Waiting for the eyetracker to start");
@@ -792,6 +898,9 @@ public class ExpeControl : MonoBehaviour {
             m_ETsubscribed = true;
             print("Eyetracker started and subscribed to");
 
+
+            // Tobii calibration routine
+
             shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
 
             m_calibrationSuccess = false;
@@ -800,9 +909,8 @@ public class ExpeControl : MonoBehaviour {
             while (!m_calibrationSuccess) {
 
                 print("BEFORE CALIBRATION");
-                print("Press space to begin calibration routine!");
-
-                yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                // print("Press space to begin calibration routine!");
+                // yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
 
                 m_calibrationDone = false;
                 yield return null;
@@ -811,7 +919,7 @@ public class ExpeControl : MonoBehaviour {
                 print("AFTER CALIBRATION");
 
                 if (b_validate && m_calibrationSuccess) {
-                    calCount = 0;
+                    // calCount = 0;
                     // Validation procedure - only if calibration was successful
                     m_validationSuccess = false;
                     // If fails: new calibration
@@ -834,13 +942,13 @@ public class ExpeControl : MonoBehaviour {
 
                 if (++calCount >= 3) {
                     print("failedCal");
+                    print("Press space to abort calibration and continue...");
                     yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                    m_calibrationSuccess = true;
                     calCount = 0;
                 }
             }
-
             // End of Tobii Calibration
-
         }
 
 
@@ -1566,7 +1674,7 @@ public class ExpeControl : MonoBehaviour {
 
     private void HMDGazeDataReceivedCallback(object sender, HMDGazeDataEventArgs rawGazeData) {
         long OcutimeStamp = EyeTrackingOperations.GetSystemTimeStamp();
-        print("in");
+        // print("in");
 
         lastOcuTS = OcutimeStamp;
 
