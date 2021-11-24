@@ -1,0 +1,155 @@
+ // THE ACTUAL GAME LOOP!
+
+    IEnumerator Start() {
+
+        taskTime = 0;
+        padPressedTime = 0;
+
+        tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
+
+        Debug.Log("Read from prefs: Tobii Tracking = " + tobiiTracking);
+
+        if (tobiiTracking) {
+            sglButton.colors = SwapColors(sglButton.colors);
+            Debug.Log("Swapped SGL Button");
+        } else {
+            hfgButton.colors = SwapColors(hfgButton.colors);
+            Debug.Log("Swapped HFG Button");
+        }
+
+
+        if (eyeTracking)
+            yield return new WaitUntil(() => _eyeTrack.ready);
+        else
+            yield return new WaitForSeconds(1);
+
+        // Debug.Log("Passed _eyeTrack.ready check");
+
+        // Show SubjInfo panel
+        setupPanel.SetActive(true);
+        pausePanel.SetActive(false);
+        // questionPanel.SetActive(false);
+        _progressBar.gameObject.SetActive(false);
+        // _radialProgress.gameObject.SetActive(false);
+        _questionSlider.gameObject.SetActive(false);
+
+        // _questionSlider.gameObject.SetActive(true);
+        RoomManager.instance.SaveManagerSceneNum();
+        RoomManager.instance.LoadBreakRoom();
+        yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
+
+        calPointA = GameObject.Find("CalPointA");
+        calPointB = GameObject.Find("CalPointB");
+        calPointF = GameObject.Find("CalPointF");
+
+        if (calPointA != null) {
+            calPointA.SetActive(false);
+            calPointB.SetActive(false);
+            calPointF.SetActive(false);
+        }
+
+        trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
+        if (trainSpawner != null) {
+            // trainSpawner.SpawnTrain();
+        }
+
+
+        LoadCamRigCal();
+
+        Debug.Log("Loaded Camera Rig Position");
+
+        _instructBehaviour.toggleControllerInstruction(true);
+        _instructBehaviour.setInstruction("Press any button on this controller (trigger, side button, or trackpad).");
+        yield return new WaitUntil(() => _instructBehaviour.deactivatedOtherController);
+        _instructBehaviour.setInstruction("The other controller has been disabled!");
+        if (userClickedPad)
+            yield return new WaitUntil(() => !userClickedPad);
+        if (userClickedTrigger)
+            yield return new WaitUntil(() => !userTouchedTrigger);
+        if (userGrippedControl)
+            yield return new WaitUntil(() => !userGrippedControl);
+        _instructBehaviour.toggleControllerInstruction(false);
+
+
+
+        // Wait for user ID --- Setup() happens here!
+        yield return new WaitUntil(() => !setupPanel.activeSelf);
+        _instructBehaviour.toggleControllerInstruction(false);
+
+
+        // Tobii Eye Tracking Setup
+
+        if (!tobiiTracking) {
+            shaderBehavior.gameObject.SetActive(false);
+
+        } else {
+            shaderBehavior.gameObject.SetActive(true);
+
+            Debug.Log("Adding Tobii callback");
+            shaderBehavior.validationCallback = (success) => {
+                this.m_validationSuccess = success;
+                this.m_validationDone = true;
+            };
+
+
+            print("Waiting for the eyetracker to start");
+            // Wait for ET server to start
+            yield return new WaitUntil(() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
+            print("_eyeTrackerTobii != null");
+
+            yield return new WaitForEndOfFrame();
+            _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
+
+            m_ETsubscribed = true;
+            print("Eyetracker started and subscribed to");
+
+            shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+            m_calibrationSuccess = false;
+
+            int calCount = 0;
+            while (!m_calibrationSuccess) {
+
+                print("BEFORE CALIBRATION");
+                print("Press space to begin calibration routine!");
+
+                yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+
+                m_calibrationDone = false;
+                yield return null;
+                startCalibration();
+                yield return new WaitUntil(() => m_calibrationDone);
+                print("AFTER CALIBRATION");
+
+                if (b_validate && m_calibrationSuccess) {
+                    calCount = 0;
+                    // Validation procedure - only if calibration was successful
+                    m_validationSuccess = false;
+                    // If fails: new calibration
+                    m_validationDone = false;
+                    yield return null;
+                    shaderBehavior.phase = ShaderBehaviour.shaderPhase.validation;
+                    yield return new WaitUntil(() => m_validationDone);
+                    shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+                    m_calibrationSuccess = m_validationSuccess;
+
+                    if (!m_validationSuccess) {
+                        print("failedVal");
+                        yield return new WaitForSecondsRealtime(3f);
+                    } else {
+                        print("succeededVal");
+                    }
+                }
+                // TODO: log calibration and validation success and precision
+
+                if (++calCount >= 3) {
+                    print("failedCal");
+                    yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                    calCount = 0;
+                }
+            }
+
+            // End of Tobii Calibration
+
+        }

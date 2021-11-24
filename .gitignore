@@ -68,6 +68,7 @@ crashlytics-build.properties
 
 # Test Data
 cogdes_alpha_SSD/SubjectData/
+emotdes_alpha_SSD/SubjectData/
 
 # MacOS Folder Metadata
 .DS_Store
