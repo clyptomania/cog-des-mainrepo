@@ -1727,8 +1727,74 @@ public class ExpeControl : MonoBehaviour {
         }
     }
 
-    // TODO: remove/uncommment, qdd right m_userdataPath back
-    // string m_userdataPath = "./test/"
+    private bool fullTobiiCalibrationComplete = false;
+    private bool eyeValidationComplete = false;
+
+    IEnumerator FullTobiiCalibration() {
+
+        print("Waiting for the eyetracker to start");
+        // Wait for ET server to start
+        yield return new WaitUntil(() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
+        print("_eyeTrackerTobii != null");
+
+        yield return new WaitForEndOfFrame();
+        _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
+
+        m_ETsubscribed = true;
+        print("Eyetracker started and subscribed to");
+
+
+        // Tobii calibration routine
+
+        // shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+        m_calibrationSuccess = false;
+
+        int calCount = 0;
+        while (!m_calibrationSuccess) {
+
+            print("BEFORE CALIBRATION");
+            // print("Press space to begin calibration routine!");
+            // yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+
+            m_calibrationDone = false;
+            yield return null;
+            startCalibration();
+            yield return new WaitUntil(() => m_calibrationDone);
+            print("AFTER CALIBRATION");
+
+            if (b_validate && m_calibrationSuccess) {
+                // calCount = 0;
+                // Validation procedure - only if calibration was successful
+                m_validationSuccess = false;
+                // If fails: new calibration
+                m_validationDone = false;
+                yield return null;
+                shaderBehavior.phase = ShaderBehaviour.shaderPhase.validation;
+                yield return new WaitUntil(() => m_validationDone);
+                shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+                m_calibrationSuccess = m_validationSuccess;
+
+                if (!m_validationSuccess) {
+                    print("failedVal");
+                    yield return new WaitForSecondsRealtime(3f);
+                } else {
+                    print("succeededVal");
+                }
+            }
+            // TODO: log calibration and validation success and precision
+
+            if (++calCount >= 3) {
+                print("failedCal");
+                print("Press space to abort calibration and continue...");
+                yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                m_calibrationSuccess = true;
+                calCount = 0;
+            }
+        }
+        // End of Tobii Calibration
+    }
 
     private void startNewRecord() {
         // m_recorder_ET = new StreamWriter(m_userdataPath + "/TESTname_ET.csv");
