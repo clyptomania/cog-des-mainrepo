@@ -17,7 +17,7 @@ public class ExpeControl : MonoBehaviour {
     public static ExpeControl instance { get; private set; }
 
     [SerializeField] private bool debugging;
-    [SerializeField] private bool controllerTutorial;
+    [SerializeField] private bool controllerTutorial, questionnaireTutorial;
     [SerializeField] private bool resetExperiments = false;
     [SerializeField] private bool eyeTracking = true;
 
@@ -860,14 +860,15 @@ public class ExpeControl : MonoBehaviour {
             shaderBehavior.gameObject.SetActive(false);
             // shaderBehavior.gameObject.SetActive(false);
 
-            toggleMessage(true, "pleaseCalibrateVive");
-            yield return new WaitForSeconds(7);
-            _instructBehaviour.RequestConfirmation(durationToContinue);
-            yield return new WaitUntil(() => !_instructBehaviour.requested);
-            yield return new WaitForSecondsRealtime(1.0f);
-            _instructBehaviour.toggleWorldInstruction(false);
-            yield return new WaitForSecondsRealtime(1.0f);
-
+            if (eyeTracking) {
+                toggleMessage(true, "pleaseCalibrateVive");
+                yield return new WaitForSeconds(5);
+                _instructBehaviour.RequestConfirmation(durationToContinue);
+                yield return new WaitUntil(() => !_instructBehaviour.requested);
+                yield return new WaitForSecondsRealtime(1.0f);
+                _instructBehaviour.toggleWorldInstruction(false);
+                yield return new WaitForSecondsRealtime(1.0f);
+            }
             // Tobii eye tracker
         } else {
 
@@ -1035,48 +1036,49 @@ public class ExpeControl : MonoBehaviour {
 
 
         // Introduce slider interaction
+        if (questionnaireTutorial) {
+            // Time Format
+            ToggleQuestion(true, "How long have you been here, in VR, so far?");
+            _questionSlider.UpdateSliderRange(10, 300, false, true);
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(1.0f);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(1.0f);
 
-        // Time Format
-        ToggleQuestion(true, "How long have you been here, in VR, so far?");
-        _questionSlider.UpdateSliderRange(10, 300, false, true);
-        yield return new WaitUntil(() => _questionSlider.confirmed);
-        yield return new WaitForSecondsRealtime(1.0f);
-        ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(1.0f);
+            // Visual Analog Scale
+            ToggleQuestion(true, "What is your feeling toward this environment?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "bad", "indifferent", "good");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(1.0f);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(1.0f);
 
-        // Visual Analog Scale
-        ToggleQuestion(true, "What is your feeling toward this environment?");
-        _questionSlider.UpdateSliderRange(1, 100, true, false, "bad", "indifferent", "good");
-        yield return new WaitUntil(() => _questionSlider.confirmed);
-        yield return new WaitForSecondsRealtime(1.0f);
-        ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(1.0f);
+            // SAM Scale: valence
+            ToggleQuestion(true, "What is your valence toward this environment?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "v");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(1.0f);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(1.0f);
 
-        // SAM Scale: valence
-        ToggleQuestion(true, "What is your valence toward this environment?");
-        _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "v");
-        yield return new WaitUntil(() => _questionSlider.confirmed);
-        yield return new WaitForSecondsRealtime(1.0f);
-        ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(1.0f);
+            // SAM Scale: arousal
+            ToggleQuestion(true, "What is your arousal toward this environment?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "a");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(1.0f);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(1.0f);
 
-        // SAM Scale: arousal
-        ToggleQuestion(true, "What is your arousal toward this environment?");
-        _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "a");
-        yield return new WaitUntil(() => _questionSlider.confirmed);
-        yield return new WaitForSecondsRealtime(1.0f);
-        ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(1.0f);
+            // Discrete Scale
+            // ToggleQuestion(true, "How would you rate this experience on a 1-to-5 scale?");
+            // _questionSlider.UpdateSliderRange(1, 5);
+            // yield return new WaitUntil(() => _questionSlider.confirmed);
+            // yield return new WaitForSecondsRealtime(1.0f);
+            // ToggleQuestion(false);
 
-        // Discrete Scale
-        // ToggleQuestion(true, "How would you rate this experience on a 1-to-5 scale?");
-        // _questionSlider.UpdateSliderRange(1, 5);
-        // yield return new WaitUntil(() => _questionSlider.confirmed);
-        // yield return new WaitForSecondsRealtime(1.0f);
-        // ToggleQuestion(false);
-
-        yield return new WaitForSecondsRealtime(0.5f);
-        toggleMessage(true, "You did great!\n\nPress the side button again to start.");
+            yield return new WaitForSecondsRealtime(0.5f);
+            toggleMessage(true, "You did great!\n\nPress the side button again to start.");
+        }
 
 
 
