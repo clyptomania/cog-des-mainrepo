@@ -128,7 +128,7 @@ public class EyeTrackingSampler : MonoBehaviour {
 
         // _expeControl.writeInfo($"Started: [{_expeControl.currentTrial.task_idx + 1}] " +
         //                        $"{_expeControl.currentTrial.expName}");
-        _expeControl.WriteInfo($"Started: [{_expeControl.currentEmotTrial.task_idx + 1}] " +
+        _expeControl.WriteInfo($"Started: [{_expeControl.currentEmotTrial.trial_idx + 1}] " +
                                $"{_expeControl.currentEmotTrial.expName}");
     }
 

@@ -1,17 +1,19 @@
 ﻿
 public struct EmotPlaylistElement {
 
-    public EmotPlaylistElement(string roomName, int duration, int task_idx, int order_idx) {
+    public EmotPlaylistElement(string roomName, int duration, int trial_idx, string instruction, string lab) {
         this.roomName = roomName;
         this.duration = duration;
-        this.task_idx = task_idx;
-        this.order_idx = order_idx;
+        this.trial_idx = trial_idx;
+        this.instruction = instruction;
+        this.lab = lab;
     }
 
     public readonly string roomName;
     public readonly int duration;
-    public readonly int task_idx;
-    public readonly int order_idx;
+    public readonly int trial_idx;
+    public readonly string instruction;
+    public readonly string lab;
 
-    public string expName => $"{roomName}_{duration}_{task_idx}_{order_idx}";
+    public string expName => $"{lab}_{trial_idx}_{roomName}_{instruction}_{duration}";
 }

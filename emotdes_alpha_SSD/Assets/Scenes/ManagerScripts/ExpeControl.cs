@@ -598,7 +598,7 @@ public class ExpeControl : MonoBehaviour {
             for (int j = 0; j < roomNames.Count; j++) {
                 // Debug.Log(roomName + ", available: " + RoomManager.instance.isRoomAvailable(roomName));
                 int trial = i * roomNames.Count + j + 1;
-                emotPlaylist.Add(new EmotPlaylistElement(roomNames[j], durations[i], trial, trial));
+                emotPlaylist.Add(new EmotPlaylistElement(roomNames[j], durations[i], trial, "trial", "SGL"));
             }
         }
 
@@ -854,13 +854,15 @@ public class ExpeControl : MonoBehaviour {
 
 
 
-        // Eye Tracking Setup
-
-        if (!tobiiTracking) {
+        if (!eyeTracking) {
             shaderBehavior.gameObject.SetActive(false);
-            // shaderBehavior.gameObject.SetActive(false);
 
-            if (eyeTracking) {
+            // Eye Tracking Setup
+            //
+            // TO DO: separate calibration from validation; add validation to VivePro Eye routine.
+            //
+        } else {
+            if (!tobiiTracking) {
                 toggleMessage(true, "pleaseCalibrateVive");
                 yield return new WaitForSeconds(5);
                 _instructBehaviour.RequestConfirmation(durationToContinue);
@@ -868,93 +870,15 @@ public class ExpeControl : MonoBehaviour {
                 yield return new WaitForSecondsRealtime(1.0f);
                 _instructBehaviour.toggleWorldInstruction(false);
                 yield return new WaitForSecondsRealtime(1.0f);
+
+                // Tobii eye tracker
+            } else {
+                eyeValidated = false;
+                eyeCalibrated = false;
+                StartCoroutine(TobiiCalibration());
+                yield return new WaitUntil(() => eyeValidated);
             }
-            // Tobii eye tracker
-        } else {
-
-            toggleMessage(true, "pleaseCalibrateTobii");
-            _instructBehaviour.RequestConfirmation(durationToContinue);
-            yield return new WaitUntil(() => !_instructBehaviour.requested);
-            yield return new WaitForSecondsRealtime(1.0f);
-            _instructBehaviour.toggleWorldInstruction(false);
-            yield return new WaitForSecondsRealtime(1.0f);
-
-
-            // shaderBehavior.gameObject.SetActive(true);
-
-            // Debug.Log("Adding Tobii callback");
-            // shaderBehavior.validationCallback = (success) => {
-            //     this.m_validationSuccess = success;
-            //     this.m_validationDone = true;
-            // };
-
-            // shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
-
-
-            print("Waiting for the eyetracker to start");
-            // Wait for ET server to start
-            yield return new WaitUntil(() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
-            print("_eyeTrackerTobii != null");
-
-            yield return new WaitForEndOfFrame();
-            _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
-
-            m_ETsubscribed = true;
-            print("Eyetracker started and subscribed to");
-
-
-            // Tobii calibration routine
-
-            // shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
-
-            m_calibrationSuccess = false;
-
-            int calCount = 0;
-            while (!m_calibrationSuccess) {
-
-                print("BEFORE CALIBRATION");
-                // print("Press space to begin calibration routine!");
-                // yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
-
-                m_calibrationDone = false;
-                yield return null;
-                startCalibration();
-                yield return new WaitUntil(() => m_calibrationDone);
-                print("AFTER CALIBRATION");
-
-                if (b_validate && m_calibrationSuccess) {
-                    // calCount = 0;
-                    // Validation procedure - only if calibration was successful
-                    m_validationSuccess = false;
-                    // If fails: new calibration
-                    m_validationDone = false;
-                    yield return null;
-                    shaderBehavior.phase = ShaderBehaviour.shaderPhase.validation;
-                    yield return new WaitUntil(() => m_validationDone);
-                    shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
-
-                    m_calibrationSuccess = m_validationSuccess;
-
-                    if (!m_validationSuccess) {
-                        print("failedVal");
-                        yield return new WaitForSecondsRealtime(3f);
-                    } else {
-                        print("succeededVal");
-                    }
-                }
-                // TODO: log calibration and validation success and precision
-
-                if (++calCount >= 3) {
-                    print("failedCal");
-                    print("Press space to abort calibration and continue...");
-                    yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
-                    m_calibrationSuccess = true;
-                    calCount = 0;
-                }
-            }
-            // End of Tobii Calibration
         }
-
 
 
         // Introduce Interaction
@@ -1096,7 +1020,7 @@ public class ExpeControl : MonoBehaviour {
             _instructBehaviour.toggleControllerInstruction(false);
             Debug.Log("Room unload finished.");
 
-            int trialidx = currentEmotTrial.task_idx;
+            int trialidx = currentEmotTrial.trial_idx;
 
             // condObjects.Clear();
 
@@ -1732,7 +1656,12 @@ public class ExpeControl : MonoBehaviour {
     private bool fullTobiiCalibrationComplete = false;
     private bool eyeValidationComplete = false;
 
+    bool eyeCalibrated = false;
+    bool eyeValidated = false;
     IEnumerator FullTobiiCalibration() {
+
+        eyeCalibrated = false;
+        eyeValidated = false;
 
         print("Waiting for the eyetracker to start");
         // Wait for ET server to start
@@ -1796,6 +1725,9 @@ public class ExpeControl : MonoBehaviour {
             }
         }
         // End of Tobii Calibration
+
+        eyeCalibrated = true;
+        eyeValidated = true;
     }
 
     private void startNewRecord() {
@@ -1841,6 +1773,92 @@ public class ExpeControl : MonoBehaviour {
 
         // writeInfo($"Elapsed time: {elapsedtime}");
         // writeInfo($"Trial ended: {(userPressed ? "Pressed trigger" : "Ran out of time")}");
+    }
+
+
+
+    IEnumerator TobiiCalibration() {
+        toggleMessage(true, "pleaseCalibrateTobii");
+        _instructBehaviour.RequestConfirmation(durationToContinue);
+        yield return new WaitUntil(() => !_instructBehaviour.requested);
+        yield return new WaitForSecondsRealtime(1.0f);
+        _instructBehaviour.toggleWorldInstruction(false);
+        yield return new WaitForSecondsRealtime(1.0f);
+
+
+        // shaderBehavior.gameObject.SetActive(true);
+
+        // Debug.Log("Adding Tobii callback");
+        // shaderBehavior.validationCallback = (success) => {
+        //     this.m_validationSuccess = success;
+        //     this.m_validationDone = true;
+        // };
+
+        // shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+
+        print("Waiting for the eyetracker to start");
+        // Wait for ET server to start
+        yield return new WaitUntil(() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
+        print("_eyeTrackerTobii != null");
+
+        yield return new WaitForEndOfFrame();
+        _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
+
+        m_ETsubscribed = true;
+        print("Eyetracker started and subscribed to");
+
+
+        // Tobii calibration routine
+
+        // shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+        m_calibrationSuccess = false;
+
+        int calCount = 0;
+        while (!m_calibrationSuccess) {
+
+            print("BEFORE CALIBRATION");
+            // print("Press space to begin calibration routine!");
+            // yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+
+            m_calibrationDone = false;
+            yield return null;
+            startCalibration();
+            yield return new WaitUntil(() => m_calibrationDone);
+            print("AFTER CALIBRATION");
+
+            if (b_validate && m_calibrationSuccess) {
+                // calCount = 0;
+                // Validation procedure - only if calibration was successful
+                m_validationSuccess = false;
+                // If fails: new calibration
+                m_validationDone = false;
+                yield return null;
+                shaderBehavior.phase = ShaderBehaviour.shaderPhase.validation;
+                yield return new WaitUntil(() => m_validationDone);
+                shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
+
+                m_calibrationSuccess = m_validationSuccess;
+
+                if (!m_validationSuccess) {
+                    print("failedVal");
+                    yield return new WaitForSecondsRealtime(3f);
+                } else {
+                    print("succeededVal");
+                }
+            }
+            // TODO: log calibration and validation success and precision
+
+            if (++calCount >= 3) {
+                print("failedCal");
+                print("Press space to abort calibration and continue...");
+                yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                m_calibrationSuccess = true;
+                calCount = 0;
+            }
+        }
+        // End of Tobii Calibration
     }
 
     // GAZE TRACKING SAMPLING
