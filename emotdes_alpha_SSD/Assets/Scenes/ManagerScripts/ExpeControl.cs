@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Tilia.Locomotors.Teleporter;
+using System.Threading;
+// using Tilia.Locomotors.Teleporter;
+using Tobii.Research;
+using Tobii.Research.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
-
-using Tobii.Research;
-using Tobii.Research.Unity;
-using System.Threading;
 
 public class ExpeControl : MonoBehaviour {
     public static ExpeControl instance { get; private set; }
@@ -23,11 +22,11 @@ public class ExpeControl : MonoBehaviour {
 
     [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton;
 
-    [SerializeField] private List<int> durations = new List<int>();
+    [SerializeField] private List<int> durations = new List<int> ();
 
     // Playlist data
-    private readonly List<playlistElement> playlist = new List<playlistElement>(90);
-    private readonly List<EmotPlaylistElement> emotPlaylist = new List<EmotPlaylistElement>(90);
+    private readonly List<playlistElement> playlist = new List<playlistElement> (90);
+    private readonly List<EmotPlaylistElement> emotPlaylist = new List<EmotPlaylistElement> (90);
     public int m_currentTrialIdx = 0;
     public int m_currentQuestionIdx = 0;
     public int currentTrialIdx => m_currentTrialIdx;
@@ -49,7 +48,7 @@ public class ExpeControl : MonoBehaviour {
         public bool orientation;
         public bool landmark;
     }
-    static public List<LightStruct> LightConditions = new List<LightStruct>(4) {
+    static public List<LightStruct> LightConditions = new List<LightStruct> (4) {
         // 0: No lightning (ctrl)
         new LightStruct { orientation = false, landmark = false },
         // 1: set light on orientation markers
@@ -81,108 +80,108 @@ public class ExpeControl : MonoBehaviour {
 
     private readonly Dictionary<string, string> messages = new Dictionary<string, string> {
         {
-        "calibrate",
-        "You can take a quick break if you wish to remove the headset.\n\n"+
-        "Then continue please with the calibration;\n"+
-        "you may ask the assistant for help with that.\n\n"+
-        "Hold the touchpad when you're done to continue!"
-        // "Bitte beginne mit der Kalibrierung.\nFrage den Assistenten, sofern du Hilfe benötigst.\n\n"+
-        // "Wenn du fertig bist, drücke bitte die Seitentaste um fortzufahren."
+            "calibrate",
+            "You can take a quick break if you wish to remove the headset.\n\n" +
+            "Then continue please with the calibration;\n" +
+            "you may ask the assistant for help with that.\n\n" +
+            "Hold the touchpad when you're done to continue!"
+            // "Bitte beginne mit der Kalibrierung.\nFrage den Assistenten, sofern du Hilfe benötigst.\n\n"+
+            // "Wenn du fertig bist, drücke bitte die Seitentaste um fortzufahren."
         },
         {
-        "takeBreak",
-        "You can take a quick break if you wish to remove the headset.\n\n"+
-        "Hold the touchpad when you're done to continue!"
-        // "Bitte beginne mit der Kalibrierung.\nFrage den Assistenten, sofern du Hilfe benötigst.\n\n"+
-        // "Wenn du fertig bist, drücke bitte die Seitentaste um fortzufahren."
+            "takeBreak",
+            "You can take a quick break if you wish to remove the headset.\n\n" +
+            "Hold the touchpad when you're done to continue!"
+            // "Bitte beginne mit der Kalibrierung.\nFrage den Assistenten, sofern du Hilfe benötigst.\n\n"+
+            // "Wenn du fertig bist, drücke bitte die Seitentaste um fortzufahren."
         },
         {
             "pleaseLean",
-        "Please lean on the high bench.\n\n" +
-        "Once you're seated, hold the trigger to continue."
+            "Please lean on the high bench.\n\n" +
+            "Once you're seated, hold the trigger to continue."
         },
         {
             "pleaseSit",
-        "Please sit down on the low bench.\n\n" +
-        "Once you're seated, hold the trigger to continue."
+            "Please sit down on the low bench.\n\n" +
+            "Once you're seated, hold the trigger to continue."
         },
         {
             "pleaseStand",
-        "Please stand up and take one step forward, away from the bench.\n\n" +
-        "Once you're standing, hold the trigger to continue."
+            "Please stand up and take one step forward, away from the bench.\n\n" +
+            "Once you're standing, hold the trigger to continue."
         },
         {
             "pleaseCalibrateTobii",
-        "To begin, we need to calibrate the eye tracker.\n" +
-        "With your eyes, follow the red dot, then the gray disks as closely as you can.\n\n" +
-        "Hold the trigger to continue."
+            "To begin, we need to calibrate the eye tracker.\n" +
+            "With your eyes, follow the red dot, then the gray disks as closely as you can.\n\n" +
+            "Hold the trigger to continue."
         },
         {
             "pleaseCalibrateVive",
-        "To begin, we need to calibrate the eye tracker.\n" +
-        "Press the MENU button on your controller and select the eye-tracking procedure.\n\n" +
-        "Hold the trigger ONLY when you've completed it to continue."
+            "To begin, we need to calibrate the eye tracker.\n" +
+            "Press the MENU button on your controller and select the eye-tracking procedure.\n\n" +
+            "Hold the trigger ONLY when you've completed it to continue."
         },
         {
-        "start",
-        "The training phase has ended.\n\n" +
-        "Press the trigger to start the experiment."
+            "start",
+            "The training phase has ended.\n\n" +
+            "Press the trigger to start the experiment."
         },
         {
-        "pause",
-        "Take off the headset if you wish.\n\n" +
-        "Take a moment to rest before continuing with the experiment.\n" +
-        "Press the trigger to start the experiment."
+            "pause",
+            "Take off the headset if you wish.\n\n" +
+            "Take a moment to rest before continuing with the experiment.\n" +
+            "Press the trigger to start the experiment."
         },
         {
-        "loading",
-        "The next room is loading..."
-        // "Nächster Raum wird geladen."
+            "loading",
+            "The next room is loading..."
+            // "Nächster Raum wird geladen."
         },
         {
-        "unloading",
-        "The current room is being unloaded..."
-        // "Unloading current room."
+            "unloading",
+            "The current room is being unloaded..."
+            // "Unloading current room."
         },
         {
-        "end",
-        "This is the end of the experiment.\nThank you very much for your participation.\nYou can take off the headset."
+            "end",
+            "This is the end of the experiment.\nThank you very much for your participation.\nYou can take off the headset."
         },
         {
-        "beginWaitingSit",
-        "The waiting period will begin soon!\n"+
-        "You will get notified once it's over, and you will\n"+
-        "be asked questions about your experience then.\n\n"+
-        "Please sit down, and hold the touch pad to begin!"
-        // "Die Wartezeit beginnt gleich.\n\n" +
-        // "Halte das Touchpad gedrückt um damit loszulegen!"
+            "beginWaitingSit",
+            "The waiting period will begin soon!\n" +
+            "You will get notified once it's over, and you will\n" +
+            "be asked questions about your experience then.\n\n" +
+            "Please sit down, and hold the touch pad to begin!"
+            // "Die Wartezeit beginnt gleich.\n\n" +
+            // "Halte das Touchpad gedrückt um damit loszulegen!"
         },
         {
-        "three",
-        "3..."
+            "three",
+            "3..."
         },
         {
-        "two",
-        "2..."
+            "two",
+            "2..."
         },
         {
-        "one",
-        "1..."
+            "one",
+            "1..."
         },
         {
-        "beginQuestions",
-        "The waiting time is now over!\n\n"+
-        "Please stand up now and step a way a bit from the chairs.\n\n"+
-        "Press the side button to continue with the questionnaires."
-        // "Die Wartezeit ist jetzt vorbei!\n\n" +
-        // "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
+            "beginQuestions",
+            "The waiting time is now over!\n\n" +
+            "Please stand up now and step a way a bit from the chairs.\n\n" +
+            "Press the side button to continue with the questionnaires."
+            // "Die Wartezeit ist jetzt vorbei!\n\n" +
+            // "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
         },
         {
-        "endQuestions",
-        "Thank you!\n\n"+
-        "The questionnaire is now finished. Get ready for the next trial!"
-        // "Die Wartezeit ist jetzt vorbei!\n\n" +
-        // "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
+            "endQuestions",
+            "Thank you!\n\n" +
+            "The questionnaire is now finished. Get ready for the next trial!"
+            // "Die Wartezeit ist jetzt vorbei!\n\n" +
+            // "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
         },
     };
 
@@ -195,19 +194,24 @@ public class ExpeControl : MonoBehaviour {
     public ObjectManager condObjects { get; private set; }
     // private TeleporterFacade _teleporter;
 
-    [Tooltip("Time in seconds needed to click trigger to continue")] public float durationToContinue;
+    [Tooltip ("Time in seconds needed to click trigger to continue")] public float durationToContinue;
 
-    void Awake() {
+    void Awake () {
 
         instance = this;
 
         if (mainCam == null)
             mainCam = Camera.main;
 
-        tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
+        tobiiTracking = PlayerPrefs.GetInt ("tobii", 0) != 0;
+
+        if (eyeTracking) {
+            GetComponent<VREyeTracker> ().enabled = true;
+            SRAnipal.SetActive (true);
+        }
 
         if (tobiiTracking) {
-            Debug.Log("Adding Tobii callback");
+            Debug.Log ("Adding Tobii callback");
             shaderBehavior.validationCallback = (success) => {
                 this.m_validationSuccess = success;
                 this.m_validationDone = true;
@@ -215,75 +219,79 @@ public class ExpeControl : MonoBehaviour {
         }
 
         string[] RoomNames = RoomManager.RoomNames;
-        cameraRig = transform.GetChild(0);
-        Debug.Log("Found camera rig: " + cameraRig.name);
-        Debug.Log("CamRig pos: " + cameraRig.position + " CamRig rot: " + cameraRig.rotation);
-        _instructBehaviour = GetComponent<InstructBehaviour>();
+        cameraRig = transform.GetChild (0);
+        Debug.Log ("Found camera rig: " + cameraRig.name);
+        Debug.Log ("CamRig pos: " + cameraRig.position + " CamRig rot: " + cameraRig.rotation);
+        _instructBehaviour = GetComponent<InstructBehaviour> ();
 
         if (_instructBehaviour.leftControllerActive) {
-            controllerBasePoint = GameObject.Find("BasePointL");
-            _questionSlider.controllerMainPoint = GameObject.Find("ControlPointL");
+            controllerBasePoint = GameObject.Find ("BasePointL");
+            _questionSlider.controllerMainPoint = GameObject.Find ("ControlPointL");
         } else {
-            controllerBasePoint = GameObject.Find("BasePointR");
-            _questionSlider.controllerMainPoint = GameObject.Find("ControlPointR");
+            controllerBasePoint = GameObject.Find ("BasePointR");
+            _questionSlider.controllerMainPoint = GameObject.Find ("ControlPointR");
         }
 
-        controllerBasePoint.SetActive(false);
-        _questionSlider.controllerMainPoint.SetActive(false);
+        controllerBasePoint.SetActive (false);
+        _questionSlider.controllerMainPoint.SetActive (false);
 
         // condObjects = new ObjectManager();
 
         // _teleporter = gameObject.GetComponentInChildren<TeleporterFacade>();
 
         // Disable panels
-        setupPanel.SetActive(false);
-        pausePanel.SetActive(false);
+        setupPanel.SetActive (false);
+        pausePanel.SetActive (false);
         // questionPanel.SetActive(false);
 
         // Get last user number
-        m_basePath = Directory.GetParent(Application.dataPath) + "/SubjectData";
-        if (!Directory.Exists(m_basePath)) Directory.CreateDirectory(m_basePath);
+        m_basePath = Directory.GetParent (Application.dataPath) + "/SubjectData";
+        if (!Directory.Exists (m_basePath)) Directory.CreateDirectory (m_basePath);
 
         if (m_userId < 0) {
             //  Loop through existing subject folder and find last one
-            string[] directories = Directory.GetDirectories(m_basePath);
+            string[] directories = Directory.GetDirectories (m_basePath);
             int lastSubjID = -1;
             foreach (string s in directories) {
-                string ss = s.Split('/').Last();
+                string ss = s.Split ('/').Last ();
 
                 int subjIdtmp;
-                int.TryParse(ss.Split('_')[1], out subjIdtmp);
+                string[] splitResult = ss.Split ('_');
+                if (splitResult.Length > 1) {
+                    Debug.Log ("Split result length: " + splitResult.Length);
+                    int.TryParse (ss.Split ('_') [1], out subjIdtmp);
 
-                if (subjIdtmp > lastSubjID)
-                    lastSubjID = subjIdtmp;
+                    if (subjIdtmp > lastSubjID)
+                        lastSubjID = subjIdtmp;
+                }
             }
             m_userId = lastSubjID + 1;
         }
-        idTxt.text = m_userId.ToString();
+        idTxt.text = m_userId.ToString ();
     }
 
-    private void SetUp() {
+    private void SetUp () {
         m_userdataPath = m_basePath + "/Subj_" + m_userId;
         // If this user already exists: start after last trial
-        if (Directory.Exists(m_userdataPath)) {
+        if (Directory.Exists (m_userdataPath)) {
 
             if (resetExperiments) {
 
-                string[] oldFiles = Directory.GetFiles(m_userdataPath, "*.*", SearchOption.AllDirectories);
+                string[] oldFiles = Directory.GetFiles (m_userdataPath, "*.*", SearchOption.AllDirectories);
 
                 foreach (string file in oldFiles) {
                     // Debug.Log(file);
-                    File.Delete(file);
+                    File.Delete (file);
                 }
-                Debug.Log("Deleted " + oldFiles.Length + " old files from " + m_userdataPath);
+                Debug.Log ("Deleted " + oldFiles.Length + " old files from " + m_userdataPath);
 
             } else {
 
-                int count = Directory.GetFiles(m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
+                int count = Directory.GetFiles (m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
 
                 // Rename userdata file before creating a new one
-                if (File.Exists(m_userdataPath + "/UserData.txt")) {
-                    File.Move(m_userdataPath + "/UserData.txt", m_userdataPath + $"/UserData_{getTimeStamp()}.txt");
+                if (File.Exists (m_userdataPath + "/UserData.txt")) {
+                    File.Move (m_userdataPath + "/UserData.txt", m_userdataPath + $"/UserData_{getTimeStamp()}.txt");
                 }
 
                 if (count > 1) {
@@ -292,27 +300,27 @@ public class ExpeControl : MonoBehaviour {
             }
         }
 
-        print(m_userdataPath);
+        print (m_userdataPath);
         // Create new folder with subject ID
-        Directory.CreateDirectory(m_userdataPath);
+        Directory.CreateDirectory (m_userdataPath);
         // User information: basic data + playlist
-        m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt");
+        m_recorder_info = new StreamWriter (m_userdataPath + "/UserData.txt");
 
         // get playlist for user ID
-        SetUserPlaylist(m_userId);
-        setTaskList();
+        SetUserPlaylist (m_userId);
+        setTaskList ();
 
         // Record some protocol information
-        WriteInfo("User_ID: " + m_userId);
+        WriteInfo ("User_ID: " + m_userId);
         // writeInfo("Stimuli order, room name, target idx, scotoma condition:");
-        WriteInfo("Room name, Duration, Order:");
+        WriteInfo ("Room name, Duration, Order:");
         // foreach (playlistElement elp in playlist)
         //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
         foreach (EmotPlaylistElement ple in emotPlaylist)
-            WriteInfo($"{ple.expName}");
-        FlushInfo();
+            WriteInfo ($"{ple.expName}");
+        FlushInfo ();
 
-        m_recorder_question = new StreamWriter(m_userdataPath + "/Answers_" + m_userId + ".txt");
+        m_recorder_question = new StreamWriter (m_userdataPath + "/Answers_" + m_userId + ".txt");
     }
 
     // private bool calibrating = false;
@@ -320,20 +328,20 @@ public class ExpeControl : MonoBehaviour {
     private bool trackCal = false;
     Coroutine runningRoutine;
 
-    public void CalibrateByController() {
+    public void CalibrateByController () {
         if (!trackCal) {
 
             if (!conCal) {
                 conCal = true;
-                controllerCalButton.colors = SwapColors(controllerCalButton.colors);
-                runningRoutine = StartCoroutine(ControllerPositioning());
+                controllerCalButton.colors = SwapColors (controllerCalButton.colors);
+                runningRoutine = StartCoroutine (ControllerPositioning ());
             } else {
-                StopCoroutine(runningRoutine);
-                _instructBehaviour.ResetRadialProgresses();
-                _instructBehaviour.toggleControllerInstruction(false);
-                controllerCalButton.colors = SwapColors(controllerCalButton.colors);
+                StopCoroutine (runningRoutine);
+                _instructBehaviour.ResetRadialProgresses ();
+                _instructBehaviour.toggleControllerInstruction (false);
+                controllerCalButton.colors = SwapColors (controllerCalButton.colors);
                 conCal = false;
-                LoadCamRigCal();
+                LoadCamRigCal ();
             }
 
             // conCal = !conCal;
@@ -347,7 +355,7 @@ public class ExpeControl : MonoBehaviour {
         // SaveCamRigCal();
         // Debug.Log("Calibrating: " + conCal);
     }
-    public void CalibrateByTracker() {
+    public void CalibrateByTracker () {
         // if (!conCal) {
         //     trackCal = !trackCal;
         //     trackerCalButton.colors = SwapColors(trackerCalButton.colors);
@@ -360,18 +368,18 @@ public class ExpeControl : MonoBehaviour {
     private GameObject calPointA, calPointB, calPointF;
     private GameObject controllerBasePoint, controllerMainPoint;
 
-    IEnumerator ControllerPositioning() {
+    IEnumerator ControllerPositioning () {
 
-        if (calPointF != null) calPointF.SetActive(true);
+        if (calPointF != null) calPointF.SetActive (true);
 
-        controllerBasePoint.SetActive(true);
+        controllerBasePoint.SetActive (true);
 
-        Vector3 newPos = new Vector3();
+        Vector3 newPos = new Vector3 ();
 
         bool positioned = false;
 
-        _instructBehaviour.toggleControllerInstruction(true);
-        _instructBehaviour.setInstruction("Using the trigger, place the controller's base on the floor.\n\n" + "Confirm with the touchpad.");
+        _instructBehaviour.toggleControllerInstruction (true);
+        _instructBehaviour.setInstruction ("Using the trigger, place the controller's base on the floor.\n\n" + "Confirm with the touchpad.");
 
         // Get first point: floor
         while (!positioned) {
@@ -387,19 +395,19 @@ public class ExpeControl : MonoBehaviour {
                 // }
                 yield return null;
             }
-            yield return new WaitUntil(() => !userTouchedTrigger || userClickedPad);
+            yield return new WaitUntil (() => !userTouchedTrigger || userClickedPad);
         }
-        Debug.Log("Calibrated floor!");
-        _instructBehaviour.setInstruction("The floor is set!");
-        calPointF.SetActive(false);
+        Debug.Log ("Calibrated floor!");
+        _instructBehaviour.setInstruction ("The floor is set!");
+        calPointF.SetActive (false);
         positioned = false;
 
         // Wait for trigger and pad release
-        yield return new WaitUntil(() => !userTouchedTrigger && !userClickedPad);
+        yield return new WaitUntil (() => !userTouchedTrigger && !userClickedPad);
         // _instructBehaviour.setInstruction("Position calibration.\n\n" + "Place the controller's base to the front right corner of the seat, then click the trigger.");
-        _instructBehaviour.setInstruction("Using the trigger, place the controller's base on the seat's front right corner.\n\n" + "Confirm with the touchpad.");
+        _instructBehaviour.setInstruction ("Using the trigger, place the controller's base on the seat's front right corner.\n\n" + "Confirm with the touchpad.");
 
-        if (calPointA != null) calPointA.SetActive(true);
+        if (calPointA != null) calPointA.SetActive (true);
 
         // Get second point: corner A
         while (!positioned) {
@@ -414,19 +422,19 @@ public class ExpeControl : MonoBehaviour {
                 cameraRig.position = newPos;
                 yield return null;
             }
-            yield return new WaitUntil(() => !userTouchedTrigger || userClickedPad);
+            yield return new WaitUntil (() => !userTouchedTrigger || userClickedPad);
         }
-        Debug.Log("Calibrated first corner!");
-        _instructBehaviour.setInstruction("The seat's position is set!");
-        calPointA.SetActive(false);
+        Debug.Log ("Calibrated first corner!");
+        _instructBehaviour.setInstruction ("The seat's position is set!");
+        calPointA.SetActive (false);
         positioned = false;
 
         // Wait for trigger and pad release
-        yield return new WaitUntil(() => !userTouchedTrigger && !userClickedPad);
+        yield return new WaitUntil (() => !userTouchedTrigger && !userClickedPad);
         // _instructBehaviour.setInstruction("Rotation calibration.\n\n" + "Place the controller's base to the front left corner of the seat, then click the trigger.");
-        _instructBehaviour.setInstruction("Using the trigger, place the controller's base on the seat's front left corner.\n\n" + "Confirm with the touchpad.");
+        _instructBehaviour.setInstruction ("Using the trigger, place the controller's base on the seat's front left corner.\n\n" + "Confirm with the touchpad.");
 
-        if (calPointB != null) calPointB.SetActive(true);
+        if (calPointB != null) calPointB.SetActive (true);
 
         float angleBetween;
         Vector3 firstCornerPos = calPointA.transform.position;
@@ -445,88 +453,87 @@ public class ExpeControl : MonoBehaviour {
                 firstCornerPos.y = 0;
 
                 // angleBetween = Vector3.SignedAngle(Vector3.right, horizontalControllerPos - firstCornerPos, Vector3.up);
-                angleBetween = Vector3.SignedAngle(Vector3.left, horizontalControllerPos - firstCornerPos, Vector3.up);
+                angleBetween = Vector3.SignedAngle (Vector3.left, horizontalControllerPos - firstCornerPos, Vector3.up);
                 // Debug.Log("Signed angle: " + angleBetween);
-                cameraRig.transform.RotateAround(firstCornerPos, Vector3.up, -angleBetween);
+                cameraRig.transform.RotateAround (firstCornerPos, Vector3.up, -angleBetween);
                 yield return null;
             }
-            yield return new WaitUntil(() => !userTouchedTrigger || userClickedPad);
+            yield return new WaitUntil (() => !userTouchedTrigger || userClickedPad);
         }
-        Debug.Log("Calibrated second corner!");
-        _instructBehaviour.setInstruction("The seat's rotation is set!");
-        calPointB.SetActive(false);
+        Debug.Log ("Calibrated second corner!");
+        _instructBehaviour.setInstruction ("The seat's rotation is set!");
+        calPointB.SetActive (false);
         positioned = false;
 
         // Wait for trigger and pad release
-        yield return new WaitUntil(() => !userTouchedTrigger && !userClickedPad);
-        controllerBasePoint.SetActive(false);
+        yield return new WaitUntil (() => !userTouchedTrigger && !userClickedPad);
+        controllerBasePoint.SetActive (false);
 
         float triggerClickTime = 0.0f;
 
-        _instructBehaviour.setInstruction("Click and hold the trigger to save the calibration, or click the touchpad to abort.");
+        _instructBehaviour.setInstruction ("Click and hold the trigger to save the calibration, or click the touchpad to abort.");
         // _radialProgress.gameObject.SetActive(true);
         while (triggerClickTime < durationToContinue) {
             if (userClickedPad) {
-                _instructBehaviour.setInstruction("Aborting!\n\n" + "Loading previous calibration.");
-                yield return new WaitUntil(() => !userClickedPad);
+                _instructBehaviour.setInstruction ("Aborting!\n\n" + "Loading previous calibration.");
+                yield return new WaitUntil (() => !userClickedPad);
                 // LoadCamRigCal();
                 // _instructBehaviour.ResetRadialProgresses();
                 // _instructBehaviour.toggleControllerInstruction(false);
-                CalibrateByController();
+                CalibrateByController ();
                 yield break;
             }
             if (userClickedTrigger) {
                 triggerClickTime += Time.deltaTime;
-                _instructBehaviour.SetRadialProgresses(triggerClickTime / durationToContinue);
+                _instructBehaviour.SetRadialProgresses (triggerClickTime / durationToContinue);
             } else {
-                _instructBehaviour.ResetRadialProgresses();
+                _instructBehaviour.ResetRadialProgresses ();
                 triggerClickTime = 0;
             }
             yield return null;
         }
 
+        SaveCamRigCal ();
 
-        SaveCamRigCal();
+        _radialProgress.SetProgress (1);
+        _instructBehaviour.setInstruction ("Calibration saved!");
 
-        _radialProgress.SetProgress(1);
-        _instructBehaviour.setInstruction("Calibration saved!");
-
-        yield return new WaitUntil(() => !userTouchedTrigger);
-        _instructBehaviour.ResetRadialProgresses();
+        yield return new WaitUntil (() => !userTouchedTrigger);
+        _instructBehaviour.ResetRadialProgresses ();
         // _radialProgress.gameObject.SetActive(false);
-        _instructBehaviour.toggleControllerInstruction(false);
-        toggleMessage(false);
+        _instructBehaviour.toggleControllerInstruction (false);
+        toggleMessage (false);
 
-        CalibrateByController();
+        CalibrateByController ();
 
         // yield return new WaitUntil(() => !calibrating);
-        Debug.Log("Done calibrating!");
+        Debug.Log ("Done calibrating!");
     }
 
-    private void SaveCamRigCal() {
-        PlayerPrefs.SetFloat("pX", cameraRig.position.x);
-        PlayerPrefs.SetFloat("pY", cameraRig.position.y);
-        PlayerPrefs.SetFloat("pZ", cameraRig.position.z);
+    private void SaveCamRigCal () {
+        PlayerPrefs.SetFloat ("pX", cameraRig.position.x);
+        PlayerPrefs.SetFloat ("pY", cameraRig.position.y);
+        PlayerPrefs.SetFloat ("pZ", cameraRig.position.z);
         // PlayerPrefs.SetFloat("rW", cameraRig.rotation.w);
-        PlayerPrefs.SetFloat("rX", cameraRig.eulerAngles.x);
-        PlayerPrefs.SetFloat("rY", cameraRig.eulerAngles.y);
-        PlayerPrefs.SetFloat("rZ", cameraRig.eulerAngles.z);
-        Debug.Log("Saved Camera Rig calibration.");
+        PlayerPrefs.SetFloat ("rX", cameraRig.eulerAngles.x);
+        PlayerPrefs.SetFloat ("rY", cameraRig.eulerAngles.y);
+        PlayerPrefs.SetFloat ("rZ", cameraRig.eulerAngles.z);
+        Debug.Log ("Saved Camera Rig calibration.");
     }
 
-    private void LoadCamRigCal() {
-        float pX = PlayerPrefs.GetFloat("pX");
-        float pY = PlayerPrefs.GetFloat("pY");
-        float pZ = PlayerPrefs.GetFloat("pZ");
+    private void LoadCamRigCal () {
+        float pX = PlayerPrefs.GetFloat ("pX");
+        float pY = PlayerPrefs.GetFloat ("pY");
+        float pZ = PlayerPrefs.GetFloat ("pZ");
         // float rW = PlayerPrefs.GetFloat("rW");
-        float rX = PlayerPrefs.GetFloat("rX");
-        float rY = PlayerPrefs.GetFloat("rY");
-        float rZ = PlayerPrefs.GetFloat("rZ");
-        cameraRig.position = new Vector3(pX, pY, pZ);
-        cameraRig.eulerAngles = new Vector3(rX, rY, rZ);
+        float rX = PlayerPrefs.GetFloat ("rX");
+        float rY = PlayerPrefs.GetFloat ("rY");
+        float rZ = PlayerPrefs.GetFloat ("rZ");
+        cameraRig.position = new Vector3 (pX, pY, pZ);
+        cameraRig.eulerAngles = new Vector3 (rX, rY, rZ);
     }
 
-    private ColorBlock SwapColors(ColorBlock colors) {
+    private ColorBlock SwapColors (ColorBlock colors) {
         Color normal = colors.normalColor;
         Color pressed = colors.pressedColor;
         colors.normalColor = pressed;
@@ -536,24 +543,24 @@ public class ExpeControl : MonoBehaviour {
         return colors;
     }
 
-    public void WriteInfo(string txt) {
-        print(txt);
+    public void WriteInfo (string txt) {
+        print (txt);
 
         if (m_recorder_info.BaseStream.CanWrite)
-            m_recorder_info.WriteLine("{0}: {1}", getTimeStamp(), txt);
+            m_recorder_info.WriteLine ("{0}: {1}", getTimeStamp (), txt);
     }
 
-    public void WriteAnswer(string txt) {
+    public void WriteAnswer (string txt) {
         if (m_recorder_question.BaseStream.CanWrite) {
-            m_recorder_question.WriteLine("{0};{1};{2};{3};{4}", getTimeStamp(),
+            m_recorder_question.WriteLine ("{0};{1};{2};{3};{4}", getTimeStamp (),
                 RoomManager.instance.currentRoomName, currentEmotTrial.duration, m_currentTrialIdx, txt);
-            m_recorder_question.Flush();
-            Debug.Log("Wrote answer: " + txt);
+            m_recorder_question.Flush ();
+            Debug.Log ("Wrote answer: " + txt);
         }
     }
-    public void FlushInfo() {
+    public void FlushInfo () {
         if (m_recorder_info.BaseStream.CanWrite)
-            m_recorder_info.Flush();
+            m_recorder_info.Flush ();
     }
 
     private IDictionary<string, string> tasks;
@@ -563,46 +570,44 @@ public class ExpeControl : MonoBehaviour {
 
     public string currentTaskString = "Example task string.";
 
-    private void setTaskList() {
-        tasks = new Dictionary<string, string>();
-        var lines = File.ReadLines(
-            Directory.GetParent(Application.dataPath) + "/SubjectData/questions.csv");
+    private void setTaskList () {
+        tasks = new Dictionary<string, string> ();
+        var lines = File.ReadLines (
+            Directory.GetParent (Application.dataPath) + "/SubjectData/questions.csv");
         foreach (var line in lines) {
-            string[] linesplit = line.Split(',');
-            tasks.Add(linesplit[0], linesplit[1]);
-            print(line);
+            string[] linesplit = line.Split (',');
+            tasks.Add (linesplit[0], linesplit[1]);
+            print (line);
         }
     }
-    private void setTaskListErwan() {
-        tasks = new Dictionary<string, string>();
-        var lines = File.ReadLines(
-            Directory.GetParent(Application.dataPath) + "/SubjectData/questions.csv");
+    private void setTaskListErwan () {
+        tasks = new Dictionary<string, string> ();
+        var lines = File.ReadLines (
+            Directory.GetParent (Application.dataPath) + "/SubjectData/questions.csv");
         foreach (var line in lines) {
-            string[] linesplit = line.Split(',');
-            tasks.Add(linesplit[0], linesplit[1]);
-            print(line);
+            string[] linesplit = line.Split (',');
+            tasks.Add (linesplit[0], linesplit[1]);
+            print (line);
         }
     }
 
-    private void SetUserPlaylist(int idx) {
+    private void SetUserPlaylist (int idx) {
         int max_idx = 100;
         if (idx > max_idx) {
-            Debug.LogError($"User index cannot be over {max_idx}.", this);
-            Quit();
+            Debug.LogError ($"User index cannot be over {max_idx}.", this);
+            Quit ();
         }
 
-        List<string> roomNames = RoomManager.instance.ListRooms();
+        List<string> roomNames = RoomManager.instance.ListRooms ();
 
         // TEMPORARY, EASY PLAYLIST CREATION (NO RANDOMIZATION)
         for (int i = 0; i < durations.Count; i++) {
             for (int j = 0; j < roomNames.Count; j++) {
                 // Debug.Log(roomName + ", available: " + RoomManager.instance.isRoomAvailable(roomName));
                 int trial = i * roomNames.Count + j + 1;
-                emotPlaylist.Add(new EmotPlaylistElement(roomNames[j], durations[i], trial, "trial", "SGL"));
+                emotPlaylist.Add (new EmotPlaylistElement (roomNames[j], durations[i], trial, "trial", "SGL"));
             }
         }
-
-
 
         // print($"playlist.Count: {emotPlaylist.Count}");
 
@@ -640,14 +645,14 @@ public class ExpeControl : MonoBehaviour {
         // }
         // print($"playlist.Count: {playlist.Count}");
     }
-    private void setUserPlaylistErwan(int idx) {
+    private void setUserPlaylistErwan (int idx) {
         int max_idx = 100;
         if (idx > max_idx) {
-            Debug.LogError($"User index cannot be over {max_idx}.", this);
-            Quit();
+            Debug.LogError ($"User index cannot be over {max_idx}.", this);
+            Quit ();
         }
 
-        StreamReader file = new StreamReader(Directory.GetParent(Application.dataPath) +
+        StreamReader file = new StreamReader (Directory.GetParent (Application.dataPath) +
             "/SubjectData/playlist.csv", Encoding.UTF8);
 
         int nrep = 14;
@@ -657,143 +662,133 @@ public class ExpeControl : MonoBehaviour {
         // Read line according to the user ID number
         char[] lineChar = new char[linesize - 1];
         file.BaseStream.Position = idx * linesize;
-        file.Read(lineChar, 0, lineChar.Length);
-        file.Close();
+        file.Read (lineChar, 0, lineChar.Length);
+        file.Close ();
 
         // Convert line from char[] to string
-        string line = new string(lineChar);
+        string line = new string (lineChar);
         // Split line by commas
-        string[] ell = line.Split(',');
+        string[] ell = line.Split (',');
         // For all element in list
         for (int i = 0; i < ell.Length; i++) {
             // Split by '-' 
-            string[] els = ell[i].Split('-');
+            string[] els = ell[i].Split ('-');
 
             // Debug.Log (ell[i]);
 
             // 0: Scene, 1: light cond, 2: Task
-            int.TryParse(els[0], out var room_idx);
-            int.TryParse(els[1], out var light_cond);
-            int.TryParse(els[2], out var quest_idx);
+            int.TryParse (els[0], out var room_idx);
+            int.TryParse (els[1], out var light_cond);
+            int.TryParse (els[2], out var quest_idx);
 
             // new playlistElement to insert in playlist
-            playlist.Add(new playlistElement(room_idx, light_cond, quest_idx, i));
+            playlist.Add (new playlistElement (room_idx, light_cond, quest_idx, i));
         }
 
-        print($"playlist.Count: {playlist.Count}");
+        print ($"playlist.Count: {playlist.Count}");
     }
 
     private bool m_isPresenting;
 
-    public bool userGrippedControl => TrackPadInput.instance.SideGripped();
-    public bool userTouchedPad => TrackPadInput.instance.TrackpadTouched();
-    public bool userClickedPad => TrackPadInput.instance.TrackpadClicked();
-    public bool userTouchedTrigger => TrackPadInput.instance.TriggerTouched();
-    public bool userClickedTrigger => TrackPadInput.instance.TriggerClicked();
-
+    public bool userGrippedControl => TrackPadInput.instance.SideGripped ();
+    public bool userTouchedPad => TrackPadInput.instance.TrackpadTouched ();
+    public bool userClickedPad => TrackPadInput.instance.TrackpadClicked ();
+    public bool userTouchedTrigger => TrackPadInput.instance.TriggerTouched ();
+    public bool userClickedTrigger => TrackPadInput.instance.TriggerClicked ();
 
     float taskTime = 0;
     float padPressedTime = 0;
 
-    public void SetTobiiTracking(bool tobTrack) {
+    public void SetTobiiTracking (bool tobTrack) {
 
-        Debug.Log("Requesting Lab change. SGL? " + tobTrack);
+        Debug.Log ("Requesting Lab change. SGL? " + tobTrack);
 
         if (tobiiTracking == tobTrack) {
-            Debug.Log("Pressed already active Lab button");
+            Debug.Log ("Pressed already active Lab button");
             return;
         }
 
-
-
         tobiiTracking = tobTrack;
-        sglButton.colors = SwapColors(sglButton.colors);
-        hfgButton.colors = SwapColors(hfgButton.colors);
-        PlayerPrefs.SetInt("tobii", (tobiiTracking ? 1 : 0));
+        sglButton.colors = SwapColors (sglButton.colors);
+        hfgButton.colors = SwapColors (hfgButton.colors);
+        PlayerPrefs.SetInt ("tobii", (tobiiTracking ? 1 : 0));
     }
-
-
-
 
     // THE ACTUAL GAME LOOP!
 
-    IEnumerator Start() {
+    IEnumerator Start () {
 
         taskTime = 0;
         padPressedTime = 0;
 
         shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
 
-        tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
+        tobiiTracking = PlayerPrefs.GetInt ("tobii", 0) != 0;
 
-        Debug.Log("Read from prefs: Tobii Tracking = " + tobiiTracking);
+        Debug.Log ("Read from prefs: Tobii Tracking = " + tobiiTracking);
 
         if (tobiiTracking) {
-            sglButton.colors = SwapColors(sglButton.colors);
-            Debug.Log("Swapped SGL Button");
+            sglButton.colors = SwapColors (sglButton.colors);
+            Debug.Log ("Swapped SGL Button");
         } else {
-            hfgButton.colors = SwapColors(hfgButton.colors);
-            Debug.Log("Swapped HFG Button");
+            hfgButton.colors = SwapColors (hfgButton.colors);
+            Debug.Log ("Swapped HFG Button");
         }
 
-
         if (eyeTracking)
-            yield return new WaitUntil(() => _eyeTrack.ready);
+            yield return new WaitUntil (() => _eyeTrack.ready);
         else
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds (1);
 
         // Debug.Log("Passed _eyeTrack.ready check");
 
         // Show SubjInfo panel
-        setupPanel.SetActive(true);
-        pausePanel.SetActive(false);
+        setupPanel.SetActive (true);
+        pausePanel.SetActive (false);
         // questionPanel.SetActive(false);
-        _progressBar.gameObject.SetActive(false);
+        _progressBar.gameObject.SetActive (false);
         // _radialProgress.gameObject.SetActive(false);
-        _questionSlider.gameObject.SetActive(false);
+        _questionSlider.gameObject.SetActive (false);
 
         // _questionSlider.gameObject.SetActive(true);
-        RoomManager.instance.SaveManagerSceneNum();
-        RoomManager.instance.LoadBreakRoom();
-        yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
+        RoomManager.instance.SaveManagerSceneNum ();
+        RoomManager.instance.LoadBreakRoom ();
+        yield return new WaitUntil (() => !(RoomManager.instance.actionInProgress));
 
-        calPointA = GameObject.Find("CalPointA");
-        calPointB = GameObject.Find("CalPointB");
-        calPointF = GameObject.Find("CalPointF");
+        calPointA = GameObject.Find ("CalPointA");
+        calPointB = GameObject.Find ("CalPointB");
+        calPointF = GameObject.Find ("CalPointF");
 
         if (calPointA != null) {
-            calPointA.SetActive(false);
-            calPointB.SetActive(false);
-            calPointF.SetActive(false);
+            calPointA.SetActive (false);
+            calPointB.SetActive (false);
+            calPointF.SetActive (false);
         }
 
-        trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
+        trainSpawner = GameObject.FindObjectOfType<TrainSpawner> ();
         if (trainSpawner != null) {
             // trainSpawner.SpawnTrain();
         }
 
+        LoadCamRigCal ();
 
-        LoadCamRigCal();
+        Debug.Log ("Loaded Camera Rig Position");
 
-        Debug.Log("Loaded Camera Rig Position");
-
-        _instructBehaviour.toggleControllerInstruction(true);
-        _instructBehaviour.setInstruction("Press any button on this controller (trigger, side button, or trackpad).");
-        yield return new WaitUntil(() => _instructBehaviour.deactivatedOtherController);
-        _instructBehaviour.setInstruction("The other controller has been disabled!");
+        _instructBehaviour.toggleControllerInstruction (true);
+        _instructBehaviour.setInstruction ("Press any button on this controller (trigger, side button, or trackpad).");
+        yield return new WaitUntil (() => _instructBehaviour.deactivatedOtherController);
+        _instructBehaviour.setInstruction ("The other controller has been disabled!");
         if (userClickedPad)
-            yield return new WaitUntil(() => !userClickedPad);
+            yield return new WaitUntil (() => !userClickedPad);
         if (userClickedTrigger)
-            yield return new WaitUntil(() => !userTouchedTrigger);
+            yield return new WaitUntil (() => !userTouchedTrigger);
         if (userGrippedControl)
-            yield return new WaitUntil(() => !userGrippedControl);
-        _instructBehaviour.toggleControllerInstruction(false);
-
-
+            yield return new WaitUntil (() => !userGrippedControl);
+        _instructBehaviour.toggleControllerInstruction (false);
 
         // Wait for user ID --- Setup() happens here!
-        yield return new WaitUntil(() => !setupPanel.activeSelf);
-        _instructBehaviour.toggleControllerInstruction(false);
+        yield return new WaitUntil (() => !setupPanel.activeSelf);
+        _instructBehaviour.toggleControllerInstruction (false);
 
         // Settings from the setup panel have been submitted: start of the trial
 
@@ -801,61 +796,57 @@ public class ExpeControl : MonoBehaviour {
         // HfG: Request to stand or lean depending on user ID
         // SGL: Request to stand or sit depending on user ID (tobiiTracking means SGL)
         if (m_userId % 2 != 0) {
-            Debug.Log("Odd user ID (" + m_userId + ").");
+            Debug.Log ("Odd user ID (" + m_userId + ").");
             if (tobiiTracking)
-                toggleMessage(true, "pleaseStand");
+                toggleMessage (true, "pleaseStand");
             else
-                toggleMessage(true, "pleaseLean");
+                toggleMessage (true, "pleaseLean");
             // _instructBehaviour.toggleWorldInstruction(true, "Please lean on the bench.");
         } else {
-            Debug.Log("Even user ID (" + m_userId + ").");
-            toggleMessage(true, "pleaseSit");
+            Debug.Log ("Even user ID (" + m_userId + ").");
+            toggleMessage (true, "pleaseSit");
         }
         // _instructBehaviour.toggleWorldInstruction(true, "This is a test instruction.\n\nPress trigger.");
-        _instructBehaviour.RequestConfirmation(durationToContinue);
-        yield return new WaitUntil(() => !_instructBehaviour.requested);
-        yield return new WaitForSecondsRealtime(1.0f);
-        _instructBehaviour.toggleWorldInstruction(false);
-        yield return new WaitForSecondsRealtime(1.0f);
+        _instructBehaviour.RequestConfirmation (durationToContinue);
+        yield return new WaitUntil (() => !_instructBehaviour.requested);
+        yield return new WaitForSecondsRealtime (1.0f);
+        _instructBehaviour.toggleWorldInstruction (false);
+        yield return new WaitForSecondsRealtime (1.0f);
 
         // First questions: demographics
 
-        ToggleQuestion(true, "How many hours have you spent in VR so far in your life?");
-        _questionSlider.UpdateSliderRange(0, 4, true, false, "0", "1--5h", ">20h", "",
-                                                                "<1h", "5--20h");
-        yield return new WaitUntil(() => _questionSlider.confirmed);
-        yield return new WaitForSecondsRealtime(1.0f);
-        ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(1.0f);
+        ToggleQuestion (true, "How many hours have you spent in VR so far in your life?");
+        _questionSlider.UpdateSliderRange (0, 4, true, false, "0", "1--5h", ">20h", "",
+            "<1h", "5--20h");
+        yield return new WaitUntil (() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime (1.0f);
+        ToggleQuestion (false);
+        yield return new WaitForSecondsRealtime (1.0f);
 
-        ToggleQuestion(true, "How often do you normally use public transport?");
-        _questionSlider.UpdateSliderRange(0, 4, true, false, "never", "monthly", "daily", "",
-                                                                "yearly", "weekly");
-        yield return new WaitUntil(() => _questionSlider.confirmed);
-        yield return new WaitForSecondsRealtime(1.0f);
-        ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(1.0f);
+        ToggleQuestion (true, "How often do you normally use public transport?");
+        _questionSlider.UpdateSliderRange (0, 4, true, false, "never", "monthly", "daily", "",
+            "yearly", "weekly");
+        yield return new WaitUntil (() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime (1.0f);
+        ToggleQuestion (false);
+        yield return new WaitForSecondsRealtime (1.0f);
 
-        ToggleQuestion(true, "How patient would you consider yourself?");
-        _questionSlider.UpdateSliderRange(0, 99, true, false, "not at all", " ", "very patient");
-        yield return new WaitUntil(() => _questionSlider.confirmed);
-        yield return new WaitForSecondsRealtime(1.0f);
-        ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(1.0f);
+        ToggleQuestion (true, "How patient would you consider yourself?");
+        _questionSlider.UpdateSliderRange (0, 99, true, false, "not at all", " ", "very patient");
+        yield return new WaitUntil (() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime (1.0f);
+        ToggleQuestion (false);
+        yield return new WaitForSecondsRealtime (1.0f);
 
-        toggleMessage(true, "pleaseStand");
-        _instructBehaviour.RequestConfirmation(durationToContinue);
-        yield return new WaitUntil(() => !_instructBehaviour.requested);
-        yield return new WaitForSecondsRealtime(1.0f);
-        _instructBehaviour.toggleWorldInstruction(false);
-        yield return new WaitForSecondsRealtime(1.0f);
-
-
-
-
+        toggleMessage (true, "pleaseStand");
+        _instructBehaviour.RequestConfirmation (durationToContinue);
+        yield return new WaitUntil (() => !_instructBehaviour.requested);
+        yield return new WaitForSecondsRealtime (1.0f);
+        _instructBehaviour.toggleWorldInstruction (false);
+        yield return new WaitForSecondsRealtime (1.0f);
 
         if (!eyeTracking) {
-            shaderBehavior.gameObject.SetActive(false);
+            shaderBehavior.gameObject.SetActive (false);
 
             // Eye Tracking Setup
             //
@@ -863,43 +854,41 @@ public class ExpeControl : MonoBehaviour {
             //
         } else {
             if (!tobiiTracking) {
-                toggleMessage(true, "pleaseCalibrateVive");
-                yield return new WaitForSeconds(5);
-                _instructBehaviour.RequestConfirmation(durationToContinue);
-                yield return new WaitUntil(() => !_instructBehaviour.requested);
-                yield return new WaitForSecondsRealtime(1.0f);
-                _instructBehaviour.toggleWorldInstruction(false);
-                yield return new WaitForSecondsRealtime(1.0f);
+                toggleMessage (true, "pleaseCalibrateVive");
+                yield return new WaitForSeconds (5);
+                _instructBehaviour.RequestConfirmation (durationToContinue);
+                yield return new WaitUntil (() => !_instructBehaviour.requested);
+                yield return new WaitForSecondsRealtime (1.0f);
+                _instructBehaviour.toggleWorldInstruction (false);
+                yield return new WaitForSecondsRealtime (1.0f);
 
                 // Tobii eye tracker
             } else {
                 eyeValidated = false;
                 eyeCalibrated = false;
-                StartCoroutine(TobiiCalibration());
-                yield return new WaitUntil(() => eyeValidated);
+                StartCoroutine (TobiiCalibration ());
+                yield return new WaitUntil (() => eyeValidated);
             }
         }
-
 
         // Introduce Interaction
         if (controllerTutorial) {
 
             // toggleMessage(false);
-            yield return new WaitForSecondsRealtime(0.5f);
-            toggleMessage(true, "Let's learn the VR controls.\n\nTake a look at your controller, and pull its trigger.");
-            yield return new WaitForSecondsRealtime(1.0f);
-
+            yield return new WaitForSecondsRealtime (0.5f);
+            toggleMessage (true, "Let's learn the VR controls.\n\nTake a look at your controller, and pull its trigger.");
+            yield return new WaitForSecondsRealtime (1.0f);
 
             // _instructBehaviour.setInstruction("Click the controller's trigger, then release it.");
-            yield return new WaitUntil(() => userClickedTrigger);
-            Debug.Log("Successfully triggered.");
-            _instructBehaviour.setInstruction("Good!\n\nNow fully release the trigger.");
-            yield return new WaitUntil(() => !userTouchedTrigger);
-            _instructBehaviour.setInstruction("You did it!");
-            yield return new WaitForSecondsRealtime(1f);
+            yield return new WaitUntil (() => userClickedTrigger);
+            Debug.Log ("Successfully triggered.");
+            _instructBehaviour.setInstruction ("Good!\n\nNow fully release the trigger.");
+            yield return new WaitUntil (() => !userTouchedTrigger);
+            _instructBehaviour.setInstruction ("You did it!");
+            yield return new WaitForSecondsRealtime (1f);
             // _instructBehaviour.toggleControllerInstruction(false);
-            _instructBehaviour.toggleWorldInstruction(false);
-            yield return new WaitForSecondsRealtime(0.25f);
+            _instructBehaviour.toggleWorldInstruction (false);
+            yield return new WaitForSecondsRealtime (0.25f);
 
             // _instructBehaviour.setInstruction("Press the controller's side buttons.");
             // yield return new WaitUntil(() => userGrippedControl);
@@ -919,79 +908,78 @@ public class ExpeControl : MonoBehaviour {
             // yield return new WaitForSecondsRealtime(0.25f);
 
             // _instructBehaviour.toggleControllerInstruction(true);
-            toggleMessage(true, "Click the controller's touch pad, then release it.");
-            yield return new WaitUntil(() => userClickedPad);
-            Debug.Log("Successfully clicked touchpad.");
-            _instructBehaviour.setInstruction("Good!\n\nNow let go of the touchpad.");
-            yield return new WaitUntil(() => !userTouchedPad);
-            _instructBehaviour.setInstruction("Well done!");
-            yield return new WaitForSecondsRealtime(1f);
-            _instructBehaviour.toggleWorldInstruction(false);
+            toggleMessage (true, "Click the controller's touch pad, then release it.");
+            yield return new WaitUntil (() => userClickedPad);
+            Debug.Log ("Successfully clicked touchpad.");
+            _instructBehaviour.setInstruction ("Good!\n\nNow let go of the touchpad.");
+            yield return new WaitUntil (() => !userTouchedPad);
+            _instructBehaviour.setInstruction ("Well done!");
+            yield return new WaitForSecondsRealtime (1f);
+            _instructBehaviour.toggleWorldInstruction (false);
             // _instructBehaviour.toggleControllerInstruction(false);
 
-            yield return new WaitForSecondsRealtime(0.25f);
+            yield return new WaitForSecondsRealtime (0.25f);
 
             // _instructBehaviour.toggleControllerInstruction(true);
-            toggleMessage(true, "Press and hold the touch pad until the bar fills, then release it.");
+            toggleMessage (true, "Press and hold the touch pad until the bar fills, then release it.");
             while (padPressedTime < durationToContinue) {
                 if (userClickedPad) {
                     padPressedTime += Time.deltaTime;
-                    _progressBar.gameObject.SetActive(true);
-                    _progressBar.SetProgress(padPressedTime / durationToContinue);
+                    _progressBar.gameObject.SetActive (true);
+                    _progressBar.SetProgress (padPressedTime / durationToContinue);
                 } else {
-                    _progressBar.gameObject.SetActive(false);
+                    _progressBar.gameObject.SetActive (false);
                     padPressedTime = 0;
                 }
                 yield return null;
             }
-            yield return new WaitUntil(() => !userTouchedPad);
-            _progressBar.gameObject.SetActive(false);
+            yield return new WaitUntil (() => !userTouchedPad);
+            _progressBar.gameObject.SetActive (false);
             // _instructBehaviour.toggleControllerInstruction(false);
-            toggleMessage(false);
+            toggleMessage (false);
 
-            toggleMessage(false);
-            yield return new WaitForSecondsRealtime(0.5f);
-            toggleMessage(true, "Now let's practice the questionnaires.\n\nPress the touch pad again to continue.");
-            yield return new WaitForSecondsRealtime(0.25f);
-            yield return new WaitUntil(() => userClickedPad);
-            toggleMessage(false);
-            yield return new WaitForSecondsRealtime(0.5f);
+            toggleMessage (false);
+            yield return new WaitForSecondsRealtime (0.5f);
+            toggleMessage (true, "Now let's practice the questionnaires.\n\nPress the touch pad again to continue.");
+            yield return new WaitForSecondsRealtime (0.25f);
+            yield return new WaitUntil (() => userClickedPad);
+            toggleMessage (false);
+            yield return new WaitForSecondsRealtime (0.5f);
         }
-
 
         // Introduce slider interaction
         if (questionnaireTutorial) {
             // Time Format
-            ToggleQuestion(true, "How long have you been here, in VR, so far?");
-            _questionSlider.UpdateSliderRange(10, 300, false, true);
-            yield return new WaitUntil(() => _questionSlider.confirmed);
-            yield return new WaitForSecondsRealtime(1.0f);
-            ToggleQuestion(false);
-            yield return new WaitForSecondsRealtime(1.0f);
+            ToggleQuestion (true, "How long have you been here, in VR, so far?");
+            _questionSlider.UpdateSliderRange (10, 300, false, true);
+            yield return new WaitUntil (() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime (1.0f);
+            ToggleQuestion (false);
+            yield return new WaitForSecondsRealtime (1.0f);
 
             // Visual Analog Scale
-            ToggleQuestion(true, "What is your feeling toward this environment?");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "bad", "indifferent", "good");
-            yield return new WaitUntil(() => _questionSlider.confirmed);
-            yield return new WaitForSecondsRealtime(1.0f);
-            ToggleQuestion(false);
-            yield return new WaitForSecondsRealtime(1.0f);
+            ToggleQuestion (true, "What is your feeling toward this environment?");
+            _questionSlider.UpdateSliderRange (1, 100, true, false, "bad", "indifferent", "good");
+            yield return new WaitUntil (() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime (1.0f);
+            ToggleQuestion (false);
+            yield return new WaitForSecondsRealtime (1.0f);
 
             // SAM Scale: valence
-            ToggleQuestion(true, "What is your valence toward this environment?");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "v");
-            yield return new WaitUntil(() => _questionSlider.confirmed);
-            yield return new WaitForSecondsRealtime(1.0f);
-            ToggleQuestion(false);
-            yield return new WaitForSecondsRealtime(1.0f);
+            ToggleQuestion (true, "What is your valence toward this environment?");
+            _questionSlider.UpdateSliderRange (1, 100, true, false, "does", "not", "matter", "v");
+            yield return new WaitUntil (() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime (1.0f);
+            ToggleQuestion (false);
+            yield return new WaitForSecondsRealtime (1.0f);
 
             // SAM Scale: arousal
-            ToggleQuestion(true, "What is your arousal toward this environment?");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "a");
-            yield return new WaitUntil(() => _questionSlider.confirmed);
-            yield return new WaitForSecondsRealtime(1.0f);
-            ToggleQuestion(false);
-            yield return new WaitForSecondsRealtime(1.0f);
+            ToggleQuestion (true, "What is your arousal toward this environment?");
+            _questionSlider.UpdateSliderRange (1, 100, true, false, "does", "not", "matter", "a");
+            yield return new WaitUntil (() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime (1.0f);
+            ToggleQuestion (false);
+            yield return new WaitForSecondsRealtime (1.0f);
 
             // Discrete Scale
             // ToggleQuestion(true, "How would you rate this experience on a 1-to-5 scale?");
@@ -1000,25 +988,22 @@ public class ExpeControl : MonoBehaviour {
             // yield return new WaitForSecondsRealtime(1.0f);
             // ToggleQuestion(false);
 
-            yield return new WaitForSecondsRealtime(0.5f);
-            toggleMessage(true, "You did great!\n\nPress the side button again to start.");
+            yield return new WaitForSecondsRealtime (0.5f);
+            toggleMessage (true, "You did great!\n\nPress the side button again to start.");
         }
 
-
-
-
-        Debug.Log("Currently playing trial " + (m_currentTrialIdx + 1) + " out of " + emotPlaylist.Count);
+        Debug.Log ("Currently playing trial " + (m_currentTrialIdx + 1) + " out of " + emotPlaylist.Count);
 
         while (m_currentTrialIdx < emotPlaylist.Count) {
-            toggleMessage(true, "unloading");
-            Debug.Log("Starting room unload...");
+            toggleMessage (true, "unloading");
+            Debug.Log ("Starting room unload...");
 
             // RoomManager.instance.UnloadScene();
-            RoomManager.instance.UnloadRoom();
-            yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
-            toggleMessage(false);
-            _instructBehaviour.toggleControllerInstruction(false);
-            Debug.Log("Room unload finished.");
+            RoomManager.instance.UnloadRoom ();
+            yield return new WaitUntil (() => !(RoomManager.instance.actionInProgress));
+            toggleMessage (false);
+            _instructBehaviour.toggleControllerInstruction (false);
+            Debug.Log ("Room unload finished.");
 
             int trialidx = currentEmotTrial.trial_idx;
 
@@ -1027,103 +1012,96 @@ public class ExpeControl : MonoBehaviour {
             // Skip trial if the station scene is not finished
             // if (!RoomManager.instance.isRoomAvailable(currentTrial.room_idx)) { m_currentTrialIdx++; continue; }
 
-            long timeSpentLoading = getTimeStamp();
-            toggleMessage(true, "loading");
+            long timeSpentLoading = getTimeStamp ();
+            toggleMessage (true, "loading");
             // RoomManager.instance.LoadScene(currentTrial.room_idx);
-            RoomManager.instance.LoadRoom(currentEmotTrial.roomName);
+            RoomManager.instance.LoadRoom (currentEmotTrial.roomName);
 
-            WriteInfo(RoomManager.instance.currSceneName);
-            yield return new WaitUntil(() => !RoomManager.instance.actionInProgress &&
-               RoomManager.instance.currentScene.isLoaded);
+            WriteInfo (RoomManager.instance.currSceneName);
+            yield return new WaitUntil (() => !RoomManager.instance.actionInProgress &&
+                RoomManager.instance.currentScene.isLoaded);
             yield return null;
-            toggleMessage(false);
+            toggleMessage (false);
 
-
-            trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
-
-
+            trainSpawner = GameObject.FindObjectOfType<TrainSpawner> ();
 
             taskTime = 0;
             padPressedTime = 0;
-
 
             if (RoomManager.instance.currSceneName == RoomManager.instance.breakRoomName && eyeTracking) {
                 // BREAK ROOM: do calibration and continue to next level
 
                 // toggleMessage(true, "calibrate");
-                toggleMessage(true, "takeBreak");
+                toggleMessage (true, "takeBreak");
                 // yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
 
                 // Wait until the user presses a special combination of inputs to stop the trial
                 while (padPressedTime < durationToContinue) {
                     if (userClickedPad) {
                         padPressedTime += Time.deltaTime;
-                        _progressBar.gameObject.SetActive(true);
-                        _progressBar.SetProgress(padPressedTime / durationToContinue);
+                        _progressBar.gameObject.SetActive (true);
+                        _progressBar.SetProgress (padPressedTime / durationToContinue);
                     } else {
-                        _progressBar.gameObject.SetActive(false);
+                        _progressBar.gameObject.SetActive (false);
                         padPressedTime = 0;
                     }
                     yield return null;
                 }
-                _progressBar.gameObject.SetActive(false);
-                toggleMessage(false);
-
-
+                _progressBar.gameObject.SetActive (false);
+                toggleMessage (false);
 
             } else {
                 // REGULAR TRIAL ROOM
-
 
                 // _instructBehaviour.toggleWorldInstruction(false);
 
                 // Update all info panels with the new trial question (there can be more than one question for a same scene)
                 // _instructBehaviour.setInstruction(currentTaskString);
 
-                toggleMessage(true, "beginWaitingSit");
+                toggleMessage (true, "beginWaitingSit");
 
                 // Wait till user presses a special combination of inputs to stop the trial
                 while (padPressedTime < durationToContinue) {
                     if (userClickedPad) {
                         padPressedTime += Time.deltaTime;
-                        _progressBar.gameObject.SetActive(true);
-                        _progressBar.SetProgress(padPressedTime / durationToContinue);
+                        _progressBar.gameObject.SetActive (true);
+                        _progressBar.SetProgress (padPressedTime / durationToContinue);
                     } else {
-                        _progressBar.gameObject.SetActive(false);
+                        _progressBar.gameObject.SetActive (false);
                         padPressedTime = 0;
                     }
                     yield return null;
                 }
-                _progressBar.gameObject.SetActive(false);
+                _progressBar.gameObject.SetActive (false);
 
-                toggleMessage(true, "three");
-                yield return new WaitForSeconds(1);
-                toggleMessage(true, "two");
-                yield return new WaitForSeconds(1);
-                toggleMessage(true, "one");
-                yield return new WaitForSeconds(1);
-                toggleMessage(false);
+                toggleMessage (true, "three");
+                yield return new WaitForSeconds (1);
+                toggleMessage (true, "two");
+                yield return new WaitForSeconds (1);
+                toggleMessage (true, "one");
+                yield return new WaitForSeconds (1);
+                toggleMessage (false);
 
                 // Start new gaze record (record name = stimulus name)
                 if (eyeTracking) {
                     if (tobiiTracking)
-                        startNewRecord();
+                        startNewRecord ();
                     else
-                        _eyeTrack.startNewRecord();
-                    Debug.Log("Started eye tracking.");
+                        _eyeTrack.startNewRecord ();
+                    Debug.Log ("Started eye tracking.");
                 }
                 // Start trial
                 m_isPresenting = true;
-                long start_time = getTimeStamp();
+                long start_time = getTimeStamp ();
 
                 if (debugging) {
                     foreach (var lightCond in LightConditions) {
                         // yield return new WaitForSecondsRealtime(1);
-                        yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
+                        yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
                         yield return null; // Leave time for key up event to disappear
-                                           // setLights (lightCond);
+                        // setLights (lightCond);
                     }
-                    yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
+                    yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
                 } else {
                     // setLights (LightConditions[currentTrial.light_cond]);
                 }
@@ -1140,7 +1118,7 @@ public class ExpeControl : MonoBehaviour {
                 // _instructBehaviour.positionWorldInstruction(startTr);
                 // Set instruction panel visible
                 if (trainSpawner)
-                    trainSpawner.Invoke("SpawnTrain", currentEmotTrial.duration - trainSpawner.DelayToOpenDoors());
+                    trainSpawner.Invoke ("SpawnTrain", currentEmotTrial.duration - trainSpawner.DelayToOpenDoors ());
 
                 // Wait until trial time runs out or touchpad pressed
                 padPressedTime = 0;
@@ -1160,154 +1138,140 @@ public class ExpeControl : MonoBehaviour {
                     // trainSpawner.SpawnTrain();
                     yield return null;
                 }
-                _progressBar.gameObject.SetActive(false);
+                _progressBar.gameObject.SetActive (false);
 
                 if (padPressedTime >= durationToContinue)
-                    Debug.Log("Finished from pad press.");
+                    Debug.Log ("Finished from pad press.");
                 else
-                    Debug.Log("Finished from expired waiting duration.");
+                    Debug.Log ("Finished from expired waiting duration.");
 
                 // Stop recording gaze
                 if (eyeTracking)
                     if (tobiiTracking)
-                        stopRecord(getTimeStamp() - start_time);
+                        stopRecord (getTimeStamp () - start_time);
                     else
-                        _eyeTrack.stopRecord(getTimeStamp() - start_time);
+                        _eyeTrack.stopRecord (getTimeStamp () - start_time);
 
                 m_isPresenting = false;
 
-                _instructBehaviour.setInstruction("Please wait");
+                _instructBehaviour.setInstruction ("Please wait");
 
+                Debug.Log ($"Finished: {currentEmotTrial.expName} - {trialidx}");
 
-                Debug.Log($"Finished: {currentEmotTrial.expName} - {trialidx}");
+                toggleMessage (true, "beginQuestions");
 
+                yield return new WaitForSeconds (1);
+                yield return new WaitUntil (() => userGrippedControl);
 
-                toggleMessage(true, "beginQuestions");
-
-                yield return new WaitForSeconds(1);
-                yield return new WaitUntil(() => userGrippedControl);
-
-                toggleMessage(false);
-
+                toggleMessage (false);
 
                 // THIS IS THE QUESTION BLOCK
 
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How long do you think you have been waiting?");
-                _questionSlider.UpdateSliderRange(30, 300, false, true);
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
-
-
+                yield return new WaitForSecondsRealtime (0.5f);
+                ToggleQuestion (true, "How long do you think you have been waiting?");
+                _questionSlider.UpdateSliderRange (30, 300, false, true);
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
 
                 // SAM Scale: valence
-                ToggleQuestion(true, "Which of these pictures represents your emotional state best?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "v");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
-                yield return new WaitForSecondsRealtime(1.0f);
+                ToggleQuestion (true, "Which of these pictures represents your emotional state best?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "does", "not", "matter", "v");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
+                yield return new WaitForSecondsRealtime (1.0f);
 
                 // SAM Scale: arousal
-                ToggleQuestion(true, "Which of these pictures represents your excitement best?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "a");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
-                yield return new WaitForSecondsRealtime(1.0f);
+                ToggleQuestion (true, "Which of these pictures represents your excitement best?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "does", "not", "matter", "a");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
+                yield return new WaitForSecondsRealtime (1.0f);
 
+                yield return new WaitForSecondsRealtime (0.5f);
+                ToggleQuestion (true, "How much did you think about\nyour PAST while waiting?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "not at all", " ", "all the time");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
 
+                yield return new WaitForSecondsRealtime (0.5f);
+                ToggleQuestion (true, "How much did you think about\nyour PRESENT while waiting?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "not at all", " ", "all the time");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
 
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How much did you think about\nyour PAST while waiting?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
+                yield return new WaitForSecondsRealtime (0.5f);
+                ToggleQuestion (true, "How much did you think about\nyour FUTURE while waiting?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "not at all", " ", "all the time");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
 
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How much did you think about\nyour PRESENT while waiting?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
+                yield return new WaitForSecondsRealtime (0.5f);
+                ToggleQuestion (true, "How intensively did you experience\nYOUR BODY most of the time?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "not at all", " ", "very intensively");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
+                yield return new WaitForSecondsRealtime (1.0f);
 
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How much did you think about\nyour FUTURE while waiting?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
+                yield return new WaitForSecondsRealtime (0.5f);
+                ToggleQuestion (true, "How intensively did you experience\nTHE SURROUNDING SPACE most of the time?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "not at all", " ", "very intensively");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
 
+                yield return new WaitForSecondsRealtime (0.5f);
+                ToggleQuestion (true, "How often did you think about time?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "not at all", " ", "extremely often");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
 
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How intensively did you experience\nYOUR BODY most of the time?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
-                yield return new WaitForSecondsRealtime(1.0f);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How intensively did you experience\nTHE SURROUNDING SPACE most of the time?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
-
-
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How often did you think about time?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "extremely often");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How fast did time pass for you?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "extremely slowly", " ", "extremely fast");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(1.0f);
-                ToggleQuestion(false);
+                yield return new WaitForSecondsRealtime (0.5f);
+                ToggleQuestion (true, "How fast did time pass for you?");
+                _questionSlider.UpdateSliderRange (1, 100, true, false, "extremely slowly", " ", "extremely fast");
+                yield return new WaitUntil (() => _questionSlider.confirmed);
+                yield return new WaitForSecondsRealtime (1.0f);
+                ToggleQuestion (false);
 
                 // THIS IS THE END OF THE QUESTION BLOCK
 
-                trainSpawner.DepartTrain();
-                yield return new WaitForSecondsRealtime(2.0f);
+                trainSpawner.DepartTrain ();
+                yield return new WaitForSecondsRealtime (2.0f);
 
-
-
-                toggleMessage(true, "endQuestions");
-                yield return new WaitForSecondsRealtime(3.0f);
+                toggleMessage (true, "endQuestions");
+                yield return new WaitForSecondsRealtime (3.0f);
 
             }
 
             m_currentTrialIdx++;
-            FlushInfo();
+            FlushInfo ();
         }
 
-        Debug.Log("Experiment concluded. Quitting...");
+        Debug.Log ("Experiment concluded. Quitting...");
 
-        toggleMessage(true, "end");
-        yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
-        toggleMessage(false);
+        toggleMessage (true, "end");
+        yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
+        toggleMessage (false);
 
-        FlushInfo();
-        Quit();
+        FlushInfo ();
+        Quit ();
     }
 
     bool paused;
-    private void toggleMessage(bool state, string message = "") {
+    private void toggleMessage (bool state, string message = "") {
 
         paused = state;
-        pausePanel.SetActive(paused);
-        Text msgHolder = pausePanel.transform.Find("ContentTxt").GetComponent<Text>();
+        pausePanel.SetActive (paused);
+        Text msgHolder = pausePanel.transform.Find ("ContentTxt").GetComponent<Text> ();
 
-        if (!messages.ContainsKey(message)) {
+        if (!messages.ContainsKey (message)) {
             // message = "pause";
             msgHolder.text = message;
         } else {
@@ -1318,57 +1282,57 @@ public class ExpeControl : MonoBehaviour {
         // Text msgHolder = pausePanel.transform.Find("ContentTxt").GetComponent<Text>();
         // string messageText = messages[message];
         // msgHolder.text = messageText;
-        Debug.Log(msgHolder.text);
+        Debug.Log (msgHolder.text);
     }
 
-    private void ToggleQuestion(bool state, string question = "") {
-        _questionSlider.gameObject.SetActive(state);
-        _questionSlider.UpdateQuestionText(question);
-        _questionSlider.RequestConfirmation();
+    private void ToggleQuestion (bool state, string question = "") {
+        _questionSlider.gameObject.SetActive (state);
+        _questionSlider.UpdateQuestionText (question);
+        _questionSlider.RequestConfirmation ();
         _questionSlider.confirmed = false;
     }
 
-    private void setLights(LightStruct cond) {
+    private void setLights (LightStruct cond) {
         // condObjects.ToggleLight (cond.orientation, selfregister.objectType.Orientation);
         // condObjects.ToggleLight (cond.landmark, selfregister.objectType.Landmark);
     }
 
-    private void OnGUI() {
-        string strInfo = string.Format("FPS: {0:0.00}", 1 / Time.deltaTime);
+    private void OnGUI () {
+        string strInfo = string.Format ("FPS: {0:0.00}", 1 / Time.deltaTime);
 
-        GUI.TextArea(new Rect(0, 200, 100, 35), strInfo);
+        GUI.TextArea (new Rect (0, 200, 100, 35), strInfo);
     }
 
-    public static long getTimeStamp() {
+    public static long getTimeStamp () {
         // USE solution I used in Olivier Z. 's project
         return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     }
 
-    private void OnApplicationQuit() {
+    private void OnApplicationQuit () {
         if (eyeTracking)
             if (tobiiTracking)
-                stopRecord(-1);
+                stopRecord (-1);
             else
-                _eyeTrack.stopRecord(-1);
+                _eyeTrack.stopRecord (-1);
 
         if (m_recorder_info.BaseStream.CanWrite)
-            m_recorder_info.Close();
+            m_recorder_info.Close ();
 
         if (m_recorder_question.BaseStream.CanWrite)
-            m_recorder_question.Close();
+            m_recorder_question.Close ();
 
         if (m_recorder_HMD.BaseStream.CanWrite)
-            m_recorder_HMD.Close();
+            m_recorder_HMD.Close ();
 
         if (m_recorder_ET.BaseStream.CanWrite)
-            m_recorder_ET.Close();
+            m_recorder_ET.Close ();
     }
 
-    public static void Quit() {
-        print("Quitting gracefully");
+    public static void Quit () {
+        print ("Quitting gracefully");
         if (instance.tobiiTracking)
-            EyeTrackingOperations.Terminate();
-        Application.Quit();
+            EyeTrackingOperations.Terminate ();
+        Application.Quit ();
 
 #if UNITY_EDITOR
         //Stop playing the scene
@@ -1379,34 +1343,33 @@ public class ExpeControl : MonoBehaviour {
     public InputField idTxt;
     private readonly Enum _localEnum;
 
-    public void validateDataInput() {
+    public void validateDataInput () {
         string txt = idTxt.text;
 
-        if (!string.IsNullOrEmpty(txt) && !conCal && !trackCal) {
-            setupPanel.SetActive(false);
+        if (!string.IsNullOrEmpty (txt) && !conCal && !trackCal) {
+            setupPanel.SetActive (false);
 
-            m_userId = Int16.Parse(txt);
+            m_userId = Int16.Parse (txt);
 
             // Debug.Log ("User Input: " + txt);
 
-            SetUp();
+            SetUp ();
         }
     }
-
 
     // SGL Tobii Eyetracker Additions
 
     private bool tobiiTracking = false;
 
     public class GazePoint {
-        public GazePoint() // Empty ctor
+        public GazePoint () // Empty ctor
         {
-            LeftGaze = new VRGazeDataEye();
-            RightGaze = new VRGazeDataEye();
-            data = new VRGazeData();
+            LeftGaze = new VRGazeDataEye ();
+            RightGaze = new VRGazeDataEye ();
+            data = new VRGazeData ();
         }
 
-        public GazePoint(IVRGazeData gaze) {
+        public GazePoint (IVRGazeData gaze) {
             LeftGaze = gaze.Left;
             RightGaze = gaze.Right;
             data = gaze;
@@ -1414,14 +1377,14 @@ public class ExpeControl : MonoBehaviour {
             LeftCollide = null;
             RightCollide = null;
 
-            LeftWorldRay = getGazeRay(lateralisation.left);
-            RightWorldRay = getGazeRay(lateralisation.right);
+            LeftWorldRay = getGazeRay (lateralisation.left);
+            RightWorldRay = getGazeRay (lateralisation.right);
 
-            LeftLocalRay = new Ray(LeftGaze.GazeOrigin, LeftGaze.GazeDirection);
-            RightLocalRay = new Ray(RightGaze.GazeOrigin, RightGaze.GazeDirection);
+            LeftLocalRay = new Ray (LeftGaze.GazeOrigin, LeftGaze.GazeDirection);
+            RightLocalRay = new Ray (RightGaze.GazeOrigin, RightGaze.GazeDirection);
 
-            LeftViewportPos = getViewportPos(lateralisation.left);
-            RightViewportPos = getViewportPos(lateralisation.right);
+            LeftViewportPos = getViewportPos (lateralisation.left);
+            RightViewportPos = getViewportPos (lateralisation.right);
         }
 
         public readonly IVRGazeData data;
@@ -1439,57 +1402,58 @@ public class ExpeControl : MonoBehaviour {
         public Transform LeftCollide;
         public Transform RightCollide;
 
-        public bool valid(lateralisation later) {
+        public bool valid (lateralisation later) {
             return later == lateralisation.left ? LeftGaze != null && LeftGaze.GazeRayWorldValid : RightGaze != null && RightGaze.GazeRayWorldValid;
         }
 
-        public Vector2 getPor(lateralisation later) {
+        public Vector2 getPor (lateralisation later) {
             return lateralisation.left == later ? LeftViewportPos : RightViewportPos;
         }
 
-        public Ray getGazeRay(lateralisation later) {
+        public Ray getGazeRay (lateralisation later) {
             IVRGazeDataEye gp = later == lateralisation.left ? LeftGaze : RightGaze;
 
-            return new Ray(data.Pose.Position + gp.GazeOrigin, data.Pose.Rotation * gp.GazeDirection);
+            return new Ray (data.Pose.Position + gp.GazeOrigin, data.Pose.Rotation * gp.GazeDirection);
         }
 
-        public Vector2 getViewportPos(lateralisation later) {
+        public Vector2 getViewportPos (lateralisation later) {
             IVRGazeDataEye gaze = later == lateralisation.left ? LeftGaze : RightGaze;
 
-            if (!gaze.GazeDirectionValid) return new Vector2(Single.NaN, Single.NaN);
+            if (!gaze.GazeDirectionValid) return new Vector2 (Single.NaN, Single.NaN);
 
-
-            Vector3 worldPosition = (later == lateralisation.left ? LeftWorldRay : RightWorldRay).GetPoint(FillCamFoV.m_distance * 20);
+            Vector3 worldPosition = (later == lateralisation.left ? LeftWorldRay : RightWorldRay).GetPoint (FillCamFoV.m_distance * 20);
 
             Vector2 screenPos;
             if (Thread.CurrentThread != mainThread) {
-                screenPos = WorldToVP(worldPosition,
+                screenPos = WorldToVP (worldPosition,
                     later == lateralisation.left ? Camera.StereoscopicEye.Left : Camera.StereoscopicEye.Right);
             } else {
-                screenPos = ExpeControl.instance.mainCam.WorldToViewportPoint(worldPosition,
+                screenPos = ExpeControl.instance.mainCam.WorldToViewportPoint (worldPosition,
                     later == lateralisation.left ? Camera.MonoOrStereoscopicEye.Left : Camera.MonoOrStereoscopicEye.Right);
             }
 
-            return new Vector2(screenPos.x, screenPos.y);
+            return new Vector2 (screenPos.x, screenPos.y);
         }
 
-        private static Vector2 WorldToVP(Vector3 worldpos, Camera.StereoscopicEye eye) {
+        private static Vector2 WorldToVP (Vector3 worldpos, Camera.StereoscopicEye eye) {
             Matrix4x4 proj = eye == Camera.StereoscopicEye.Left ? ExpeControl.instance.camStereoProjLeft : ExpeControl.instance.camStereoProjRight;
 
-            Vector4 worldPos = new Vector4(worldpos.x, worldpos.y, worldpos.z, 1.0f);
+            Vector4 worldPos = new Vector4 (worldpos.x, worldpos.y, worldpos.z, 1.0f);
             Vector4 viewPos = ExpeControl.instance.camViewMat * worldPos;
             Vector4 projPos = proj * viewPos; // ExpeControl.instance.mainCam.projectionMatrix * viewPos;
-            Vector3 ndcPos = new Vector3(projPos.x / projPos.w, projPos.y / projPos.w, projPos.z / projPos.w);
-            Vector3 viewportPos = new Vector3(ndcPos.x * 0.5f + 0.5f, ndcPos.y * 0.5f + 0.5f, -viewPos.z);
+            Vector3 ndcPos = new Vector3 (projPos.x / projPos.w, projPos.y / projPos.w, projPos.z / projPos.w);
+            Vector3 viewportPos = new Vector3 (ndcPos.x * 0.5f + 0.5f, ndcPos.y * 0.5f + 0.5f, -viewPos.z);
 
             return viewportPos;
         }
     }
 
-    public GazePoint gazePoint = new GazePoint();
+    public GameObject SRAnipal;
+    public VREyeTracker trackr;
+    public GazePoint gazePoint = new GazePoint ();
     public ShaderBehaviour shaderBehavior;
-    public delegate void samplingCallback(GazePoint gaze);
-    public Dictionary<string, samplingCallback> SamplingCallbacks = new Dictionary<string, samplingCallback>();
+    public delegate void samplingCallback (GazePoint gaze);
+    public Dictionary<string, samplingCallback> SamplingCallbacks = new Dictionary<string, samplingCallback> ();
 
     private VREyeTracker _eyeTrackerTobii => (VREyeTracker.Instance);
     private bool isTobiiTracking => (_eyeTrackerTobii.isActiveAndEnabled);
@@ -1510,11 +1474,11 @@ public class ExpeControl : MonoBehaviour {
     private bool m_ETsubscribed = false;
 
     // CALIBRATION BEG
-    private void startCalibration() {
-        _calibration.StartCalibration(null, CalibrationCallback);
+    private void startCalibration () {
+        _calibration.StartCalibration (null, CalibrationCallback);
     }
 
-    private void CalibrationCallback(bool calibrationResult) {
+    private void CalibrationCallback (bool calibrationResult) {
         m_calibrationSuccess = calibrationResult;
         m_calibrationDone = true;
     }
@@ -1534,13 +1498,13 @@ public class ExpeControl : MonoBehaviour {
     public long UnityTimeStamp;
 
     private static readonly Thread mainThread = Thread.CurrentThread;
-    private void Update() {
+    private void Update () {
         // return;
         // To be used in this component - Coroutines are called back between "Update" and "LateUpdate"
         if (tobiiTracking) {
-            RetrieveCameraData();
+            RetrieveCameraData ();
             if (isSampling) {
-                m_recorder_HMD.WriteLine(
+                m_recorder_HMD.WriteLine (
                     $"{gazePoint.data.TimeStamp},{UnityTimeStamp}," +
                     $"{(gazePoint.LeftCollide != null ? gazePoint.LeftCollide.name : "None")}," +
                     $"{(gazePoint.RightCollide != null ? gazePoint.RightCollide.name : "None")}");
@@ -1551,7 +1515,7 @@ public class ExpeControl : MonoBehaviour {
     }
     public Vector2[] validationHit = new Vector2[2];
 
-    public void RetrieveCameraData() {
+    public void RetrieveCameraData () {
         Transform camTrans = mainCam.transform;
 
         cameraRotation = camTrans.eulerAngles;
@@ -1559,39 +1523,38 @@ public class ExpeControl : MonoBehaviour {
         cameraPosition = camTrans.position;
         cameraLocalScale = camTrans.localScale;
 
-        camStereoProjLeft = mainCam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left);
-        camStereoProjRight = mainCam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Right);
+        camStereoProjLeft = mainCam.GetStereoProjectionMatrix (Camera.StereoscopicEye.Left);
+        camStereoProjRight = mainCam.GetStereoProjectionMatrix (Camera.StereoscopicEye.Right);
 
-        gazePoint.LeftCollide = Physics.Raycast(gazePoint.LeftWorldRay, out RaycastHit hitL) ? hitL.transform : null;
-        gazePoint.RightCollide = Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit hitR) ? hitR.transform : null;
+        gazePoint.LeftCollide = Physics.Raycast (gazePoint.LeftWorldRay, out RaycastHit hitL) ? hitL.transform : null;
+        gazePoint.RightCollide = Physics.Raycast (gazePoint.RightWorldRay, out RaycastHit hitR) ? hitR.transform : null;
 
-
-        if (gazePoint.LeftCollide != null && gazePoint.LeftCollide.name.Contains("mesh"))
+        if (gazePoint.LeftCollide != null && gazePoint.LeftCollide.name.Contains ("mesh"))
             gazePoint.LeftCollide = gazePoint.LeftCollide.parent;
-        if (gazePoint.RightCollide != null && gazePoint.RightCollide.name.Contains("mesh"))
+        if (gazePoint.RightCollide != null && gazePoint.RightCollide.name.Contains ("mesh"))
             gazePoint.RightCollide = gazePoint.RightCollide.parent;
 
-        if (Physics.Raycast(gazePoint.LeftWorldRay, out RaycastHit vL)) {
-            validationHit[0] = shaderBehavior.transform.InverseTransformPoint(vL.point);
+        if (Physics.Raycast (gazePoint.LeftWorldRay, out RaycastHit vL)) {
+            validationHit[0] = shaderBehavior.transform.InverseTransformPoint (vL.point);
             validationHit[0].x = (validationHit[0].x + .5f) * Utils.Cam_FOV_hori;
             validationHit[0].y = (validationHit[0].y + .5f) * Utils.Cam_FOV_vert;
 
             //            Vector3 aa = shB.transform.InverseTransformPoint(vL.point);
             //            print($"{aa.x},{aa.y},{aa.z} -- {validationHit[0].x},{validationHit[0].y}");
         } else {
-            validationHit[0] = new Vector2(float.NaN, float.NaN);
+            validationHit[0] = new Vector2 (float.NaN, float.NaN);
         }
-        if (Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit vR)) {
-            validationHit[1] = shaderBehavior.transform.InverseTransformPoint(vR.point);
+        if (Physics.Raycast (gazePoint.RightWorldRay, out RaycastHit vR)) {
+            validationHit[1] = shaderBehavior.transform.InverseTransformPoint (vR.point);
             validationHit[1].x = (validationHit[1].x + .5f) * Utils.Cam_FOV_hori;
             validationHit[1].y = (validationHit[1].y + .5f) * Utils.Cam_FOV_vert;
         } else {
-            validationHit[1] = new Vector2(float.NaN, float.NaN);
+            validationHit[1] = new Vector2 (float.NaN, float.NaN);
         }
 
         camViewMat = mainCam.worldToCameraMatrix;
 
-        UnityTimeStamp = getTimeStamp();
+        UnityTimeStamp = getTimeStamp ();
     }
 
     // Record data
@@ -1602,20 +1565,20 @@ public class ExpeControl : MonoBehaviour {
     public bool isSampling;
     public long lastOcuTS;
 
-    private void HMDGazeDataReceivedCallback(object sender, HMDGazeDataEventArgs rawGazeData) {
-        long OcutimeStamp = EyeTrackingOperations.GetSystemTimeStamp();
+    private void HMDGazeDataReceivedCallback (object sender, HMDGazeDataEventArgs rawGazeData) {
+        long OcutimeStamp = EyeTrackingOperations.GetSystemTimeStamp ();
         // print("in");
 
         lastOcuTS = OcutimeStamp;
 
-        EyeTrackerOriginPose bestMatchingPose = new EyeTrackerOriginPose(OcutimeStamp, cameraPosition, cameraQuaternion);
+        EyeTrackerOriginPose bestMatchingPose = new EyeTrackerOriginPose (OcutimeStamp, cameraPosition, cameraQuaternion);
 
-        VRGazeData gazeData = new VRGazeData(rawGazeData, bestMatchingPose);
-        gazePoint = new GazePoint(gazeData);
+        VRGazeData gazeData = new VRGazeData (rawGazeData, bestMatchingPose);
+        gazePoint = new GazePoint (gazeData);
 
         // Viewport positions
-        Vector2 leftPor = gazePoint.getPor(lateralisation.left);
-        Vector2 rightPor = gazePoint.getPor(lateralisation.right);
+        Vector2 leftPor = gazePoint.getPor (lateralisation.left);
+        Vector2 rightPor = gazePoint.getPor (lateralisation.right);
         // 3D gaze vector
         Vector3 leftBasePoint = gazeData.Left.GazeOrigin;
         Vector3 rightBasePoint = gazeData.Right.GazeOrigin;
@@ -1630,7 +1593,7 @@ public class ExpeControl : MonoBehaviour {
 
         // TODO: add back func startNewRecord - unblock below
         if (false && isSampling) {
-            m_recorder_ET.WriteLine(
+            m_recorder_ET.WriteLine (
                 $"{OcutimeStamp},{UnityTimeStamp}," +
                 $"{leftPor.x},{leftPor.y}," +
                 $"{rightPor.x},{rightPor.y}," +
@@ -1645,11 +1608,11 @@ public class ExpeControl : MonoBehaviour {
                 $"{leftGazeDirection.x},{leftGazeDirection.y},{leftGazeDirection.z}," +
                 $"{rightGazeDirection.x},{rightGazeDirection.y},{rightGazeDirection.z}," +
                 $"{valL},{valR}"
-             );
+            );
         }
 
         foreach (samplingCallback func in SamplingCallbacks.Values) {
-            func(gazePoint);
+            func (gazePoint);
         }
     }
 
@@ -1658,22 +1621,21 @@ public class ExpeControl : MonoBehaviour {
 
     bool eyeCalibrated = false;
     bool eyeValidated = false;
-    IEnumerator FullTobiiCalibration() {
+    IEnumerator FullTobiiCalibration () {
 
         eyeCalibrated = false;
         eyeValidated = false;
 
-        print("Waiting for the eyetracker to start");
+        print ("Waiting for the eyetracker to start");
         // Wait for ET server to start
-        yield return new WaitUntil(() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
-        print("_eyeTrackerTobii != null");
+        yield return new WaitUntil (() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
+        print ("_eyeTrackerTobii != null");
 
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame ();
         _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
 
         m_ETsubscribed = true;
-        print("Eyetracker started and subscribed to");
-
+        print ("Eyetracker started and subscribed to");
 
         // Tobii calibration routine
 
@@ -1684,15 +1646,15 @@ public class ExpeControl : MonoBehaviour {
         int calCount = 0;
         while (!m_calibrationSuccess) {
 
-            print("BEFORE CALIBRATION");
+            print ("BEFORE CALIBRATION");
             // print("Press space to begin calibration routine!");
             // yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
 
             m_calibrationDone = false;
             yield return null;
-            startCalibration();
-            yield return new WaitUntil(() => m_calibrationDone);
-            print("AFTER CALIBRATION");
+            startCalibration ();
+            yield return new WaitUntil (() => m_calibrationDone);
+            print ("AFTER CALIBRATION");
 
             if (b_validate && m_calibrationSuccess) {
                 // calCount = 0;
@@ -1702,24 +1664,24 @@ public class ExpeControl : MonoBehaviour {
                 m_validationDone = false;
                 yield return null;
                 shaderBehavior.phase = ShaderBehaviour.shaderPhase.validation;
-                yield return new WaitUntil(() => m_validationDone);
+                yield return new WaitUntil (() => m_validationDone);
                 shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
 
                 m_calibrationSuccess = m_validationSuccess;
 
                 if (!m_validationSuccess) {
-                    print("failedVal");
-                    yield return new WaitForSecondsRealtime(3f);
+                    print ("failedVal");
+                    yield return new WaitForSecondsRealtime (3f);
                 } else {
-                    print("succeededVal");
+                    print ("succeededVal");
                 }
             }
             // TODO: log calibration and validation success and precision
 
             if (++calCount >= 3) {
-                print("failedCal");
-                print("Press space to abort calibration and continue...");
-                yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                print ("failedCal");
+                print ("Press space to abort calibration and continue...");
+                yield return new WaitUntil (() => Input.GetKeyUp (KeyCode.Space));
                 m_calibrationSuccess = true;
                 calCount = 0;
             }
@@ -1730,12 +1692,12 @@ public class ExpeControl : MonoBehaviour {
         eyeValidated = true;
     }
 
-    private void startNewRecord() {
+    private void startNewRecord () {
         // m_recorder_ET = new StreamWriter(m_userdataPath + "/TESTname_ET.csv");
         // m_recorder_ET = new StreamWriter(m_userdataPath + "/" + currentTrial.expName + "_ET.csv");
-        m_recorder_ET = new StreamWriter(m_userdataPath + "/" +
-                                         currentEmotTrial.expName + "_ET.csv");
-        m_recorder_ET.WriteLine(
+        m_recorder_ET = new StreamWriter (m_userdataPath + "/" +
+            currentEmotTrial.expName + "_ET.csv");
+        m_recorder_ET.WriteLine (
             "OcutimeStamp,UnityTimeStamp," +
             "leftPor.x,leftPor.y," +
             "rightPor.x,rightPor.y," +
@@ -1753,9 +1715,9 @@ public class ExpeControl : MonoBehaviour {
 
         // m_recorder_HMD = new StreamWriter(m_userdataPath + "/TESTname_HMD.csv");
         // m_recorder_HMD = new StreamWriter(m_userdataPath + "/" + currentTrial.expName + "_HMD.csv");
-        m_recorder_HMD = new StreamWriter(m_userdataPath + "/" +
-                                   currentEmotTrial.expName + "_HMD.csv");
-        m_recorder_HMD.WriteLine(
+        m_recorder_HMD = new StreamWriter (m_userdataPath + "/" +
+            currentEmotTrial.expName + "_HMD.csv");
+        m_recorder_HMD.WriteLine (
             "OcutimeStamp,UnityTimeStamp," +
             "LeftCollide,RightCollide");
 
@@ -1764,27 +1726,24 @@ public class ExpeControl : MonoBehaviour {
         // writeInfo($"Started: [{currentTrial.exp_idx + 1}] {currentTrial.expName}");
     }
 
-    private void stopRecord(long elapsedtime) {
+    private void stopRecord (long elapsedtime) {
         isSampling = false;
         if (m_recorder_ET != null && m_recorder_ET.BaseStream.CanWrite)
-            m_recorder_ET.Close();
+            m_recorder_ET.Close ();
         if (m_recorder_HMD != null && m_recorder_HMD.BaseStream.CanWrite)
-            m_recorder_HMD.Close();
+            m_recorder_HMD.Close ();
 
         // writeInfo($"Elapsed time: {elapsedtime}");
         // writeInfo($"Trial ended: {(userPressed ? "Pressed trigger" : "Ran out of time")}");
     }
 
-
-
-    IEnumerator TobiiCalibration() {
-        toggleMessage(true, "pleaseCalibrateTobii");
-        _instructBehaviour.RequestConfirmation(durationToContinue);
-        yield return new WaitUntil(() => !_instructBehaviour.requested);
-        yield return new WaitForSecondsRealtime(1.0f);
-        _instructBehaviour.toggleWorldInstruction(false);
-        yield return new WaitForSecondsRealtime(1.0f);
-
+    IEnumerator TobiiCalibration () {
+        toggleMessage (true, "pleaseCalibrateTobii");
+        _instructBehaviour.RequestConfirmation (durationToContinue);
+        yield return new WaitUntil (() => !_instructBehaviour.requested);
+        yield return new WaitForSecondsRealtime (1.0f);
+        _instructBehaviour.toggleWorldInstruction (false);
+        yield return new WaitForSecondsRealtime (1.0f);
 
         // shaderBehavior.gameObject.SetActive(true);
 
@@ -1796,18 +1755,16 @@ public class ExpeControl : MonoBehaviour {
 
         // shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
 
-
-        print("Waiting for the eyetracker to start");
+        print ("Waiting for the eyetracker to start");
         // Wait for ET server to start
-        yield return new WaitUntil(() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
-        print("_eyeTrackerTobii != null");
+        yield return new WaitUntil (() => _eyeTrackerTobii != null && _eyeTrackerTobii._eyeTracker != null);
+        print ("_eyeTrackerTobii != null");
 
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame ();
         _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
 
         m_ETsubscribed = true;
-        print("Eyetracker started and subscribed to");
-
+        print ("Eyetracker started and subscribed to");
 
         // Tobii calibration routine
 
@@ -1818,15 +1775,15 @@ public class ExpeControl : MonoBehaviour {
         int calCount = 0;
         while (!m_calibrationSuccess) {
 
-            print("BEFORE CALIBRATION");
+            print ("BEFORE CALIBRATION");
             // print("Press space to begin calibration routine!");
             // yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
 
             m_calibrationDone = false;
             yield return null;
-            startCalibration();
-            yield return new WaitUntil(() => m_calibrationDone);
-            print("AFTER CALIBRATION");
+            startCalibration ();
+            yield return new WaitUntil (() => m_calibrationDone);
+            print ("AFTER CALIBRATION");
 
             if (b_validate && m_calibrationSuccess) {
                 // calCount = 0;
@@ -1836,24 +1793,24 @@ public class ExpeControl : MonoBehaviour {
                 m_validationDone = false;
                 yield return null;
                 shaderBehavior.phase = ShaderBehaviour.shaderPhase.validation;
-                yield return new WaitUntil(() => m_validationDone);
+                yield return new WaitUntil (() => m_validationDone);
                 shaderBehavior.phase = ShaderBehaviour.shaderPhase.none;
 
                 m_calibrationSuccess = m_validationSuccess;
 
                 if (!m_validationSuccess) {
-                    print("failedVal");
-                    yield return new WaitForSecondsRealtime(3f);
+                    print ("failedVal");
+                    yield return new WaitForSecondsRealtime (3f);
                 } else {
-                    print("succeededVal");
+                    print ("succeededVal");
                 }
             }
             // TODO: log calibration and validation success and precision
 
             if (++calCount >= 3) {
-                print("failedCal");
-                print("Press space to abort calibration and continue...");
-                yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                print ("failedCal");
+                print ("Press space to abort calibration and continue...");
+                yield return new WaitUntil (() => Input.GetKeyUp (KeyCode.Space));
                 m_calibrationSuccess = true;
                 calCount = 0;
             }
