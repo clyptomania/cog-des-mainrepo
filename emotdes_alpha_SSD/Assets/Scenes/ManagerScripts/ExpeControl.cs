@@ -19,6 +19,7 @@ public class ExpeControl : MonoBehaviour {
     [SerializeField] private bool controllerTutorial, questionnaireTutorial;
     [SerializeField] private bool resetExperiments = false;
     [SerializeField] private bool eyeTracking = true;
+    [SerializeField] private bool preTesting = true;
 
     [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton;
 
@@ -27,6 +28,7 @@ public class ExpeControl : MonoBehaviour {
     // Playlist data
     private readonly List<playlistElement> playlist = new List<playlistElement> (90);
     private readonly List<EmotPlaylistElement> emotPlaylist = new List<EmotPlaylistElement> (90);
+    private readonly List<List<EmotPlaylistElement>> allPlaylists = new List<List<EmotPlaylistElement>> (90);
     public int m_currentTrialIdx = 0;
     public int m_currentQuestionIdx = 0;
     public int currentTrialIdx => m_currentTrialIdx;
@@ -258,7 +260,7 @@ public class ExpeControl : MonoBehaviour {
                 int subjIdtmp;
                 string[] splitResult = ss.Split ('_');
                 if (splitResult.Length > 1) {
-                    Debug.Log ("Split result length: " + splitResult.Length);
+                    // Debug.Log ("Split result length: " + splitResult.Length);
                     int.TryParse (ss.Split ('_') [1], out subjIdtmp);
 
                     if (subjIdtmp > lastSubjID)
@@ -268,6 +270,12 @@ public class ExpeControl : MonoBehaviour {
             m_userId = lastSubjID + 1;
         }
         idTxt.text = m_userId.ToString ();
+
+        // Testing CSV loading
+
+        Debug.Log ("Test CSV loading here.");
+        setPlaylistCSV ();
+
     }
 
     private void SetUp () {
@@ -645,6 +653,131 @@ public class ExpeControl : MonoBehaviour {
         // }
         // print($"playlist.Count: {playlist.Count}");
     }
+
+    private void setPlaylistCSV () {
+
+        string playlistName;
+        string testKind;
+
+        if (preTesting)
+            testKind = "Pre";
+        else
+            testKind = "Full";
+
+        if (tobiiTracking) {
+            Debug.Log ("We are at SGL.");
+            playlistName = $"/SubjectData/Playlists/{testKind}-1.csv";
+        } else {
+            Debug.Log ("We are at HfG.");
+            playlistName = $"/SubjectData/Playlists/{testKind}-2.csv";
+        }
+
+        // StreamReader file = new StreamReader (Directory.GetParent (Application.dataPath) + playlistName, Encoding.UTF8);
+
+        List<List<string[]>> participants = new List<List<string[]>> (90);
+
+        var lines = File.ReadLines (Directory.GetParent (Application.dataPath) + playlistName);
+        // Debug.Log ("Number of lines: " + lines.Count ());
+        int lineCounter = 0;
+        List<string[]> participant = new List<string[]> (90);
+        string toPrint = "";
+        foreach (var line in lines) {
+            switch (lineCounter % 3) {
+                case 0:
+                    Debug.Log ("Creating a new playlist for participant " + ((lineCounter / 3) + 1));
+                    participant = new List<string[]> (90);
+                    // string[] linesplit = line.Split (',');
+                    participant.Add (line.Split (','));
+                    toPrint = "Printing var1 line ";
+                    break;
+                case 1:
+                    toPrint = "Printing var2 line ";
+                    // linesplit = line.Split (',');
+                    participant.Add (line.Split (','));
+                    break;
+                case 2:
+                    toPrint = "Printing time line ";
+                    // string[] linesplit = line.Split (',');
+                    participant.Add (line.Split (','));
+                    participants.Add (participant);
+                    // Debug.Log ("List of participants is now " + participants.Count + " long");
+                    break;
+            }
+            // toPrint += line;
+
+            toPrint += $"of participant {(lineCounter / 3) + 1}: {line}";
+            lineCounter++;
+            Debug.Log (toPrint);
+            // string[] linesplit = line.Split (',');
+            // tasks.Add (linesplit[0], linesplit[1]);
+            // print (line);
+        }
+
+        foreach (List<string[]> person in participants) {
+            List<EmotPlaylistElement> ePlaylist = new List<EmotPlaylistElement> (90);
+            for (int i = 0; i < person[0].Length; i++) {
+
+                // Durations from array defined in Editor
+
+                int.TryParse (person[2][i], out int durationIdx);
+                int duration = durations[durationIdx - 1];
+
+                string room = "BreakRoom";
+                string inst = "Chill";
+                string labo = "Lab";
+
+                // SGL-specific playlist generation
+                if (tobiiTracking) {
+                    labo = "SGL";
+                    // TO DO: replace hard-coded room names with dynamically assigned ones from the Editor
+                    // Variable one, first level: warmly lit tunnel
+                    if (person[0][i] == "a") {
+                        room = "Version 8 - warmes Licht";
+                        // Variable one, second level: coldly lit tunnel
+                    } else {
+                        room = "Version 9 - kaltes Licht";
+                    }
+
+                    // Variable two, first level: sit down (specifically for SGL)
+                    if (person[1][i] == "x") {
+                        inst = "sit-SGL";
+                        // Variable two, second level: stand up (specifically for SGL)
+                    } else {
+                        inst = "stand-SGL";
+                    }
+
+                    // HfG-specific playlist generation
+                } else {
+                    labo = "HfG";
+                    // TO DO: replace hard-coded room names with dynamically assigned ones from the Editor
+                    // Variable one, first level: mesh benches
+                    if (person[0][i] == "a") {
+                        room = "Version 1 - Bank Testbed Mesh";
+                        // Variable one, second level: wooden benches
+                    } else {
+                        room = "Version 2 - Bank Testbed Wood";
+                    }
+
+                    // Variable two, first level: sit on the low bench (specifically for HfG)
+                    if (person[1][i] == "x") {
+                        inst = "sit-HfG";
+                        // Variable two, second level: lean on the high bench (specifically for HfG)
+                    } else {
+                        inst = "lean-HfG";
+                    }
+                }
+                ePlaylist.Add (new EmotPlaylistElement (room, duration, i, inst, labo));
+                // EmotPlaylistElement pElement = new EmotPlaylistElement (room, duration, i, inst, labo);
+            }
+            allPlaylists.Add (ePlaylist);
+        }
+        Debug.Log ("Length of allPlaylist: " + allPlaylists.Count ());
+
+        foreach (var pEl in allPlaylists[0]) {
+            Debug.Log (pEl.expName);
+        }
+    }
+
     private void setUserPlaylistErwan (int idx) {
         int max_idx = 100;
         if (idx > max_idx) {
