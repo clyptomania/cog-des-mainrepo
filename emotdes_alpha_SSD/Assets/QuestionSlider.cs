@@ -19,8 +19,7 @@ public class QuestionSlider : MonoBehaviour {
     // private int minutes, seconds;
     [SerializeField] private bool discrete = true;
     [SerializeField] private bool timeFormat = true;
-    [SerializeField] [Range(0.1f, 1)] private float swipeSpeed = 0.5f;
-
+    [SerializeField][Range (0.1f, 1)] private float swipeSpeed = 0.5f;
 
     public SteamVR_Input_Sources anyHand;
     public SteamVR_Action_Boolean sideButtonAction;
@@ -40,7 +39,6 @@ public class QuestionSlider : MonoBehaviour {
 
     public GameObject valencePanel, arousalPanel;
 
-
     float deltaX, range, divisor, rounder, discreteVal;
     bool nonSwipe = true;
 
@@ -49,23 +47,22 @@ public class QuestionSlider : MonoBehaviour {
     private string confirmingText = "\n\n\n\nPress the side button again to confirm your answer, or swipe again to change it.";
     private string confirmedText = "\n\n\n\nAnswer confirmed!";
 
-
     /// <summary>
     /// Awake is called when the script instance is being loaded.
     /// </summary>
-    void Awake() {
+    void Awake () {
         instance = this;
 
-        slider = GetComponentInChildren<Slider>();
+        slider = GetComponentInChildren<Slider> ();
 
-        UpdateSliderRange(30, 300f);
+        UpdateSliderRange (30, 300f);
 
-        valencePanel.SetActive(false);
-        arousalPanel.SetActive(false);
+        valencePanel.SetActive (false);
+        arousalPanel.SetActive (false);
         // Debug.Log("Slider found with value: " + sliderValue);
     }
 
-    public void PadSwipe(SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta) {
+    public void PadSwipe (SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta) {
 
         if (_expeControl.userTouchedTrigger || confirmed)
             return;
@@ -83,16 +80,16 @@ public class QuestionSlider : MonoBehaviour {
                 sliderValue += deltaX;
             else sliderValue = maxVal;
         else
-            if (sliderValue + deltaX > minVal)
+        if (sliderValue + deltaX > minVal)
             sliderValue += deltaX;
         else sliderValue = minVal;
 
-        UpdateSlider();
+        UpdateSlider ();
     }
 
-    public void UpdateSliderRange(float min, float max, bool vA = false, bool tF = false,
-    string minLabel = "", string midLabel = "", string maxLabel = "", string valAro = "",
-    string twoLabel = "", string fourLabel = "") {
+    public void UpdateSliderRange (float min, float max, bool vA = false, bool tF = false,
+        string minLabel = "", string midLabel = "", string maxLabel = "", string valAro = "",
+        string twoLabel = "", string fourLabel = "") {
         minVal = min;
         maxVal = max;
         visualAnalog = vA;
@@ -102,13 +99,13 @@ public class QuestionSlider : MonoBehaviour {
         range = max - min;
         divisor = 1 / range;
         if (timeFormat) {
-            minText.text = SecondsToTime(minVal);
+            minText.text = SecondsToTime (minVal);
             midText.text = "";
-            maxText.text = SecondsToTime(maxVal);
+            maxText.text = SecondsToTime (maxVal);
         } else {
-            minText.text = Mathf.RoundToInt(minVal).ToString();
-            midText.text = (minVal + range / 2f).ToString();
-            maxText.text = Mathf.RoundToInt(maxVal).ToString();
+            minText.text = Mathf.RoundToInt (minVal).ToString ();
+            midText.text = (minVal + range / 2f).ToString ();
+            maxText.text = Mathf.RoundToInt (maxVal).ToString ();
         }
         if (minLabel != "") {
             minText.text = minLabel;
@@ -140,31 +137,33 @@ public class QuestionSlider : MonoBehaviour {
             fourText.text = "";
             twoText.text = "";
             if (valAro == "v") {
-                valencePanel.SetActive(true); arousalPanel.SetActive(false);
+                valencePanel.SetActive (true);
+                arousalPanel.SetActive (false);
             }
             if (valAro == "a") {
-                arousalPanel.SetActive(true); valencePanel.SetActive(false);
+                arousalPanel.SetActive (true);
+                valencePanel.SetActive (false);
             }
         } else {
             SAM = false;
-            arousalPanel.SetActive(false);
-            valencePanel.SetActive(false);
+            arousalPanel.SetActive (false);
+            valencePanel.SetActive (false);
         }
 
         sliderValue = minVal + range / 2f;
 
-        UpdateSlider();
+        UpdateSlider ();
     }
 
-    public string SecondsToTime(float totalSeconds) {
-        int minutes = Mathf.FloorToInt(totalSeconds / 60F);
-        int seconds = Mathf.FloorToInt(totalSeconds - minutes * 60);
-        return string.Format("{0:0}:{1:00}", minutes, seconds);
+    public string SecondsToTime (float totalSeconds) {
+        int minutes = Mathf.FloorToInt (totalSeconds / 60F);
+        int seconds = Mathf.FloorToInt (totalSeconds - minutes * 60);
+        return string.Format ("{0:0}:{1:00}", minutes, seconds);
     }
 
-    private void UpdateSlider() {
+    private void UpdateSlider () {
         slider.value = (sliderValue - minVal) * divisor;
-        discreteVal = Mathf.Round(sliderValue * rounder) / rounder;
+        discreteVal = Mathf.Round (sliderValue * rounder) / rounder;
 
         if (discrete)
             slider.value = (discreteVal - minVal) * divisor;
@@ -172,33 +171,33 @@ public class QuestionSlider : MonoBehaviour {
             slider.value = (sliderValue - minVal) * divisor;
 
         if (timeFormat)
-            sliderText.text = SecondsToTime(discreteVal);
+            sliderText.text = SecondsToTime (discreteVal);
         else
-            sliderText.text = (discreteVal).ToString();
+            sliderText.text = (discreteVal).ToString ();
         if (visualAnalog)
             sliderText.text = "";
     }
 
-    public void PadTouchStart(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+    public void PadTouchStart (SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         // Debug.Log("Began Touch");
         nonSwipe = true;
-        controllerMainPoint.SetActive(false);
+        controllerMainPoint.SetActive (false);
         if (confirming) {
             questionTextField.text = questionText + confirmationText;
             confirming = false;
-            Debug.Log("Aborted confirmation from touch start.");
+            Debug.Log ("Aborted confirmation from touch start.");
 
             slider.interactable = true;
         }
     }
-    public void PadTouchEnd(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+    public void PadTouchEnd (SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         // Debug.Log("Ended Touch");
         nonSwipe = true;
         if (directInteract && !confirmed && !_expeControl.userTouchedTrigger)
-            controllerMainPoint.SetActive(true);
+            controllerMainPoint.SetActive (true);
     }
 
-    public void UpdateQuestionText(string text) {
+    public void UpdateQuestionText (string text) {
         questionText = text;
         questionTextField.text = questionText + confirmationText;
 
@@ -210,103 +209,102 @@ public class QuestionSlider : MonoBehaviour {
 
         if (!_expeControl.userTouchedTrigger)
             slider.interactable = true;
-        _instructBehaviour.ResetRadialProgresses();
+        _instructBehaviour.ResetRadialProgresses ();
     }
 
-    public void RequestConfirmation() {
+    public void RequestConfirmation () {
         requesting = true;
         confirmed = false;
         if (directInteract)
-            controllerMainPoint.SetActive(true);
+            controllerMainPoint.SetActive (true);
     }
 
     private float timeConfirming = 0.0f;
-    public void StartConfirmation() {
+    public void StartConfirmation () {
         confirming = true;
-        Debug.Log("Started confirmation");
+        Debug.Log ("Started confirmation");
         timeConfirming = Time.time;
         slider.interactable = false;
         // yield return new WaitForSeconds(0.25f);
         questionTextField.text = questionText + confirmingText;
     }
 
-    public void ConfirmAnswer() {
+    public void ConfirmAnswer () {
         if (Time.time - timeConfirming > 0.5) {
             confirmed = true;
             confirming = false;
-            Debug.Log("Successfully confirmed answer: " + sliderValue);
+            Debug.Log ("Successfully confirmed answer: " + sliderValue);
             questionTextField.text = confirmedText;
 
-            string answerString = discreteVal.ToString();
+            string answerString = discreteVal.ToString ();
             if (timeFormat)
                 answerString += "s";
 
-            _expeControl.WriteAnswer(questionText + ";" + answerString);
+            _expeControl.WriteAnswer (questionText, answerString);
 
             requesting = false;
         } else {
-            Debug.Log("Confirmation click happened too fast.");
+            Debug.Log ("Confirmation click happened too fast.");
         }
     }
-    public void SideButtonGrip(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+    public void SideButtonGrip (SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         if (requesting) {
             if (!confirming) {
-                StartConfirmation();
+                // StartConfirmation();
             } else {
-                ConfirmAnswer();
+                // ConfirmAnswer();
             }
         }
     }
 
-    public void TriggerPress(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+    public void TriggerPress (SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         slider.interactable = false;
     }
-    public void TriggerRelease(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+    public void TriggerRelease (SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         if (!confirmed)
             slider.interactable = true;
     }
 
     float triggerClickTime;
 
-    public void TriggerClick(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+    public void TriggerClick (SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         if (requesting) {
             if (directInteract) {
-                controllerMainPoint.SetActive(false);
+                controllerMainPoint.SetActive (false);
                 Vector3[] fourCorners = new Vector3[4];
-                slider.fillRect.GetWorldCorners(fourCorners);
-                Debug.Log("Slider's world position: " + fourCorners[0]);
+                slider.fillRect.GetWorldCorners (fourCorners);
+                Debug.Log ("Slider's world position: " + fourCorners[0]);
             }
             triggerClickTime = 0.0f;
             if (transform.gameObject.activeSelf)
-                StartCoroutine(HoldTrigger());
+                StartCoroutine (HoldTrigger ());
         }
     }
 
-    public void TriggerUnClick(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
+    public void TriggerUnClick (SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         // StopCoroutine(HoldTrigger());
         if (!confirmed) {
-            StopAllCoroutines();
-            _instructBehaviour.ResetRadialProgresses();
+            StopAllCoroutines ();
+            _instructBehaviour.ResetRadialProgresses ();
             triggerClickTime = 0.0f;
             if (directInteract)
-                controllerMainPoint.SetActive(true);
+                controllerMainPoint.SetActive (true);
         }
     }
 
-
-    IEnumerator HoldTrigger() {
+    IEnumerator HoldTrigger () {
         while (triggerClickTime < _expeControl.durationToContinue) {
             triggerClickTime += Time.deltaTime;
-            _instructBehaviour.SetRadialProgresses(triggerClickTime / _expeControl.durationToContinue);
+            _instructBehaviour.SetRadialProgresses (triggerClickTime / _expeControl.durationToContinue);
             yield return null;
         }
-        Debug.Log("Successfully confirmed answer: " + sliderValue);
+        Debug.Log ("Successfully confirmed answer: " + sliderValue);
 
-        string answerString = discreteVal.ToString();
+        string answerString = discreteVal.ToString ();
         if (timeFormat)
             answerString += "s";
 
-        _expeControl.WriteAnswer(questionText + ";" + answerString);
+        _expeControl.WriteAnswer (questionText, answerString);
 
         triggerClickTime = 0;
         confirmed = true;
@@ -314,25 +312,25 @@ public class QuestionSlider : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    void Start() {
+    void Start () {
 
         requesting = false;
 
         _expeControl = ExpeControl.instance;
         _instructBehaviour = InstructBehaviour.instance;
 
-        trackpadVector.AddOnChangeListener(PadSwipe, anyHand);
-        trackpadTouchAction.AddOnStateDownListener(PadTouchStart, anyHand);
-        trackpadTouchAction.AddOnStateUpListener(PadTouchEnd, anyHand);
+        trackpadVector.AddOnChangeListener (PadSwipe, anyHand);
+        trackpadTouchAction.AddOnStateDownListener (PadTouchStart, anyHand);
+        trackpadTouchAction.AddOnStateUpListener (PadTouchEnd, anyHand);
         // sideButtonAction.AddOnStateDownListener(SideButtonGrip, anyHand);
-        triggerTouchAction.AddOnStateDownListener(TriggerPress, anyHand);
-        triggerTouchAction.AddOnStateUpListener(TriggerRelease, anyHand);
-        triggerClickAction.AddOnStateDownListener(TriggerClick, anyHand);
-        triggerClickAction.AddOnStateUpListener(TriggerUnClick, anyHand);
+        triggerTouchAction.AddOnStateDownListener (TriggerPress, anyHand);
+        triggerTouchAction.AddOnStateUpListener (TriggerRelease, anyHand);
+        triggerClickAction.AddOnStateDownListener (TriggerClick, anyHand);
+        triggerClickAction.AddOnStateUpListener (TriggerUnClick, anyHand);
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update () {
 
     }
 }
