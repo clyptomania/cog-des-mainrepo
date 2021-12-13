@@ -20,7 +20,7 @@
     // public readonly string varOne;
     // public readonly string varTwo;
 
-    public string expNameCSV => $"{lab},{participant+1},{trial_idx+1},{roomName},{instruction},{duration}";
+    public string expNameCSV => $"{lab},{participant+1},{trial_idx},{roomName},{instruction},{duration}";
     // public string expName => $"{lab}_{participant+1}_{trial_idx+1}_{roomName}_{instruction}_{duration}";
     public string expName {
         get {
@@ -36,7 +36,7 @@
             } else {
                 condensedRoomName = roomName;
             }
-            return $"{lab}_{participant+1}_{trial_idx+1}_{condensedRoomName}_{instruction}_{duration}";
+            return $"{lab}_{participant+1}_{trial_idx}_{condensedRoomName}_{instruction}_{duration}";
         }
     }
 }

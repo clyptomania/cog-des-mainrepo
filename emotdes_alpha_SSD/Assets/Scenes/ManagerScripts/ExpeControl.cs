@@ -24,7 +24,7 @@ public class ExpeControl : MonoBehaviour {
     [SerializeField]
     private int max_idx = 100;
 
-    [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton;
+    [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, startButton, continueButton;
 
     [SerializeField] private List<int> durations = new List<int> ();
 
@@ -252,9 +252,11 @@ public class ExpeControl : MonoBehaviour {
         // questionPanel.SetActive(false);
 
         LoadPlaylistsFromCSVs ();
-        GetLastUserNumber ();
+
+        GetPreviousParticipant ();
+        // GetLastUserNumber ();
         // TestParticipantID ();
-        TestTrialID ();
+        // TestTrialID ();
 
     }
 
@@ -273,19 +275,24 @@ public class ExpeControl : MonoBehaviour {
 
         m_userdataPath = m_basePath + "/Subj_" + m_userId;
 
-        if (Directory.Exists (m_userdataPath)) {
-            Debug.Log ("Participant data already exists at " + m_userdataPath);
+        GetPreviousTrial ();
 
-            int count = Directory.GetFiles (m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
-            if (count > 2) {
-                m_currentTrialIdx = (count - 1) / 2;
-                trialIDField.text = (m_currentTrialIdx + 1).ToString ();
-            }
+        // if (Directory.Exists (m_userdataPath)) {
+        //     Debug.Log ("Participant data already exists at " + m_userdataPath);
 
-        } else {
-            Debug.Log ("Participant data does not exist yet for " + m_userdataPath);
-            trialIDField.text = "1";
-        }
+        //     int count = Directory.GetFiles (m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
+        //     if (count > 2) {
+        //         m_currentTrialIdx = (count - 1) / 2;
+
+        //         // if (m_currentTrialIdx)
+
+        //         trialIDField.text = (m_currentTrialIdx + 1).ToString ();
+        //     }
+
+        // } else {
+        //     Debug.Log ("Participant data does not exist yet for " + m_userdataPath);
+        //     trialIDField.text = "1";
+        // }
 
         // TestTrialID ();
 
@@ -304,6 +311,117 @@ public class ExpeControl : MonoBehaviour {
         trialIDField.text = trialID.ToString ();
 
         m_currentTrialIdx = trialID - 1;
+    }
+
+    public void GetPreviousParticipant () {
+
+        m_basePath = Directory.GetParent (Application.dataPath) + "/SubjectData/" + m_labID;
+        if (!Directory.Exists (m_basePath))
+            Directory.CreateDirectory (m_basePath);
+
+        string[] directories = Directory.GetDirectories (m_basePath);
+        int lastSubjID = 0;
+        string lastSubjectDir = "";
+
+        foreach (string directory in directories) {
+            string folder = directory.Split ('/').Last ();
+
+            int tmpSubjID;
+
+            string[] splitResults = folder.Split ('_');
+            if (splitResults.Length > 1) {
+                int.TryParse (splitResults[1], out tmpSubjID);
+
+                if (tmpSubjID > lastSubjID) {
+                    lastSubjID = tmpSubjID;
+                    lastSubjectDir = m_basePath + "/Subj_" + lastSubjID;
+                }
+            }
+        }
+
+        m_userId = lastSubjID;
+        Debug.Log ("Last detected participant folder " + " from " + m_labID + ": " + lastSubjID);
+
+        // m_userdataPath = m_basePath + "/Subj_" + m_userId;
+
+        // string[] answerFiles = Directory.GetFiles (lastSubjectDir, "*_Answers.csv", SearchOption.AllDirectories);
+        int count = Directory.GetFiles (lastSubjectDir, "*_Answers.csv", SearchOption.AllDirectories).Length;
+        int maxTrials = allPlaylists[m_userId - 1].Count + 2;
+
+        Debug.Log ("Detected " + count + " answer files for participant " + lastSubjID);
+
+        if (count == 0) {
+            Debug.Log ("The last participant did not complete any answers. Starting with that participant ID.");
+
+            m_userId = lastSubjID;
+            m_currentTrialIdx = 0;
+
+            participantIDField.text = m_userId.ToString ();
+            trialIDField.text = m_currentTrialIdx.ToString ();
+
+        } else if (count < maxTrials) {
+            Debug.Log ("The last participant completed " + count + " answers. Resuming with that participant ID from trial " + (count));
+
+            m_userId = lastSubjID;
+            m_currentTrialIdx = count;
+
+            participantIDField.text = m_userId.ToString ();
+            trialIDField.text = m_currentTrialIdx.ToString ();
+
+        } else if (count >= maxTrials) {
+            Debug.Log ("The last participant completed all answers. Starting with the next participant ID.");
+
+            m_userId = lastSubjID + 1;
+            m_currentTrialIdx = 0;
+
+            participantIDField.text = m_userId.ToString ();
+            trialIDField.text = m_currentTrialIdx.ToString ();
+
+        }
+
+        m_userdataPath = m_basePath + "/Subj_" + m_userId;
+
+        // if (count > 2) {
+        //     m_currentTrialIdx = (count - 1) / 2;
+        //     // trialIDField.text = m_currentTrialIdx.ToString ();
+        // } else {
+
+        // }
+    }
+
+    void GetPreviousTrial () {
+
+        int count = 0;
+
+        if (!Directory.Exists (m_userdataPath)) {
+            count = 0;
+        } else {
+            count = Directory.GetFiles (m_userdataPath, "*_Answers.csv", SearchOption.AllDirectories).Length;
+        }
+
+        int maxTrials = allPlaylists[m_userId - 1].Count + 2;
+
+        if (count == 0) {
+            Debug.Log ("This participant did not complete any answers. Starting with Trial 0.");
+
+            m_currentTrialIdx = 0;
+            trialIDField.text = m_currentTrialIdx.ToString ();
+            continueButton.interactable = true;
+
+        } else if (count < maxTrials) {
+            Debug.Log ("This participant completed " + count + " answers. Resuming with trial " + (count + 1));
+
+            m_currentTrialIdx = count;
+            trialIDField.text = m_currentTrialIdx.ToString ();
+            continueButton.interactable = true;
+
+        } else if (count >= maxTrials) {
+            Debug.Log ("This participant completed all answers. Choose a different participant or select any trial to re-start from there.");
+
+            m_currentTrialIdx = 99;
+            trialIDField.text = m_currentTrialIdx.ToString ();
+            continueButton.interactable = false;
+        }
     }
 
     void GetLastUserNumber () {
@@ -332,7 +450,9 @@ public class ExpeControl : MonoBehaviour {
                     lastSubjID = tmpSubjID;
             }
         }
-        m_userId = lastSubjID + 1;
+        // m_userId = lastSubjID + 1;
+        m_userId = lastSubjID;
+        TestParticipantID ();
 
         if (m_userId >= allPlaylists.Count) {
             Debug.Log ("We are at the last user");
@@ -340,8 +460,6 @@ public class ExpeControl : MonoBehaviour {
         }
 
         participantIDField.text = m_userId.ToString ();
-
-        TestParticipantID ();
 
         // Get last completed trial information
 
@@ -362,6 +480,26 @@ public class ExpeControl : MonoBehaviour {
             m_currentTrialIdx = (count - 1) / 2;
             trialIDField.text = m_currentTrialIdx.ToString ();
         }
+    }
+
+    private void StartNew () {
+
+        m_userdataPath = m_basePath + "/Subj_" + m_userId;
+
+        if (Directory.Exists (m_userdataPath)) {
+            Debug.Log ("Data for participant " + m_userId + " already exists and will be deleted.");
+
+            string[] oldFiles = Directory.GetFiles (m_userdataPath, "*.*", SearchOption.AllDirectories);
+            foreach (string file in oldFiles) {
+                // Debug.Log(file);
+                File.Delete (file);
+            }
+            Debug.Log ("Deleted " + oldFiles.Length + " old files from " + m_userdataPath);
+        }
+    }
+
+    private void ContinueFrom () {
+
     }
 
     private void SetUp () {
@@ -395,37 +533,30 @@ public class ExpeControl : MonoBehaviour {
                     m_currentTrialIdx = count / 2;
                 }
             }
+
+        } else {
+            // Create new folder with subject ID
+            Directory.CreateDirectory (m_userdataPath);
+            // User information: basic data + playlist
+            m_recorder_info = new StreamWriter (m_userdataPath + "/UserData.txt");
+            // Record some protocol information
+            WriteInfo ("User_ID: " + m_userId);
+            // writeInfo("Stimuli order, room name, target idx, scotoma condition:");
+            WriteInfo ("Room name, Duration, Order:");
+            // foreach (playlistElement elp in playlist)
+            //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
+            foreach (EmotPlaylistElement ple in emotPlaylist)
+                WriteInfo ($"{ple.expNameCSV}");
+            FlushInfo ();
         }
 
         print (m_userdataPath);
-        // Create new folder with subject ID
-        Directory.CreateDirectory (m_userdataPath);
-        // User information: basic data + playlist
-        m_recorder_info = new StreamWriter (m_userdataPath + "/UserData.txt");
-        // m_recorder_question = new StreamWriter (m_userdataPath + "/UserData.txt");
-        m_recorder_question = new StreamWriter (m_userdataPath + "/Answers.csv", true);
-
-        if (m_recorder_question.BaseStream.CanWrite) {
-            m_recorder_question.WriteLine ("UnityTS,LabID,ParticipantID,TrialID,Room,Instruction,Duration,Question,Answer");
-            // RoomManager.instance.currentRoomName, currentEmotTrial.duration, m_currentTrialIdx, txt);
-            m_recorder_question.Flush ();
-        }
 
         // get playlist for user ID --- we begin with user ID 1, but start with element 0 of the list of playlists.
         // SetUserPlaylist (m_userId - 1);
         SetUserPlaylistFromCSVs (m_userId - 1);
 
         // setTaskList ();
-
-        // Record some protocol information
-        WriteInfo ("User_ID: " + m_userId);
-        // writeInfo("Stimuli order, room name, target idx, scotoma condition:");
-        WriteInfo ("Room name, Duration, Order:");
-        // foreach (playlistElement elp in playlist)
-        //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
-        foreach (EmotPlaylistElement ple in emotPlaylist)
-            WriteInfo ($"{ple.expNameCSV}");
-        FlushInfo ();
     }
 
     // private bool calibrating = false;
@@ -933,7 +1064,8 @@ public class ExpeControl : MonoBehaviour {
 
         if (tobiiTracking == tobTrack) {
             Debug.Log ("Pressed already active Lab button");
-            GetLastUserNumber ();
+            GetPreviousParticipant ();
+            // GetLastUserNumber ();
             return;
         }
 
@@ -943,7 +1075,8 @@ public class ExpeControl : MonoBehaviour {
         PlayerPrefs.SetInt ("tobii", (tobiiTracking ? 1 : 0));
 
         m_labID = tobiiTracking ? "SGL" : "HfG";
-        GetLastUserNumber ();
+        GetPreviousParticipant ();
+        // GetLastUserNumber ();
     }
 
     // THE ACTUAL GAME LOOP!
@@ -1576,18 +1709,24 @@ public class ExpeControl : MonoBehaviour {
     public InputField trialIDField;
     private readonly Enum _localEnum;
 
+    public void ContinueButtonClick () {
+
+    }
+
     public void StartButtonClick () {
-        string txt = participantIDField.text;
+        // string txt = participantIDField.text;\
 
-        if (!string.IsNullOrEmpty (txt) && !conCal && !trackCal) {
-            setupPanel.SetActive (false);
+        TestParticipantID ();
+        TestTrialID ();
 
-            m_userId = Int16.Parse (txt);
-
+        if (conCal || trackCal) {
+            return;
+            // m_userId = Int16.Parse (txt);
             // Debug.Log ("User Input: " + txt);
-
-            SetUp ();
         }
+
+        setupPanel.SetActive (false);
+        SetUp ();
     }
 
     // SGL Tobii Eyetracker Additions
@@ -1927,7 +2066,18 @@ public class ExpeControl : MonoBehaviour {
 
     private void startNewAnswerRecord () {
 
-        m_recorder_question = new StreamWriter (m_userdataPath + "/Answers_" + currentEmotTrial.expName + ".txt");
+        m_recorder_question = new StreamWriter (m_userdataPath + "/" + currentEmotTrial.expName + "_Answers.csv");
+
+        // m_recorder_question = new StreamWriter (m_userdataPath + "/Answers.csv", true); 
+
+        if (m_recorder_question.BaseStream.CanWrite) {
+            // m_recorder_question.WriteLine ("{0},{1},{2},{3}", getTimeStamp (), currentEmotTrial.expNameCSV, CondenseString (question), answer);
+            //                                                                 $"{lab},{participant+1},{trial_idx},{roomName},{instruction},{duration}";
+            m_recorder_question.WriteLine ("UnityTS,LabID,ParticipantID,TrialID,Room,Instruction,Duration,Question,Answer");
+            // RoomManager.instance.currentRoomName, currentEmotTrial.duration, m_currentTrialIdx, txt);
+            m_recorder_question.Flush ();
+        }
+
     }
 
     private void startNewRecord () {
