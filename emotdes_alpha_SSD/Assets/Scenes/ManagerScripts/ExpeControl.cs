@@ -31,7 +31,7 @@ public class ExpeControl : MonoBehaviour {
     // Playlist data
     private readonly List<playlistElement> playlist = new List<playlistElement> (90);
     private readonly List<EmotPlaylistElement> emotPlaylist = new List<EmotPlaylistElement> (90);
-    private readonly List<List<EmotPlaylistElement>> allPlaylists = new List<List<EmotPlaylistElement>> (90);
+    private List<List<EmotPlaylistElement>> allPlaylists = new List<List<EmotPlaylistElement>> (90);
     public int m_currentTrialIdx = 0;
     public int m_currentQuestionIdx = 0;
     public int currentTrialIdx => m_currentTrialIdx;
@@ -47,6 +47,15 @@ public class ExpeControl : MonoBehaviour {
         left,
         right,
         comb
+    }
+
+    public enum instruction {
+        hfgSit,
+        hfgLean,
+        sglSit,
+        sglStand,
+        calibrate,
+        chill
     }
 
     public struct LightStruct {
@@ -843,25 +852,6 @@ public class ExpeControl : MonoBehaviour {
         }
     }
 
-    private void SetUserPlaylist (int idx) {
-        // int max_idx = 100;
-        if (idx > max_idx) {
-            Debug.LogError ($"User index cannot be over {max_idx}.", this);
-            Quit ();
-        }
-
-        List<string> roomNames = RoomManager.instance.ListRooms ();
-
-        // TEMPORARY, EASY PLAYLIST CREATION (NO RANDOMIZATION)
-        for (int i = 0; i < durations.Count; i++) {
-            for (int j = 0; j < roomNames.Count; j++) {
-                // Debug.Log(roomName + ", available: " + RoomManager.instance.isRoomAvailable(roomName));
-                int trial = i * roomNames.Count + j + 1;
-                emotPlaylist.Add (new EmotPlaylistElement (roomNames[j], durations[i], trial, "trial", "SGL", 0));
-            }
-        }
-    }
-
     private void SetUserPlaylistFromCSVs (int idx) {
 
         if (idx > allPlaylists.Count) {
@@ -875,6 +865,8 @@ public class ExpeControl : MonoBehaviour {
     }
 
     private void LoadPlaylistsFromCSVs () {
+
+        allPlaylists = new List<List<EmotPlaylistElement>> (90);
 
         string playlistName;
         string testKind;
@@ -949,7 +941,10 @@ public class ExpeControl : MonoBehaviour {
                 int duration = durations[durationIdx - 1];
 
                 string room = "BreakRoom";
-                string inst = "Chill";
+                // string inst = "Chill";
+                instruction inst = instruction.chill;
+                // inst = instruction.hfgLean.ToString ();
+                // Debug.Log ("\n\nTESTING: toString() of enums: " + inst + "\n\n");
                 string labo = "Lab";
 
                 // SGL-specific playlist generation
@@ -966,10 +961,10 @@ public class ExpeControl : MonoBehaviour {
 
                     // Variable two, first level: sit down (specifically for SGL)
                     if (person[1][i] == "x") {
-                        inst = "sit-SGL";
+                        inst = instruction.sglSit;
                         // Variable two, second level: stand up (specifically for SGL)
                     } else {
-                        inst = "stand-SGL";
+                        inst = instruction.sglStand;
                     }
 
                     // HfG-specific playlist generation
@@ -986,13 +981,16 @@ public class ExpeControl : MonoBehaviour {
 
                     // Variable two, first level: sit on the low bench (specifically for HfG)
                     if (person[1][i] == "x") {
-                        inst = "sit-HfG";
+                        // inst = "sit-HfG";
+                        inst = instruction.hfgSit;
                         // Variable two, second level: lean on the high bench (specifically for HfG)
                     } else {
-                        inst = "lean-HfG";
+                        inst = instruction.hfgLean;
+                        // inst = "lean-HfG";
                     }
                 }
                 ePlaylist.Add (new EmotPlaylistElement (room, duration, i, inst, labo, j));
+                Debug.Log ("Created playlist element with instruction: " + inst);
                 // EmotPlaylistElement pElement = new EmotPlaylistElement (room, duration, i, inst, labo);
             }
             allPlaylists.Add (ePlaylist);
@@ -1075,6 +1073,7 @@ public class ExpeControl : MonoBehaviour {
         PlayerPrefs.SetInt ("tobii", (tobiiTracking ? 1 : 0));
 
         m_labID = tobiiTracking ? "SGL" : "HfG";
+        LoadPlaylistsFromCSVs ();
         GetPreviousParticipant ();
         // GetLastUserNumber ();
     }
@@ -1140,18 +1139,26 @@ public class ExpeControl : MonoBehaviour {
         Debug.Log ("Loaded Camera Rig Position");
 
         _instructBehaviour.toggleControllerInstruction (true);
+
         _instructBehaviour.setInstruction ("Press any button on this controller (trigger, side button, or trackpad).");
-        yield return new WaitUntil (() => _instructBehaviour.deactivatedOtherController);
+        yield return new WaitUntil (() => _instructBehaviour.deactivatedOtherController || Input.GetKeyDown ("space"));
         _instructBehaviour.setInstruction ("The other controller has been disabled!");
-        if (userClickedPad)
-            yield return new WaitUntil (() => !userClickedPad);
-        if (userClickedTrigger)
-            yield return new WaitUntil (() => !userTouchedTrigger);
-        if (userGrippedControl)
-            yield return new WaitUntil (() => !userGrippedControl);
+
+        if (!debugging) {
+            if (userClickedPad)
+                yield return new WaitUntil (() => !userClickedPad);
+            if (userClickedTrigger)
+                yield return new WaitUntil (() => !userTouchedTrigger);
+            if (userGrippedControl)
+                yield return new WaitUntil (() => !userGrippedControl);
+        }
         _instructBehaviour.toggleControllerInstruction (false);
 
+        //
+        //
         // Wait for user ID --- Setup() happens here!
+        //
+        //
         yield return new WaitUntil (() => !setupPanel.activeSelf);
         _instructBehaviour.toggleControllerInstruction (false);
 
@@ -1358,6 +1365,7 @@ public class ExpeControl : MonoBehaviour {
         }
 
         Debug.Log ("Currently playing trial " + (m_currentTrialIdx + 1) + " out of " + emotPlaylist.Count);
+        Debug.Log (currentEmotTrial.expName);
 
         while (m_currentTrialIdx < emotPlaylist.Count) {
             toggleMessage (true, "unloading");
@@ -1460,13 +1468,13 @@ public class ExpeControl : MonoBehaviour {
                 long start_time = getTimeStamp ();
 
                 if (debugging) {
-                    foreach (var lightCond in LightConditions) {
-                        // yield return new WaitForSecondsRealtime(1);
-                        yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
-                        yield return null; // Leave time for key up event to disappear
-                        // setLights (lightCond);
-                    }
-                    yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
+                    // foreach (var lightCond in LightConditions) {
+                    //     // yield return new WaitForSecondsRealtime(1);
+                    //     yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
+                    //     yield return null; // Leave time for key up event to disappear
+                    //     // setLights (lightCond);
+                    // }
+                    // yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
                 } else {
                     // setLights (LightConditions[currentTrial.light_cond]);
                 }
@@ -1725,8 +1733,9 @@ public class ExpeControl : MonoBehaviour {
             // Debug.Log ("User Input: " + txt);
         }
 
-        setupPanel.SetActive (false);
         SetUp ();
+        setupPanel.SetActive (false);
+
     }
 
     // SGL Tobii Eyetracker Additions

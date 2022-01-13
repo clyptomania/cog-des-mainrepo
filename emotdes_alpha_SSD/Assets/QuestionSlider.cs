@@ -331,6 +331,12 @@ public class QuestionSlider : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-
+        if (requesting && Input.GetKeyDown ("space")) {
+            // confirmed = true;
+            // confirming = false;
+            // requesting = false;
+            ConfirmAnswer ();
+            Debug.Log ("Manually confirmed answer.");
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿public struct EmotPlaylistElement {
 
-    public EmotPlaylistElement (string roomName, int duration, int trial_idx, string instruction, string lab, int participant) {
+    public EmotPlaylistElement (string roomName, int duration, int trial_idx, ExpeControl.instruction instruction, string lab, int participant) {
         this.roomName = roomName;
         this.duration = duration;
         this.trial_idx = trial_idx;
@@ -14,7 +14,8 @@
     public readonly string roomName;
     public readonly int duration;
     public readonly int trial_idx;
-    public readonly string instruction;
+    // public readonly string instruction;
+    public readonly ExpeControl.instruction instruction;
     public readonly string lab;
     public readonly int participant;
     // public readonly string varOne;
