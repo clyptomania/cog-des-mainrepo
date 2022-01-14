@@ -168,7 +168,7 @@ public class ExpeControl : MonoBehaviour {
             "The waiting period will begin soon!\n" +
             "You will get notified once it's over, and you will\n" +
             "be asked questions about your experience then.\n\n" +
-            "Please sit down, and hold the touch pad to begin!"
+            "Please sit down, and pull the trigger to begin!"
             // "Die Wartezeit beginnt gleich.\n\n" +
             // "Halte das Touchpad gedrückt um damit loszulegen!"
         },
@@ -190,7 +190,7 @@ public class ExpeControl : MonoBehaviour {
             "The waiting period will begin soon!\n" +
             "You will get notified once it's over, and you will\n" +
             "be asked questions about your experience then.\n\n" +
-            "Please sit down, and hold the touch pad to begin!"
+            "Please sit down, and hold the pull the trigger to begin!"
             // "Die Wartezeit beginnt gleich.\n\n" +
             // "Halte das Touchpad gedrückt um damit loszulegen!"
         },
@@ -830,6 +830,19 @@ public class ExpeControl : MonoBehaviour {
         cameraRig.eulerAngles = new Vector3(rX, rY, rZ);
     }
 
+    private void DisableCalPoints() {
+
+        calPointA = GameObject.Find("CalPointA");
+        calPointB = GameObject.Find("CalPointB");
+        calPointF = GameObject.Find("CalPointF");
+
+        if (calPointA != null) {
+            calPointA.SetActive(false);
+            calPointB.SetActive(false);
+            calPointF.SetActive(false);
+        }
+    }
+
     private ColorBlock SwapColors(ColorBlock colors) {
         Color normal = colors.normalColor;
         Color pressed = colors.pressedColor;
@@ -1128,6 +1141,15 @@ public class ExpeControl : MonoBehaviour {
         LoadPlaylistsFromCSVs();
         GetPreviousParticipant();
         // GetLastUserNumber ();
+    }
+
+
+    public string SecondsToTime(float totalSeconds) {
+        int minutes = Mathf.FloorToInt(totalSeconds / 60F);
+        int seconds = Mathf.FloorToInt(totalSeconds - minutes * 60);
+        string output = string.Format("{0:0}:{1:00}", minutes, seconds);
+        // Debug.Log(output);
+        return output;
     }
 
     // THE ACTUAL GAME LOOP!
@@ -1469,6 +1491,8 @@ public class ExpeControl : MonoBehaviour {
                     RoomManager.instance.currentScene.isLoaded);
                 yield return null;
 
+                DisableCalPoints();
+
                 toggleMessage(true, "takeBreak");
 
 
@@ -1504,6 +1528,7 @@ public class ExpeControl : MonoBehaviour {
             toggleMessage(false);
 
             trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
+            DisableCalPoints();
 
             taskTime = 0;
             padPressedTime = 0;
@@ -1515,311 +1540,282 @@ public class ExpeControl : MonoBehaviour {
             trialIDInfo.text = (trialIDX).ToString();
             roomLabel.text = currentEmotTrial.roomName;
             instructionLabel.text = "Intro";
-
-            if (RoomManager.instance.currSceneName == RoomManager.instance.breakRoomName) {
-                // BREAK ROOM: do calibration and continue to next level
-
-                // toggleMessage(true, "calibrate");
-                toggleMessage(true, "takeBreak");
-                // yield return new WaitUntil(() => userGrippedControl || Input.GetKeyUp(KeyCode.Space));
-
-                // Wait until the user presses a special combination of inputs to stop the trial
+            durationInfo.text = SecondsToTime(currentEmotTrial.duration);
+            passedInfo.text = SecondsToTime(0);
 
 
-                _instructBehaviour.RequestConfirmation(durationToContinue);
-                yield return new WaitUntil(() => !_instructBehaviour.requested);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                _instructBehaviour.toggleWorldInstruction(false);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
+            // REGULAR TRIAL ROOM
 
+            // _instructBehaviour.toggleWorldInstruction(false);
 
-                //
-                // old Version --- different interaction
-                //
-                // while (padPressedTime < durationToContinue) {
-                //     if (userClickedPad) {
-                //         padPressedTime += Time.deltaTime;
-                //         _progressBar.gameObject.SetActive (true);
-                //         _progressBar.SetProgress (padPressedTime / durationToContinue);
-                //     } else {
-                //         _progressBar.gameObject.SetActive (false);
-                //         padPressedTime = 0;
-                //     }
-                //     yield return null;
-                // }
-                // _progressBar.gameObject.SetActive (false);
-                // toggleMessage (false);
+            // Update all info panels with the new trial question (there can be more than one question for a same scene)
+            // _instructBehaviour.setInstruction(currentTaskString);
 
-            } else {
-                // REGULAR TRIAL ROOM
+            switch (currentEmotTrial.instruction) {
 
-                // _instructBehaviour.toggleWorldInstruction(false);
+                case instruction.hfgLean:
+                    toggleMessage(true, "instructionLeanHFG");
+                    instructionLabel.text = "Leaning HFG";
+                    break;
 
-                // Update all info panels with the new trial question (there can be more than one question for a same scene)
-                // _instructBehaviour.setInstruction(currentTaskString);
+                case instruction.hfgSit:
+                    toggleMessage(true, "instructionSitHFG");
+                    instructionLabel.text = "Sitting HFG";
+                    break;
 
-                switch (currentEmotTrial.instruction) {
+                case instruction.sglSit:
+                    toggleMessage(true, "instructionSitSGL");
+                    instructionLabel.text = "Sitting SGL";
+                    break;
 
-                    case instruction.hfgLean:
-                        toggleMessage(true, "instructionLeanHFG");
-                        instructionLabel.text = "Leaning HFG";
-                        break;
-
-                    case instruction.hfgSit:
-                        toggleMessage(true, "instructionSitHFG");
-                        instructionLabel.text = "Sitting HFG";
-                        break;
-
-                    case instruction.sglSit:
-                        toggleMessage(true, "instructionSitSGL");
-                        instructionLabel.text = "Sitting SGL";
-                        break;
-
-                    case instruction.sglStand:
-                        toggleMessage(true, "instructionStandSGL");
-                        instructionLabel.text = "Standing SGL";
-                        break;
-                }
-
-                // toggleMessage(true, "beginWaitingSit");
-
-
-                _instructBehaviour.RequestConfirmation(durationToContinue);
-                yield return new WaitUntil(() => !_instructBehaviour.requested);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                _instructBehaviour.toggleWorldInstruction(false);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-
-
-                //
-                // old version
-                // Wait till user presses a special combination of inputs to stop the trial
-                //
-                // while (padPressedTime < durationToContinue) {
-                //     if (userClickedPad) {
-                //         padPressedTime += Time.deltaTime;
-                //         _progressBar.gameObject.SetActive (true);
-                //         _progressBar.SetProgress (padPressedTime / durationToContinue);
-                //     } else {
-                //         _progressBar.gameObject.SetActive (false);
-                //         padPressedTime = 0;
-                //     }
-                //     yield return null;
-                // }
-                // _progressBar.gameObject.SetActive (false);
-
-
-
-                toggleMessage(true, "three");
-                yield return new WaitForSeconds(1);
-                toggleMessage(true, "two");
-                yield return new WaitForSeconds(1);
-                toggleMessage(true, "one");
-                yield return new WaitForSeconds(1);
-                toggleMessage(false);
-
-                // Start new gaze record (record name = stimulus name)
-                if (eyeTracking) {
-                    if (tobiiTracking)
-                        startNewRecord();
-                    else
-                        _eyeTrack.startNewRecord();
-                    Debug.Log("Started eye tracking.");
-                }
-                // Start trial
-                m_isPresenting = true;
-                long start_time = getTimeStamp();
-
-                if (debugging) {
-                    // foreach (var lightCond in LightConditions) {
-                    //     // yield return new WaitForSecondsRealtime(1);
-                    //     yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
-                    //     yield return null; // Leave time for key up event to disappear
-                    //     // setLights (lightCond);
-                    // }
-                    // yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
-                } else {
-                    // setLights (LightConditions[currentTrial.light_cond]);
-                }
-
-                // Teleport user to starting position
-                // Transform startTr = GameObject.Find("Start").transform;
-                // _teleporter.Teleport(startTr);
-                // startTr.gameObject.SetActive(false);
-
-                // Give time to teleport before relocating world instruction panel
-                // yield return new WaitForSecondsRealtime(.5f);
-
-                // Position instruction panel relative to new user location
-                // _instructBehaviour.positionWorldInstruction(startTr);
-                // Set instruction panel visible
-                if (trainSpawner)
-                    trainSpawner.Invoke("SpawnTrain", currentEmotTrial.duration - trainSpawner.DelayToOpenDoors());
-
-                // Wait until trial time runs out or touchpad pressed
-                padPressedTime = 0;
-                while (taskTime < currentEmotTrial.duration && padPressedTime < durationToContinue && !Input.GetKeyDown("space")) {
-                    taskTime += Time.deltaTime;
-
-                    // if (userClickedPad) {
-                    //     padPressedTime += Time.deltaTime;
-
-                    //     _progressBar.gameObject.SetActive(true);
-                    //     _progressBar.SetProgress(padPressedTime / durationPressToLeave);
-                    // } else {
-                    //     _progressBar.gameObject.SetActive(false);
-                    //     padPressedTime = 0;
-                    // }
-
-                    // trainSpawner.SpawnTrain();
-                    yield return null;
-                }
-                _progressBar.gameObject.SetActive(false);
-
-                if (padPressedTime >= durationToContinue)
-                    Debug.Log("Finished from pad press abort.");
-                else if (taskTime >= currentEmotTrial.duration)
-                    Debug.Log("Finished from expired waiting duration.");
-                else
-                    Debug.Log("Finished from space bar abort.");
-
-                // Stop recording gaze
-                if (eyeTracking)
-                    if (tobiiTracking)
-                        stopRecord(getTimeStamp() - start_time);
-                    else
-                        _eyeTrack.stopRecord(getTimeStamp() - start_time);
-
-                m_isPresenting = false;
-
-                _instructBehaviour.setInstruction("Please wait");
-
-                Debug.Log($"Finished: {currentEmotTrial.expName} - {trialIDX}");
-
-                //
-                // Initiate Questioning
-                //
-                startNewAnswerRecord();
-                switch (currentEmotTrial.instruction) {
-
-                    case instruction.hfgLean:
-                        toggleMessage(true, "instructionEndSitLean");
-                        instructionLabel.text = "Standing Questionnaire";
-                        break;
-
-                    case instruction.hfgSit:
-                        toggleMessage(true, "instructionEndSitLean");
-                        instructionLabel.text = "Standing Questionnaire";
-                        break;
-
-                    case instruction.sglSit:
-                        toggleMessage(true, "instructionEndSitLean");
-                        instructionLabel.text = "Standing Questionnaire";
-                        break;
-
-                    case instruction.sglStand:
-                        toggleMessage(true, "instructionEndStand");
-                        instructionLabel.text = "Sitting Questionnaire";
-                        break;
-                }
-
-
-                toggleMessage(true, "beginQuestions");
-
-                _instructBehaviour.RequestConfirmation(durationToContinue);
-                yield return new WaitUntil(() => !_instructBehaviour.requested);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                _instructBehaviour.toggleWorldInstruction(false);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-
-
-                toggleMessage(false);
-
-                // THIS IS THE QUESTION BLOCK
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How long do you think you have been waiting?");
-                _questionSlider.UpdateSliderRange(30, 300, false, true);
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-
-                // SAM Scale: valence
-                ToggleQuestion(true, "Which of these pictures represents your emotional state best?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "v");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-
-                // SAM Scale: arousal
-                ToggleQuestion(true, "Which of these pictures represents your excitement best?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "a");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How much did you think about\nyour PAST while waiting?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How much did you think about\nyour PRESENT while waiting?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How much did you think about\nyour FUTURE while waiting?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How intensively did you experience\nYOUR BODY most of the time?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How intensively did you experience\nTHE SURROUNDING SPACE most of the time?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How often did you think about time?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "extremely often");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-
-                yield return new WaitForSecondsRealtime(0.5f);
-                ToggleQuestion(true, "How fast did time pass for you?");
-                _questionSlider.UpdateSliderRange(1, 100, true, false, "extremely slowly", " ", "extremely fast");
-                yield return new WaitUntil(() => _questionSlider.confirmed);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                ToggleQuestion(false);
-
-                // THIS IS THE END OF THE QUESTION BLOCK
-
-                trainSpawner.DepartTrain();
-                yield return new WaitForSecondsRealtime(2.0f);
-
-                toggleMessage(true, "endQuestions");
-                stopAnswerRecord();
-                yield return new WaitForSecondsRealtime(3.0f);
-
+                case instruction.sglStand:
+                    toggleMessage(true, "instructionStandSGL");
+                    instructionLabel.text = "Standing SGL";
+                    break;
             }
+
+            // toggleMessage(true, "beginWaitingSit");
+
+
+            _instructBehaviour.RequestConfirmation(durationToContinue);
+            yield return new WaitUntil(() => !_instructBehaviour.requested);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            _instructBehaviour.toggleWorldInstruction(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+
+            //
+            // old version
+            // Wait till user presses a special combination of inputs to stop the trial
+            //
+            // while (padPressedTime < durationToContinue) {
+            //     if (userClickedPad) {
+            //         padPressedTime += Time.deltaTime;
+            //         _progressBar.gameObject.SetActive (true);
+            //         _progressBar.SetProgress (padPressedTime / durationToContinue);
+            //     } else {
+            //         _progressBar.gameObject.SetActive (false);
+            //         padPressedTime = 0;
+            //     }
+            //     yield return null;
+            // }
+            // _progressBar.gameObject.SetActive (false);
+
+
+
+            toggleMessage(true, "three");
+            yield return new WaitForSeconds(1);
+            toggleMessage(true, "two");
+            yield return new WaitForSeconds(1);
+            toggleMessage(true, "one");
+            yield return new WaitForSeconds(1);
+            toggleMessage(false);
+
+            // Start new gaze record (record name = stimulus name)
+            if (eyeTracking) {
+                if (tobiiTracking)
+                    startNewRecord();
+                else
+                    _eyeTrack.startNewRecord();
+                Debug.Log("Started eye tracking.");
+            }
+            // Start trial
+            m_isPresenting = true;
+            long start_time = getTimeStamp();
+
+            if (debugging) {
+                // foreach (var lightCond in LightConditions) {
+                //     // yield return new WaitForSecondsRealtime(1);
+                //     yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
+                //     yield return null; // Leave time for key up event to disappear
+                //     // setLights (lightCond);
+                // }
+                // yield return new WaitUntil (() => userGrippedControl || Input.GetKeyUp (KeyCode.Space));
+            } else {
+                // setLights (LightConditions[currentTrial.light_cond]);
+            }
+
+            // Teleport user to starting position
+            // Transform startTr = GameObject.Find("Start").transform;
+            // _teleporter.Teleport(startTr);
+            // startTr.gameObject.SetActive(false);
+
+            // Give time to teleport before relocating world instruction panel
+            // yield return new WaitForSecondsRealtime(.5f);
+
+            // Position instruction panel relative to new user location
+            // _instructBehaviour.positionWorldInstruction(startTr);
+            // Set instruction panel visible
+            if (trainSpawner)
+                trainSpawner.Invoke("SpawnTrain", currentEmotTrial.duration - trainSpawner.DelayToOpenDoors());
+
+            // Wait until trial time runs out or touchpad pressed
+            padPressedTime = 0;
+            while (taskTime < currentEmotTrial.duration && padPressedTime < durationToContinue && !Input.GetKeyDown("space")) {
+                taskTime += Time.deltaTime;
+
+
+                passedInfo.text = SecondsToTime(taskTime);
+
+                // if (userClickedPad) {
+                //     padPressedTime += Time.deltaTime;
+
+                //     _progressBar.gameObject.SetActive(true);
+                //     _progressBar.SetProgress(padPressedTime / durationPressToLeave);
+                // } else {
+                //     _progressBar.gameObject.SetActive(false);
+                //     padPressedTime = 0;
+                // }
+
+                // trainSpawner.SpawnTrain();
+                yield return null;
+            }
+            _progressBar.gameObject.SetActive(false);
+
+            if (padPressedTime >= durationToContinue)
+                Debug.Log("Finished from pad press abort.");
+            else if (taskTime >= currentEmotTrial.duration)
+                Debug.Log("Finished from expired waiting duration.");
+            else
+                Debug.Log("Finished from space bar abort.");
+
+            // Stop recording gaze
+            if (eyeTracking)
+                if (tobiiTracking)
+                    stopRecord(getTimeStamp() - start_time);
+                else
+                    _eyeTrack.stopRecord(getTimeStamp() - start_time);
+
+            m_isPresenting = false;
+
+            _instructBehaviour.setInstruction("Please wait");
+
+            Debug.Log($"Finished: {currentEmotTrial.expName} - {trialIDX}");
+
+            //
+            // Initiate Questioning
+            //
+            startNewAnswerRecord();
+            switch (currentEmotTrial.instruction) {
+
+                case instruction.hfgLean:
+                    toggleMessage(true, "instructionEndSitLean");
+                    instructionLabel.text = "Standing Questionnaire";
+                    break;
+
+                case instruction.hfgSit:
+                    toggleMessage(true, "instructionEndSitLean");
+                    instructionLabel.text = "Standing Questionnaire";
+                    break;
+
+                case instruction.sglSit:
+                    toggleMessage(true, "instructionEndSitLean");
+                    instructionLabel.text = "Standing Questionnaire";
+                    break;
+
+                case instruction.sglStand:
+                    toggleMessage(true, "instructionEndStand");
+                    instructionLabel.text = "Sitting Questionnaire";
+                    break;
+            }
+
+
+            toggleMessage(true, "beginQuestions");
+
+            _instructBehaviour.RequestConfirmation(durationToContinue);
+            yield return new WaitUntil(() => !_instructBehaviour.requested);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            _instructBehaviour.toggleWorldInstruction(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+
+            toggleMessage(false);
+
+            // THIS IS THE QUESTION BLOCK
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "How long do you think you have been waiting?");
+            _questionSlider.UpdateSliderRange(30, 300, false, true);
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+            // SAM Scale: valence
+            ToggleQuestion(true, "Which of these pictures represents your emotional state best?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "v");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            // SAM Scale: arousal
+            ToggleQuestion(true, "Which of these pictures represents your excitement best?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "does", "not", "matter", "a");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "How much did you think about\nyour PAST while waiting?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "How much did you think about\nyour PRESENT while waiting?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "How much did you think about\nyour FUTURE while waiting?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "How intensively did you experience\nYOUR BODY most of the time?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "How intensively did you experience\nTHE SURROUNDING SPACE most of the time?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "How often did you think about time?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "extremely often");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "How fast did time pass for you?");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "extremely slowly", " ", "extremely fast");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+            // THIS IS THE END OF THE QUESTION BLOCK
+
+            trainSpawner.DepartTrain();
+            yield return new WaitForSecondsRealtime(2.0f);
+
+            toggleMessage(true, "endQuestions");
+            stopAnswerRecord();
+            yield return new WaitForSecondsRealtime(3.0f);
+
+
 
             m_currentTrialIdx++;
             FlushInfo();
@@ -1918,6 +1914,7 @@ public class ExpeControl : MonoBehaviour {
 
     public InputField participantIDField, participantIDInfo;
     public InputField trialIDField, trialIDInfo;
+    public InputField durationInfo, passedInfo;
     public Text roomLabel, instructionLabel;
     private readonly Enum _localEnum;
 

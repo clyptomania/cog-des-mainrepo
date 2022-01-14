@@ -72,4 +72,8 @@ cogdes_alpha_SSD/SubjectData/
 
 # MacOS Folder Metadata
 .DS_Store
-emotdes_alpha_SSD/SubjectData/Subj_*/
+
+# Subject Data
+# emotdes_alpha_SSD/SubjectData/Subj_*/
+emotdes_alpha_SSD/SubjectData/SGL/Subj_*/
+emotdes_alpha_SSD/SubjectData/HFG/Subj_*/
