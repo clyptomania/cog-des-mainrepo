@@ -1446,12 +1446,50 @@ public class ExpeControl : MonoBehaviour {
             _instructBehaviour.toggleControllerInstruction(false);
             Debug.Log("Room unload finished.");
 
-            int trialidx = currentEmotTrial.trial_idx;
+            int trialIDX = currentEmotTrial.trial_idx;
 
             // condObjects.Clear();
 
             // Skip trial if the station scene is not finished
             // if (!RoomManager.instance.isRoomAvailable(currentTrial.room_idx)) { m_currentTrialIdx++; continue; }
+
+
+
+            //
+            // BREAK ROOM: do calibration and continue to next level
+            //
+            if (trialIDX % 5 == 0 && trialIDX > 1) {
+                Debug.Log("Break room needed");
+
+                RoomManager.instance.LoadRoom(RoomManager.instance.breakRoomName);
+
+                WriteInfo(RoomManager.instance.currSceneName);
+                yield return new WaitUntil(() =>
+                    !RoomManager.instance.actionInProgress &&
+                    RoomManager.instance.currentScene.isLoaded);
+                yield return null;
+
+                toggleMessage(true, "takeBreak");
+
+
+                _instructBehaviour.RequestConfirmation(durationToContinue);
+                yield return new WaitUntil(() => !_instructBehaviour.requested);
+                yield return new WaitForSecondsRealtime(messageWaitDuration);
+                _instructBehaviour.toggleWorldInstruction(false);
+                yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+
+                toggleMessage(true, "unloading");
+                Debug.Log("Starting room unload...");
+
+                // RoomManager.instance.UnloadScene();
+                RoomManager.instance.UnloadRoom();
+
+                yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
+                toggleMessage(false);
+                Debug.Log("Room unload finished.");
+
+            }
 
             long timeSpentLoading = getTimeStamp();
             toggleMessage(true, "loading");
@@ -1459,8 +1497,9 @@ public class ExpeControl : MonoBehaviour {
             RoomManager.instance.LoadRoom(currentEmotTrial.roomName);
 
             WriteInfo(RoomManager.instance.currSceneName);
-            yield return new WaitUntil(() => !RoomManager.instance.actionInProgress &&
-               RoomManager.instance.currentScene.isLoaded);
+            yield return new WaitUntil(() =>
+                !RoomManager.instance.actionInProgress &&
+                RoomManager.instance.currentScene.isLoaded);
             yield return null;
             toggleMessage(false);
 
@@ -1473,7 +1512,7 @@ public class ExpeControl : MonoBehaviour {
             // displaying info
             //
             participantIDInfo.text = m_userId.ToString();
-            trialIDInfo.text = (trialidx + 1).ToString();
+            trialIDInfo.text = (trialIDX).ToString();
             roomLabel.text = currentEmotTrial.roomName;
             instructionLabel.text = "Intro";
 
@@ -1655,7 +1694,7 @@ public class ExpeControl : MonoBehaviour {
 
                 _instructBehaviour.setInstruction("Please wait");
 
-                Debug.Log($"Finished: {currentEmotTrial.expName} - {trialidx}");
+                Debug.Log($"Finished: {currentEmotTrial.expName} - {trialIDX}");
 
                 //
                 // Initiate Questioning
