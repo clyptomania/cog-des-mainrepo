@@ -24,7 +24,7 @@ public class ExpeControl : MonoBehaviour {
     [SerializeField]
     private int max_idx = 100;
 
-    [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, startButton, continueButton;
+    [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, enButton, deButton, startButton, continueButton;
 
     [SerializeField] private List<int> durations = new List<int>();
 
@@ -504,6 +504,7 @@ public class ExpeControl : MonoBehaviour {
             mainCam = Camera.main;
 
         tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
+        language = PlayerPrefs.GetInt("german") == 1 ? lang.german : lang.english;
         m_labID = tobiiTracking ? "SGL" : "HfG";
 
         if (eyeTracking) {
@@ -1378,6 +1379,33 @@ public class ExpeControl : MonoBehaviour {
         // GetLastUserNumber ();
     }
 
+    public void SetGerman(bool german) {
+
+        // Debug.Log ("Requesting Lab change. SGL? " + tobTrack);
+
+        if (german) {
+            if (language == lang.german) {
+                Debug.Log("It's already German...");
+                return;
+            } else {
+                language = lang.german;
+                deButton.colors = SwapColors(deButton.colors);
+                enButton.colors = SwapColors(enButton.colors);
+                PlayerPrefs.SetInt("german", 1);
+            }
+        } else {
+            if (language == lang.english) {
+                Debug.Log("It's already English...");
+                return;
+            } else {
+                language = lang.english;
+                deButton.colors = SwapColors(deButton.colors);
+                enButton.colors = SwapColors(enButton.colors);
+                PlayerPrefs.SetInt("german", 0);
+            }
+        }
+    }
+
     public string SecondsToTime(float totalSeconds) {
         int minutes = Mathf.FloorToInt(totalSeconds / 60F);
         int seconds = Mathf.FloorToInt(totalSeconds - minutes * 60);
@@ -1405,6 +1433,12 @@ public class ExpeControl : MonoBehaviour {
         } else {
             hfgButton.colors = SwapColors(hfgButton.colors);
             Debug.Log("Swapped HFG Button");
+        }
+
+        if (language == lang.german) {
+            deButton.colors = SwapColors(deButton.colors);
+        } else {
+            enButton.colors = SwapColors(enButton.colors);
         }
 
         currentRoomInfo.text = "";
