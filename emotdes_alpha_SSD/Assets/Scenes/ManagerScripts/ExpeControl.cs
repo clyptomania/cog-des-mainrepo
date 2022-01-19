@@ -482,7 +482,7 @@ public class ExpeControl : MonoBehaviour {
             Debug.Log ("This participant completed all answers. Choose a different participant or select any trial to re-start from there.");
 
             m_currentTrialIdx = 99;
-            trialIDField.text = maxTrials.ToString ();
+            trialIDField.text = "";
             // continueButton.interactable = false;
         }
     }
@@ -537,12 +537,12 @@ public class ExpeControl : MonoBehaviour {
 
     void GetLastTrialNumber () {
 
-        m_userdataPath = m_basePath + "/Subj_" + m_userId;
-        int count = Directory.GetFiles (m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
-        if (count > 2) {
-            m_currentTrialIdx = (count - 1) / 2;
-            trialIDField.text = m_currentTrialIdx.ToString ();
-        }
+        // m_userdataPath = m_basePath + "/Subj_" + m_userId;
+        // int count = Directory.GetFiles (m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
+        // if (count > 2) {
+        //     m_currentTrialIdx = (count - 1) / 2;
+        //     trialIDField.text = m_currentTrialIdx.ToString ();
+        // }
     }
 
     private void StartNew () {
@@ -1245,10 +1245,12 @@ public class ExpeControl : MonoBehaviour {
         yield return new WaitUntil (() => !setupPanel.activeSelf);
         _instructBehaviour.toggleControllerInstruction (false);
 
+        DisableCalPoints ();
+
         infoPanel.SetActive (true);
         participantIDInfo.text = m_userId.ToString ();
 
-        trialIDInfo.text = currentTrialIdx.ToString ();
+        trialIDInfo.text = (m_currentTrialIdx + 1).ToString ();
         currentRoomInfo.text = currentEmotTrial.roomName;
 
         // Settings from the setup panel have been submitted: start of the trial
@@ -1269,6 +1271,25 @@ public class ExpeControl : MonoBehaviour {
         // }
 
         if (m_currentTrialIdx == 0) {
+
+            switch (currentEmotTrial.instruction) {
+
+                case instruction.hfgLean:
+                    nextInstructionInfo.text = "Leaning HFG";
+                    break;
+
+                case instruction.hfgSit:
+                    nextInstructionInfo.text = "Sitting HFG";
+                    break;
+
+                case instruction.sglSit:
+                    nextInstructionInfo.text = "Sitting SGL";
+                    break;
+
+                case instruction.sglStand:
+                    nextInstructionInfo.text = "Standing SGL";
+                    break;
+            }
 
             currentInstructionInfo.text = "Intro";
 
@@ -1470,7 +1491,7 @@ public class ExpeControl : MonoBehaviour {
         while (m_currentTrialIdx < emotPlaylist.Count) {
 
             participantIDInfo.text = m_userId.ToString ();
-            trialIDInfo.text = (m_currentTrialIdx).ToString ();
+            trialIDInfo.text = (m_currentTrialIdx + 1).ToString ();
             currentRoomInfo.text = currentEmotTrial.roomName;
             currentInstructionInfo.text = currentEmotTrial.instruction.ToString ();
             durationInfo.text = SecondsToTime (currentEmotTrial.duration);
@@ -1498,6 +1519,9 @@ public class ExpeControl : MonoBehaviour {
             //
             if (trialIDX % 5 == 0 && trialIDX > 1) {
                 Debug.Log ("Break room needed");
+
+                currentRoomInfo.text = "Break Room";
+                currentInstructionInfo.text = "Take Break";
 
                 RoomManager.instance.LoadRoom (RoomManager.instance.breakRoomName);
 
@@ -1551,7 +1575,7 @@ public class ExpeControl : MonoBehaviour {
             // displaying info
             //
             participantIDInfo.text = m_userId.ToString ();
-            trialIDInfo.text = (trialIDX).ToString ();
+            trialIDInfo.text = (m_currentTrialIdx + 1).ToString ();
             currentRoomInfo.text = currentEmotTrial.roomName;
             currentInstructionInfo.text = "Intro";
             durationInfo.text = SecondsToTime (currentEmotTrial.duration);
@@ -1595,23 +1619,19 @@ public class ExpeControl : MonoBehaviour {
                 switch (nextEmotTrial.instruction) {
 
                     case instruction.hfgLean:
-                        toggleMessage (true, "instructionLeanHFG");
-                        currentInstructionInfo.text = "Leaning HFG";
+                        nextInstructionInfo.text = "Leaning HFG";
                         break;
 
                     case instruction.hfgSit:
-                        toggleMessage (true, "instructionSitHFG");
-                        currentInstructionInfo.text = "Sitting HFG";
+                        nextInstructionInfo.text = "Sitting HFG";
                         break;
 
                     case instruction.sglSit:
-                        toggleMessage (true, "instructionSitSGL");
-                        currentInstructionInfo.text = "Sitting SGL";
+                        nextInstructionInfo.text = "Sitting SGL";
                         break;
 
                     case instruction.sglStand:
-                        toggleMessage (true, "instructionStandSGL");
-                        currentInstructionInfo.text = "Standing SGL";
+                        nextInstructionInfo.text = "Standing SGL";
                         break;
                 }
                 // Show that this is the last trial
@@ -1741,26 +1761,26 @@ public class ExpeControl : MonoBehaviour {
 
                 case instruction.hfgLean:
                     toggleMessage (true, "instructionEndSitLean");
-                    currentInstructionInfo.text = "Standing Questionnaire";
+                    currentInstructionInfo.text = "Standing Questions";
                     break;
 
                 case instruction.hfgSit:
                     toggleMessage (true, "instructionEndSitLean");
-                    currentInstructionInfo.text = "Standing Questionnaire";
+                    currentInstructionInfo.text = "Standing Questions";
                     break;
 
                 case instruction.sglSit:
                     toggleMessage (true, "instructionEndSitLean");
-                    currentInstructionInfo.text = "Standing Questionnaire";
+                    currentInstructionInfo.text = "Standing Questions";
                     break;
 
                 case instruction.sglStand:
                     toggleMessage (true, "instructionEndStand");
-                    currentInstructionInfo.text = "Sitting Questionnaire";
+                    currentInstructionInfo.text = "Sitting Questions";
                     break;
             }
 
-            toggleMessage (true, "beginQuestions");
+            // toggleMessage (true, "beginQuestions");
 
             _instructBehaviour.RequestConfirmation (durationToContinue);
             yield return new WaitUntil (() => !_instructBehaviour.requested);
@@ -1970,7 +1990,7 @@ public class ExpeControl : MonoBehaviour {
         setupPanel.SetActive (false);
     }
 
-    public IEnumerator StartButtonClick () {
+    public void StartButtonClick () {
         // string txt = participantIDField.text;\
 
         trialIDField.text = "0";
@@ -1979,15 +1999,15 @@ public class ExpeControl : MonoBehaviour {
         TestTrialID ();
 
         if (conCal || trackCal) {
-            yield return null;
+            return;
             // m_userId = Int16.Parse (txt);
             // Debug.Log ("User Input: " + txt);
         }
 
         SetUp ();
-        yield return new WaitForSecondsRealtime (messageWaitDuration);
+        // yield return new WaitForSecondsRealtime (messageWaitDuration);
         setupPanel.SetActive (false);
-
+        // yield return null;
     }
 
     // SGL Tobii Eyetracker Additions
