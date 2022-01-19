@@ -219,8 +219,6 @@ public class ExpeControl : MonoBehaviour {
             "Then continue please with the calibration;\n" +
             "you may ask the assistant for help with that.\n\n" +
             "Pull the trigger when you're done to continue!"
-            // "Bitte beginne mit der Kalibrierung.\nFrage den Assistenten, sofern du Hilfe benötigst.\n\n"+
-            // "Wenn du fertig bist, drücke bitte die Seitentaste um fortzufahren."
         },
         {
             "takeBreak",
@@ -354,7 +352,7 @@ public class ExpeControl : MonoBehaviour {
             "calibrate",
             "Sie können eine kurze Pause einlegen, wenn Sie das Headset abnehmen möchten.\n\n" +
             "Dann fahren Sie bitte mit der Kalibrierung fort;\n" +
-            "Sie können den Assistenten dabei um Hilfe bitten.\n\n" +
+            "Sie können die dabei jederzeit um Hilfe bitten.\n\n" +
             "Halten Sie den Trigger gedrückt um fortzufahren!"
         },
         {
