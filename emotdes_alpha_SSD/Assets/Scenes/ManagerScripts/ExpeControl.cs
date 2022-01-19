@@ -1861,7 +1861,7 @@ public class ExpeControl : MonoBehaviour {
             }
 
             // Show next trial information
-            if (m_currentTrialIdx < emotPlaylist.Count + 1) {
+            if (m_currentTrialIdx < emotPlaylist.Count - 1) {
 
                 nextRoomInfo.text = nextEmotTrial.roomName;
 
@@ -1886,7 +1886,7 @@ public class ExpeControl : MonoBehaviour {
                 // Show that this is the last trial
             } else {
                 nextRoomInfo.text = "End of session";
-                currentInstructionInfo.text = "Outro";
+                nextInstructionInfo.text = "Outro";
             }
 
             // toggleMessage(true, "beginWaitingSit");
@@ -2220,7 +2220,7 @@ public class ExpeControl : MonoBehaviour {
         if (m_recorder_info.BaseStream.CanWrite)
             m_recorder_info.Close();
 
-        if (m_recorder_question != null && m_recorder_question.BaseStream.CanWrite)
+        if (m_recorder_question != StreamWriter.Null && m_recorder_question.BaseStream != null && m_recorder_question.BaseStream.CanWrite)
             m_recorder_question.Close();
 
         if (m_recorder_HMD.BaseStream.CanWrite)
