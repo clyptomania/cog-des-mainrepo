@@ -160,55 +160,55 @@ public class ExpeControl : MonoBehaviour {
     private readonly Dictionary<string, string> questionsDE = new Dictionary<string, string> {
         {
             "vrLife",
-            "How many hours have you spent in VR so far in your life?"
+            "Wie viele Stunden haben Sie bisher in Ihrem Leben in VR verbracht?"
         },
         {
             "transportFreq",
-            "How often do you normally use public transport?"
+            "Wie oft benutzen Sie normalerweise öffentliche Verkehrsmittel?"
         },
         {
             "patience",
-            "How patient would you consider yourself to be?"
+            "Wie geduldig würden Sie sich selbst einschätzen?"
         },
         {
             "waitEstimation",
-            "How long do you think you have been waiting?"
+            "Wie lange, glauben Sie, haben Sie gewartet?"
         },
         {
             "valence",
-            "Which of these pictures represents your emotional state best?"
+            "Welches dieser Bilder stellt Ihre Gefühlslage am besten dar?"
         },
         {
             "arousal",
-            "Which of these pictures represents your excitement best?"
+            "Welches dieser Bilder stellt Ihre Aufregung am besten dar?"
         },
         {
             "thinkPast",
-            "How much did you think about\nyour PAST while waiting?"
+            "Wie oft haben Sie während der Wartezeit über \nIhre VERGANGENHEIT nachgedacht?"
         },
         {
             "thinkPresent",
-            "How much did you think about\nyour PRESENT while waiting?"
+            "Wie oft haben Sie während des Wartens über \nIhre GEGENWART nachgedacht?"
         },
         {
             "thinkFuture",
-            "How much did you think about\nyour FUTURE while waiting?"
+            "Wie oft haben Sie während des Wartens über \nIhre ZUKUNFT nachgedacht?"
         },
         {
             "experienceBody",
-            "How intensively did you experience\nYOUR BODY most of the time?"
+            "Wie intensiv haben Sie \nIhren KÖRPER während des Wartens erlebt?"
         },
         {
             "experienceSpace",
-            "How intensively did you experience\nTHE SURROUNDING SPACE most of the time?"
+            "Wie intensiv haben Sie \nden UMGEBUNGSRAUM während des Wartens erlebt?"
         },
         {
             "thinkTime",
-            "How often did you think about time?"
+            "Wie oft haben Sie über Zeit an sich nachgedacht?"
         },
         {
             "timePass",
-            "How fast did time pass for you?"
+            "Wie schnell ist die Zeit für Sie vergangen?"
         }
     };
 
@@ -265,11 +265,11 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "loading",
-            "The next room is loading..."
+            "The next room is being loaded..."
         },
         {
             "unloading",
-            "The current room is being unloaded..."
+            "The room is being unloaded..."
         },
         {
             "end",
@@ -300,7 +300,7 @@ public class ExpeControl : MonoBehaviour {
             "The waiting period will begin soon!\n" +
             "You will get notified once it's over, and you will\n" +
             "be asked questions about your experience then.\n\n" +
-            "Please sit down, and hold the pull the trigger to begin!"
+            "Please sit down, and pull the trigger to begin!"
         },
         {
             "instructionStandSGL",
@@ -347,158 +347,142 @@ public class ExpeControl : MonoBehaviour {
             "The questionnaire is now finished. Get ready for the next trial!"
         },
     };
-
     private readonly Dictionary<string, string> messagesDE = new Dictionary<string, string> {
         {
             "calibrate",
-            "You can take a quick break if you wish to remove the headset.\n\n" +
-            "Then continue please with the calibration;\n" +
-            "you may ask the assistant for help with that.\n\n" +
-            "Pull the trigger when you're done to continue!"
-            // "Bitte beginne mit der Kalibrierung.\nFrage den Assistenten, sofern du Hilfe benötigst.\n\n"+
-            // "Wenn du fertig bist, drücke bitte die Seitentaste um fortzufahren."
+            "Sie können eine kurze Pause einlegen, wenn Sie das Headset abnehmen möchten.\n\n" +
+            "Dann fahren Sie bitte mit der Kalibrierung fort;\n" +
+            "Sie können die dabei jederzeit um Hilfe bitten.\n\n" +
+            "Halten Sie den Trigger gedrückt um fortzufahren!"
         },
         {
             "takeBreak",
-            "You can take a quick break if you wish to remove the headset.\n\n" +
-            "Pull the trigger when you're done to continue!"
+            "Sie können eine kurze Pause einlegen, wenn Sie das Headset abnehmen möchten.\n\n" +
+            "Halten Sie den Trigger gedrückt um fortzufahren!"
         },
         {
             "pleaseLean",
-            "Please lean on the high bench.\n\n" +
-            "Once you're seated, pull the trigger to continue."
+            "Bitte lehnen Sie sich an den Anlehner an.\n\n" +
+            "Sobald Sie Platz genommen haben, halten Sie den Trigger gedrückt, um fortzufahren."
         },
         {
             "pleaseSit",
-            "Please sit down on the low bench.\n\n" +
-            "Once you're seated, pull the trigger to continue."
+            "Bitte setzen Sie sich auf die Bank.\n\n" +
+            "Sobald Sie Platz genommen haben, halten Sie den Trigger gedrückt, um fortzufahren."
         },
         {
             "pleaseStand",
-            "Please stand up and take one step forward, away from the bench.\n\n" +
-            "Once you're standing, pull the trigger to continue."
+            "Bitte stehen Sie auf und treten Sie einen Schritt nach vorne, weg von der Bank.\n\n" +
+            "Sobald Sie stehen, halten Sie den Trigger gedrückt, um fortzufahren."
         },
         {
             "pleaseCalibrateTobii",
-            "To begin, we need to calibrate the eye tracker.\n" +
-            "With your eyes, follow the red dot, then the gray disks as closely as you can.\n\n" +
-            "Pull the trigger to continue."
+            "Sobald Sie stehen, müssen wir den Eye-Tracker kalibrieren.\n" +
+            "Verfolgen Sie erst den roten Punkt und dann die grauen Scheiben so genau wie möglich mit Ihren Augen.\n\n" +
+            "Drücken Sie den Abzug, um fortzufahren."
         },
         {
             "pleaseCalibrateVive",
-            "To begin, we need to calibrate the eye tracker.\n" +
-            "Press the MENU button on your controller and select the eye-tracking procedure.\n\n" +
-            "Pull the trigger ONLY when you've completed it to continue."
+            "Zunächst müssen wir den Eyetracker kalibrieren.\n" +
+            "Drücken Sie die MENÜ-TASTE am Controller und wählen Sie das Eye-Tracking-Verfahren aus.\n\n" +
+            "Drücken Sie den Auslöser ERST WENN Sie die Aufgabe abgeschlossen haben, um fortzufahren."
         },
         {
             "start",
-            "The training phase has ended.\n\n" +
-            "Pull the trigger to start the experiment."
+            "Die Trainingsphase ist beendet.\n\n" +
+            "Halten Sie den Trigger gedrückt, um das Experiment zu starten."
         },
         {
             "pause",
-            "Take off the headset if you wish.\n\n" +
-            "Take a moment to rest before continuing with the experiment.\n" +
-            "Pull the trigger to start the experiment."
+            "Wenn Sie möchten, nehmen Sie das Headset ab.\n\n" +
+            "Nehmen Sie sich einen Moment Zeit, um sich auszuruhen, bevor Sie mit dem Experiment fortfahren.\n" +
+            "Halten Sie den Trigger gedrückt, um das Experiment zu starten."
         },
         {
             "loading",
-            "Der nächste Raum wird geladen..."
+            "Raum wird geladen..."
         },
         {
             "unloading",
-            "Der Raum wird entladen..."
+            "Raum wird geladen..."
         },
         {
             "end",
-            "This is the end of the experiment!\n\nThank you very much for your participation.\n\nYou can take off the headset."
+            "Das ist das Ende des Experiments!\n\nVielen Dank für Ihre Teilnahme.\n\nSie können das Headset abnehmen."
         },
         {
             "beginWaitingSit",
-            "Die Wartezeit beginnt gleich!\n" +
-            "Du bekommst Bescheid, wenn diese vorbei ist, und dir\n" +
-            "werden im Anschluss Fragen zu deiner Erfahrung gestellt.\n\n" +
-            "Setze dich bitte, und betätige den Abzug um loszulegen!"
-            // "Die Wartezeit beginnt gleich.\n\n" +
-            // "Halte das Touchpad gedrückt um damit loszulegen!"
+            "Die Wartezeit wird gleich beginnen!\n" +
+            "Sie werden benachrichtigt, wenn sie vorbei ist, und Sie werden\n" +
+            "dann werden Ihnen Fragen zu Ihrer Erfahrung gestellt.\n\n" +
+            "Bitte setzen Sie sich, und halten Sie den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionEndSitLean",
-            "The waiting time is now over!\n\n" +
-            "Please stand up now and step a way a bit from the seats.\n\n" +
-            "Pull the trigger to continue with the questionnaires."
+            "Die Wartezeit ist nun vorbei!\n\n" +
+            "Bitte stehen Sie jetzt auf und treten Sie ein Stück von der Sitzbank weg.\n\n" +
+            "Halten Sie den Trigger gedrückt, um mit den Fragen fortzufahren."
         },
         {
             "instructionEndStand",
-            "The waiting time is now over!\n\n" +
-            "You can now sit down if you like.\n\n" +
-            "Pull the trigger to continue with the questionnaires."
+            "Die Wartezeit ist nun vorbei!\n\n" +
+            "Wenn Sie möchten, können Sie sich jetzt setzen.\n\n" +
+            "Halten Sie den Trigger gedrückt, um mit den Fragen fortzufahren."
         },
         // instruction.hfgLean instruction.hfgSit instruction.sglSit instruction.sglStand,
         {
             "instructionSitSGL",
-            "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
-            "Please sit down, and hold the pull the trigger to begin!"
-            // "Die Wartezeit beginnt gleich.\n\n" +
-            // "Halte das Touchpad gedrückt um damit loszulegen!"
+            "Die Wartezeit wird gleich beginnen!\n" +
+            "Sie werden benachrichtigt, sobald diese vorbei ist, und Ihnen werden\n" +
+            "dann einige Fragen gestellt.\n\n" +
+            "Bitte setzen Sie sich, und halten Sie den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionStandSGL",
-            "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
-            "Please stand a bit away from the seat, and pull the trigger to begin!"
-            // "Die Wartezeit beginnt gleich.\n\n" +
-            // "Halte das Touchpad gedrückt um damit loszulegen!"
+            "Die Wartezeit wird gleich beginnen!\n" +
+            "Sie werden benachrichtigt, sobald diese vorbei ist, und Ihnen werden\n" +
+            "dann einige Fragen gestellt.\n\n" +
+            "Bitte setzen Sie sich, und halten Sie den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionSitHFG",
-            "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
-            "Please sit down on the low bench, and pull the trigger to begin!"
-            // "Die Wartezeit beginnt gleich.\n\n" +
-            // "Halte das Touchpad gedrückt um damit loszulegen!"
+            "Die Wartezeit wird gleich beginnen!\n" +
+            "Sie werden benachrichtigt, sobald diese vorbei ist, und Ihnen werden\n" +
+            "dann einige Fragen gestellt.\n\n" +
+            "Bitte setzen Sie sich, und halten Sie den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionLeanHFG",
             "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
-            "Please lean on the high bench, and pull the trigger to begin!"
-            // "Die Wartezeit beginnt gleich.\n\n" +
-            // "Halte das Touchpad gedrückt um damit loszulegen!"
+            "Sie werden benachrichtigt, sobald diese vorbei ist, und Ihnen werden\n" +
+            "dann einige Fragen gestellt.\n\n" +
+            "Bitte setzen Sie sich, und halten Sie den Trigger gedrückt, um zu beginnen!"
         },
         {
-            "three",
+            "Drei",
             "3..."
         },
         {
-            "two",
+            "Zwei",
             "2..."
         },
         {
-            "one",
+            "Eins",
             "1..."
         },
         {
             "beginQuestions",
-            "The waiting time is now over!\n\n" +
-            "Please stand up now and step a way a bit from the chairs.\n\n" +
-            "Pull the trigger to continue with the questionnaires."
-            // "Die Wartezeit ist jetzt vorbei!\n\n" +
-            // "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
+            "Die Wartezeit ist nun vorbei!\n\n" +
+            "Bitte stehen Sie jetzt auf und treten Sie ein Stück von den Stühlen weg.\n\n" +
+            "Halten Sie den Trigger gedrückt, um mit den Fragen fortzufahren."
         },
         {
             "endQuestions",
-            "Thank you!\n\n" +
-            "The questionnaire is now finished. Get ready for the next trial!"
-            // "Die Wartezeit ist jetzt vorbei!\n\n" +
-            // "Betätige die Seitenknöpfe um mit den Fragebögen fortzufahren."
+            "Vielen Dank!\n\n" +
+            "Der Fragebogen ist nun beendet. Halten Sie sich bereit für die nächste Szene!"
         },
     };
+
 
     private EyeTrackingSampler _eyeTrack => EyeTrackingSampler.instance;
     private ProgressBar _progressBar => ProgressBar.instance;
