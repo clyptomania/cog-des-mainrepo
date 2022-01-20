@@ -75,8 +75,8 @@ cogdes_alpha_SSD/SubjectData/
 
 # Subject Data
 # emotdes_alpha_SSD/SubjectData/Subj_*/
-emotdes_alpha_SSD/SubjectData/SGL/Subj_*/
-emotdes_alpha_SSD/SubjectData/HFG/Subj_*/
+# emotdes_alpha_SSD/SubjectData/SGL/Subj_*/
+# emotdes_alpha_SSD/SubjectData/HFG/Subj_*/
 emotdes_alpha_SSD/SubjectData/Subj_15/UserData.txt
 emotdes_alpha_SSD/SubjectData/Subj_15/Answers_15.txt
 emotdes_alpha_SSD/SubjectData/Subj_14/UserData.txt
