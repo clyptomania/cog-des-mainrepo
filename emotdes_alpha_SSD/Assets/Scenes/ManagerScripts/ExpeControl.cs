@@ -17,7 +17,7 @@ public class ExpeControl : MonoBehaviour {
 
     [SerializeField] private bool debugging;
     [SerializeField] private bool controllerTutorial, questionnaireTutorial;
-    [SerializeField] private bool resetExperiments = false;
+    [SerializeField] private bool deleteOldData = false;
     [SerializeField] private bool eyeTracking = true;
     [SerializeField] private bool preTesting = true;
 
@@ -154,6 +154,26 @@ public class ExpeControl : MonoBehaviour {
         {
             "timePass",
             "How fast did time pass for you?"
+        },
+        {
+            "realism",
+            "How realistic did you find the virtual subway station?"
+        },
+        {
+            "differences",
+            "Do you think the scenes you've experienced were similar or different from one another?"
+        },
+        {
+            "preferPosture",
+            "Which POSTURE did you prefer?"
+        },
+        {
+            "preferMaterial",
+            "Which SEAT MATERIAL did you prefer?"
+        },
+        {
+            "comfort",
+            "How comfortable were you during the waiting period?"
         }
     };
 
@@ -209,6 +229,26 @@ public class ExpeControl : MonoBehaviour {
         {
             "timePass",
             "Wie schnell ist die Zeit für Sie vergangen?"
+        },
+        {
+            "realism",
+            "How realistic did you find the virtual subway station?"
+        },
+        {
+            "differences",
+            "Do you think the scenes you've experienced were similar or different from one another?"
+        },
+        {
+            "preferPosture",
+            "Which POSTURE did you prefer?"
+        },
+        {
+            "preferMaterial",
+            "Which SEAT MATERIAL did you prefer?"
+        },
+        {
+            "comfort",
+            "How comfortable were you during the waiting period?"
         }
     };
 
@@ -346,6 +386,11 @@ public class ExpeControl : MonoBehaviour {
             "Thank you!\n\n" +
             "The questionnaire is now finished. Get ready for the next trial!"
         },
+        {
+            "outroQuestions",
+            "The experiment is almost over!\n\n" +
+            "Here are some final questions for you."
+        }
     };
     private readonly Dictionary<string, string> messagesDE = new Dictionary<string, string> {
         {
@@ -481,6 +526,11 @@ public class ExpeControl : MonoBehaviour {
             "Vielen Dank!\n\n" +
             "Der Fragebogen ist nun beendet. Halten Sie sich bereit für die nächste Szene!"
         },
+        {
+            "outroQuestions",
+            "The experiment is almost over!\n\n" +
+            "Here are some final questions for you."
+        }
     };
 
 
@@ -795,18 +845,18 @@ public class ExpeControl : MonoBehaviour {
         }
     }
 
-    private void SetUp(Boolean reset = true) {
+    private void SetUp(Boolean rename = true) {
 
-        resetExperiments = reset;
+        // deleteOldData = reset;
         m_userdataPath = m_basePath + "/Subj_" + m_userId;
 
-        Boolean renameFiles = !reset;
+        // Boolean renameFiles = !rename;
 
         // If this participant already exists: start after last trial
         if (Directory.Exists(m_userdataPath)) {
             Debug.Log("Data for participant " + m_userId + " already exists.");
 
-            if (resetExperiments) {
+            if (deleteOldData) {
 
                 string[] oldFiles = Directory.GetFiles(m_userdataPath, "*.*", SearchOption.AllDirectories);
 
@@ -816,42 +866,68 @@ public class ExpeControl : MonoBehaviour {
                 }
                 Debug.Log("Deleted " + oldFiles.Length + " old files from " + m_userdataPath);
 
+
+
             } else {
 
-                if (renameFiles) {
+                if (rename) {
+
+                    Debug.Log("Files from previous attempts to be renamed:");
+
                     int count = Directory.GetFiles(m_userdataPath, "*.csv", SearchOption.AllDirectories).Length;
+
+                    string[] csvFiles = Directory.GetFiles(m_userdataPath, "*.csv", SearchOption.AllDirectories);
+                    string[] txtFiles = Directory.GetFiles(m_userdataPath, "*.txt", SearchOption.AllDirectories);
+
+                    string[] oldFiles = new string[csvFiles.Length + txtFiles.Length];
+                    csvFiles.CopyTo(oldFiles, 0);
+                    txtFiles.CopyTo(oldFiles, csvFiles.Length);
+
+                    foreach (string file in oldFiles) {
+                        Debug.Log(file);
+                        File.Move(file, file + $"_{getTimeStamp()}.bak");
+                    }
+
+                    // if (count > 1) {
+                    //     m_currentTrialIdx = count / 2;
+                    // }
+                } else {
 
                     // Rename userdata file before creating a new one
                     if (File.Exists(m_userdataPath + "/UserData.txt")) {
                         File.Move(m_userdataPath + "/UserData.txt", m_userdataPath + $"/UserData_{getTimeStamp()}.txt");
                     }
-                    // if (count > 1) {
-                    //     m_currentTrialIdx = count / 2;
-                    // }
                 }
             }
 
         } else {
-            // Create new folder with subject ID
-            Directory.CreateDirectory(m_userdataPath);
-            // User information: basic data + playlist
-            m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt");
-            // Record some protocol information
-            WriteInfo("User_ID: " + m_userId);
-            // writeInfo("Stimuli order, room name, target idx, scotoma condition:");
-            WriteInfo("Room name, Duration, Order:");
-            // foreach (playlistElement elp in playlist)
-            //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
-            foreach (EmotPlaylistElement ple in emotPlaylist)
-                WriteInfo($"{ple.expNameCSV}");
-            FlushInfo();
+
         }
 
-        print(m_userdataPath);
+        Debug.Log("Writing experiment data on:");
+        Debug.Log(m_userdataPath);
+
+        // Create new folder with subject ID
+        Directory.CreateDirectory(m_userdataPath);
 
         // get playlist for user ID --- we begin with user ID 1, but start with element 0 of the list of playlists.
         // SetUserPlaylist (m_userId - 1);
         SetUserPlaylistFromCSVs(m_userId - 1);
+
+
+
+        // User information: basic data + playlist
+        m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt");
+        // Record some protocol information
+        WriteInfo("User_ID: " + m_userId);
+        WriteInfo("lab,participant,trial_idx,roomName,instruction,duration");
+        // writeInfo("Stimuli order, room name, target idx, scotoma condition:");
+        // foreach (playlistElement elp in playlist)
+        //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
+        foreach (EmotPlaylistElement ple in emotPlaylist)
+            WriteInfo($"{ple.expNameCSV}");
+        WriteInfo("Started experiment at: " + getTimeStamp());
+        FlushInfo();
 
         // setTaskList ();
     }
@@ -2054,7 +2130,6 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             _instructBehaviour.toggleWorldInstruction(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
-
             toggleMessage(false);
 
             // THIS IS THE QUESTION BLOCK
@@ -2065,6 +2140,23 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "timePass");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "extremely slowly", " ", "extremely fast");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "comfort");
+            _questionSlider.UpdateSliderRange(1, 100, true, false, "very uncomfortable", " ", "very comfortable");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
 
             // SAM Scale: valence
             ToggleQuestion(true, "valence");
@@ -2125,13 +2217,6 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
 
-            yield return new WaitForSecondsRealtime(0.5f);
-            ToggleQuestion(true, "timePass");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "extremely slowly", " ", "extremely fast");
-            yield return new WaitUntil(() => _questionSlider.confirmed);
-            yield return new WaitForSecondsRealtime(messageWaitDuration);
-            ToggleQuestion(false);
-
             // THIS IS THE END OF THE QUESTION BLOCK
 
             trainSpawner.DepartTrain();
@@ -2145,7 +2230,85 @@ public class ExpeControl : MonoBehaviour {
             FlushInfo();
         }
 
-        Debug.Log("Experiment concluded. Quitting...");
+        m_currentTrialIdx--;
+
+        currentInstructionInfo.text = "Outro Questions";
+
+        toggleMessage(true, "outroQuestions");
+
+        _instructBehaviour.RequestConfirmation(durationToContinue);
+        yield return new WaitUntil(() => !_instructBehaviour.requested);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+        _instructBehaviour.toggleWorldInstruction(false);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+        toggleMessage(false);
+
+
+        toggleMessage(true, "unloading");
+        Debug.Log("Starting room unload...");
+
+        // RoomManager.instance.UnloadScene();
+        RoomManager.instance.UnloadRoom();
+        yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
+        toggleMessage(false);
+        _instructBehaviour.toggleControllerInstruction(false);
+        Debug.Log("Room unload finished.");
+
+
+        RoomManager.instance.LoadRoom(RoomManager.instance.breakRoomName);
+
+        WriteInfo(RoomManager.instance.currSceneName);
+        yield return new WaitUntil(() =>
+           !RoomManager.instance.actionInProgress &&
+           RoomManager.instance.currentScene.isLoaded);
+        yield return null;
+        DisableCalPoints();
+
+        currentRoomInfo.text = "Break Room";
+
+
+
+        // Last questions: comparisons
+
+        startNewAnswerRecord("_OutroQuestions");
+
+
+
+        // build a switch here for different labs
+
+        ToggleQuestion(true, "preferPosture");
+        _questionSlider.UpdateSliderRange(0, 99, true, false, "sitting", "neither", "leaning");
+        yield return new WaitUntil(() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+        ToggleQuestion(false);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+        ToggleQuestion(true, "preferMaterial");
+        _questionSlider.UpdateSliderRange(0, 99, true, false, "wood", "neither", "metal mesh");
+        yield return new WaitUntil(() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+        ToggleQuestion(false);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+
+
+        ToggleQuestion(true, "differences");
+        _questionSlider.UpdateSliderRange(0, 99, true, false, "extremely similar", " ", "extremely different");
+        yield return new WaitUntil(() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+        ToggleQuestion(false);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+        ToggleQuestion(true, "realism");
+        _questionSlider.UpdateSliderRange(0, 99, true, false, "extremely unrealistic", " ", "extremely realistic");
+        yield return new WaitUntil(() => _questionSlider.confirmed);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+        ToggleQuestion(false);
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+        stopAnswerRecord();
+
+
 
         toggleMessage(true, "end");
 
@@ -2155,6 +2318,9 @@ public class ExpeControl : MonoBehaviour {
         _instructBehaviour.toggleWorldInstruction(false);
         yield return new WaitForSecondsRealtime(messageWaitDuration);
         toggleMessage(false);
+
+
+        Debug.Log("Experiment concluded. Quitting...");
 
         FlushInfo();
         Quit();
@@ -2638,9 +2804,13 @@ public class ExpeControl : MonoBehaviour {
 
     private void startNewAnswerRecord(string name = "") {
 
-        string fileName = currentEmotTrial.expName + "_Answers";
+        string fileName = "";
+
+
         if (name != "") {
             fileName = currentEmotTrial.participantName + name;
+        } else {
+            fileName = currentEmotTrial.expName + "_Answers";
         }
 
         fileName += ".csv";
