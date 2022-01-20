@@ -21,7 +21,7 @@
     // public readonly string varOne;
     // public readonly string varTwo;
 
-    public string expNameCSV => $"{lab},{participant + 1},{trial_idx},{roomName},{instruction},{duration}";
+    public string expNameCSV => $"{lab},{participant + 1},{trial_idx},{condensedRoomName},{instruction},{duration}";
     // public string expName => $"{lab}_{participant+1}_{trial_idx+1}_{roomName}_{instruction}_{duration}";
 
     public string participantName {
@@ -29,20 +29,39 @@
             return $"{lab}_{participant + 1}";
         }
     }
-    public string expName {
+
+    string condensedRoomName {
         get {
-            string condensedRoomName = "";
+            string full = "";
             string[] roomNameParts = roomName.Split(' ');
             if (roomNameParts.Length > 1) {
                 foreach (string part in roomNameParts) {
                     if (part == " " || part == "_" || part == "-" || part == "?")
                         continue;
                     else
-                        condensedRoomName += part;
+                        full += part;
                 }
             } else {
-                condensedRoomName = roomName;
+                full = roomName;
             }
+            return full;
+        }
+    }
+
+    public string expName {
+        get {
+            // string condensedRoomName = "";
+            // string[] roomNameParts = roomName.Split(' ');
+            // if (roomNameParts.Length > 1) {
+            //     foreach (string part in roomNameParts) {
+            //         if (part == " " || part == "_" || part == "-" || part == "?")
+            //             continue;
+            //         else
+            //             condensedRoomName += part;
+            //     }
+            // } else {
+            //     condensedRoomName = roomName;
+            // }
             return $"{lab}_{participant + 1}_{trial_idx}_{condensedRoomName}_{instruction}_{duration}";
         }
     }

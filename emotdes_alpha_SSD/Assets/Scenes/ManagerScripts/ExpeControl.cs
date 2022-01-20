@@ -174,6 +174,10 @@ public class ExpeControl : MonoBehaviour {
         {
             "comfort",
             "How comfortable were you during the waiting period?"
+        },
+        {
+            "totalTime",
+            "How long did you estimate the experiment took in total?"
         }
     };
 
@@ -249,6 +253,10 @@ public class ExpeControl : MonoBehaviour {
         {
             "comfort",
             "How comfortable were you during the waiting period?"
+        },
+        {
+            "totalTime",
+            "How long did you estimate the experiment took in total?"
         }
     };
 
@@ -389,7 +397,8 @@ public class ExpeControl : MonoBehaviour {
         {
             "outroQuestions",
             "The experiment is almost over!\n\n" +
-            "Here are some final questions for you."
+            "Here are some final questions for you.\n\n" +
+            "Pull the trigger to continue."
         }
     };
     private readonly Dictionary<string, string> messagesDE = new Dictionary<string, string> {
@@ -529,7 +538,8 @@ public class ExpeControl : MonoBehaviour {
         {
             "outroQuestions",
             "The experiment is almost over!\n\n" +
-            "Here are some final questions for you."
+            "Here are some final questions for you.\n\n" +
+            "Pull the trigger to continue."
         }
     };
 
@@ -2136,7 +2146,7 @@ public class ExpeControl : MonoBehaviour {
 
             yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "waitEstimation");
-            _questionSlider.UpdateSliderRange(30, 300, false, true);
+            _questionSlider.UpdateSliderRange(0, 300, false, true);
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -2368,11 +2378,10 @@ public class ExpeControl : MonoBehaviour {
         if (!qDictionary.ContainsKey(question)) {
             // message = "pause";
             _questionSlider.UpdateQuestionText(question);
-            csvQuestionText = question;
         } else {
             _questionSlider.UpdateQuestionText(qDictionary[question]);
-            csvQuestionText = qDictionary[question];
         }
+        csvQuestionText = question;
 
         _questionSlider.RequestConfirmation();
         _questionSlider.confirmed = false;
