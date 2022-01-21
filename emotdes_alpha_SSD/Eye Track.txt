@@ -1,0 +1,30 @@
+Try that link: https://hessenbox-a10.rz.uni-frankfurt.de/getlink/fi6oDH7DLsxPt6VuYrUoMSZz/
+
+// Add that import
+// using ViveSR.anipal.Eye;
+
+// Add that property outside of the function calling the calibration
+// private bool doCalibration;
+
+// You want to calibrate before every trial, I believe. So always true
+//  You could just as well remove the if statement below
+doCalibration = true;
+
+// CALIBRATION
+if (doCalibration)
+{
+    // Tell participants that a calibration will start after they press the trigger
+    toggleMessage(true, "calibrate");
+    yield return new WaitUntil(() => userClickedTrigger || Input.GetKeyUp(KeyCode.Space));
+    toggleMessage(false);
+
+    bool calibrationSuccess = false;
+    while(!calibrationSuccess)
+    {
+        // Contrary to the old API this function is not async
+        int calibReturnCode = SRanipal_Eye_API.LaunchEyeCalibration(IntPtr.Zero);
+        // Their API kinda suck so right now you cannot pass a delegate to the calibration call (to check if it failed or succeeded) and "calibReturnCode" always returns a positive outcome.
+        //  So if somebody fails the calibration, they have to do it again but by triggering it manually...
+        calibrationSuccess = calibReturnCode == (int)ViveSR.Error.WORK;
+    }
+}
