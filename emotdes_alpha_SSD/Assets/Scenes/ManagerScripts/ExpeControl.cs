@@ -12,6 +12,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
 
+using ViveSR.anipal.Eye;
+
 public class ExpeControl : MonoBehaviour {
     public static ExpeControl instance { get; private set; }
 
@@ -262,9 +264,8 @@ public class ExpeControl : MonoBehaviour {
 
     private readonly Dictionary<string, string> messagesEN = new Dictionary<string, string> {
         {
-            "calibrate",
-            "You can take a quick break if you wish to remove the headset.\n\n" +
-            "Then continue please with the calibration;\n" +
+            "calibrateVSR",
+            "Please start the EYE TRACKER calibration.\n" +
             "you may ask the assistant for help with that.\n\n" +
             "Pull the trigger when you're done to continue!"
         },
@@ -403,10 +404,9 @@ public class ExpeControl : MonoBehaviour {
     };
     private readonly Dictionary<string, string> messagesDE = new Dictionary<string, string> {
         {
-            "calibrate",
-            "Sie können eine kurze Pause einlegen, wenn Sie das Headset abnehmen möchten.\n\n" +
-            "Dann fahren Sie bitte mit der Kalibrierung fort;\n" +
-            "Sie können die dabei jederzeit um Hilfe bitten.\n\n" +
+            "calibrateVSR",
+            "Starte bitte die EYE TRACKER Kalibrierung.\n" +
+            "Du kannst die Assistenten dabei jederzeit um Hilfe bitten.\n\n" +
             "Halten Sie den Trigger gedrückt um fortzufahren!"
         },
         {
@@ -756,7 +756,7 @@ public class ExpeControl : MonoBehaviour {
             count = Directory.GetFiles(m_userdataPath, "*_Answers.csv", SearchOption.AllDirectories).Length;
         }
 
-        int maxTrials = allPlaylists[m_userId - 1].Count + 2;
+        int maxTrials = allPlaylists[m_userId - 1].Count;
 
         if (count == 0) {
             Debug.Log("This participant did not complete any answers. Starting with Trial 1.");
@@ -912,13 +912,14 @@ public class ExpeControl : MonoBehaviour {
 
         } else {
 
+
+            // Create new folder with subject ID
+            Directory.CreateDirectory(m_userdataPath);
+
         }
 
         Debug.Log("Writing experiment data on:");
         Debug.Log(m_userdataPath);
-
-        // Create new folder with subject ID
-        Directory.CreateDirectory(m_userdataPath);
 
         // get playlist for user ID --- we begin with user ID 1, but start with element 0 of the list of playlists.
         // SetUserPlaylist (m_userId - 1);
@@ -2001,22 +2002,30 @@ public class ExpeControl : MonoBehaviour {
             _instructBehaviour.toggleWorldInstruction(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            //
-            // old version
-            // Wait till user presses a special combination of inputs to stop the trial
-            //
-            // while (padPressedTime < durationToContinue) {
-            //     if (userClickedPad) {
-            //         padPressedTime += Time.deltaTime;
-            //         _progressBar.gameObject.SetActive (true);
-            //         _progressBar.SetProgress (padPressedTime / durationToContinue);
-            //     } else {
-            //         _progressBar.gameObject.SetActive (false);
-            //         padPressedTime = 0;
-            //     }
-            //     yield return null;
-            // }
-            // _progressBar.gameObject.SetActive (false);
+            // HfG Calibration
+            if (!tobiiTracking) {
+
+                toggleMessage(true, "calibrateVSR");
+                _instructBehaviour.RequestConfirmation(durationToContinue);
+                yield return new WaitUntil(() => !_instructBehaviour.requested);
+                yield return new WaitForSecondsRealtime(messageWaitDuration);
+                _instructBehaviour.toggleWorldInstruction(false);
+                yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+                bool calibrationSuccess = false;
+                while (!calibrationSuccess) {
+                    // Contrary to the old API this function is not async
+                    int calibReturnCode = SRanipal_Eye_API.LaunchEyeCalibration(IntPtr.Zero);
+                    // Their API kinda suck so right now you cannot pass a delegate to the calibration call (to check if it failed or succeeded) and "calibReturnCode" always returns a positive outcome.
+                    //  So if somebody fails the calibration, they have to do it again but by triggering it manually...
+                    calibrationSuccess = calibReturnCode == (int)ViveSR.Error.WORK;
+                }
+
+                // SGL Calibration
+            } else {
+
+            }
+
 
             toggleMessage(true, "three");
             yield return new WaitForSeconds(1);
@@ -2462,7 +2471,10 @@ public class ExpeControl : MonoBehaviour {
         trialIDField.text = "0";
 
         TestParticipantID();
-        TestTrialID();
+        // TestTrialID();
+
+
+        m_currentTrialIdx = 0;
 
         if (conCal || trackCal) {
             return;
