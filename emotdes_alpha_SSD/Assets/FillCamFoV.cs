@@ -6,6 +6,7 @@ public class FillCamFoV : MonoBehaviour {
 
     public Camera mainCam;
     public static readonly float m_distance = 100f;
+    // public static readonly float m_distance = 100f;
 
     // Position and scale quad so that it always fills exactly the camera's FoV
     void PositionQuad() {

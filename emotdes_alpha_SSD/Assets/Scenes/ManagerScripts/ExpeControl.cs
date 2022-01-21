@@ -270,6 +270,12 @@ public class ExpeControl : MonoBehaviour {
             "Pull the trigger when you're done to continue!"
         },
         {
+            "calibrateTob",
+            "Please start the EYE TRACKER calibration.\n" +
+            "FOLLOW the RED DOT as closesly as you can!\n\n" +
+            "Pull the trigger to continue."
+        },
+        {
             "takeBreak",
             "You can take a quick break if you wish to remove the headset.\n\n" +
             "Pull the trigger when you're done to continue!"
@@ -408,6 +414,12 @@ public class ExpeControl : MonoBehaviour {
             "Starte bitte die EYE TRACKER Kalibrierung.\n" +
             "Du kannst die Assistenten dabei jederzeit um Hilfe bitten.\n\n" +
             "Halten Sie den Trigger gedrückt um fortzufahren!"
+        },
+        {
+            "calibrateTob",
+            "Please start the EYE TRACKER calibration.\n" +
+            "FOLLOW the RED DOT as closesly as you can!\n\n" +
+            "Pull the trigger when you're done to continue!"
         },
         {
             "takeBreak",
@@ -605,6 +617,8 @@ public class ExpeControl : MonoBehaviour {
         setupPanel.SetActive(false);
         infoPanel.SetActive(false);
         pausePanel.SetActive(false);
+
+        grayArea.SetActive(false);
         // questionPanel.SetActive(false);
 
         LoadPlaylistsFromCSVs();
@@ -2024,6 +2038,19 @@ public class ExpeControl : MonoBehaviour {
                 // SGL Calibration
             } else {
 
+                toggleMessage(true, "calibrateTob");
+                _instructBehaviour.RequestConfirmation(durationToContinue);
+                yield return new WaitUntil(() => !_instructBehaviour.requested);
+                yield return new WaitForSecondsRealtime(messageWaitDuration);
+                _instructBehaviour.toggleWorldInstruction(false);
+                yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+                eyeCalibrated = false;
+                StartCoroutine(FullTobiiCalibration());
+
+                yield return new WaitUntil(() => eyeCalibrated);
+
+
             }
 
 
@@ -2414,7 +2441,7 @@ public class ExpeControl : MonoBehaviour {
 
     private void OnApplicationQuit() {
         if (eyeTracking)
-            if (tobiiTracking)
+            if (isSampling && tobiiTracking)
                 stopRecord(-1);
             else
                 _eyeTrack.stopRecord(-1);
@@ -2583,6 +2610,7 @@ public class ExpeControl : MonoBehaviour {
     public VREyeTracker trackr;
     public GazePoint gazePoint = new GazePoint();
     public ShaderBehaviour shaderBehavior;
+    public GameObject grayArea;
     public delegate void samplingCallback(GazePoint gaze);
     public Dictionary<string, samplingCallback> SamplingCallbacks = new Dictionary<string, samplingCallback>();
 
@@ -2661,9 +2689,11 @@ public class ExpeControl : MonoBehaviour {
         gazePoint.RightCollide = Physics.Raycast(gazePoint.RightWorldRay, out RaycastHit hitR) ? hitR.transform : null;
 
         if (gazePoint.LeftCollide != null && gazePoint.LeftCollide.name.Contains("mesh"))
-            gazePoint.LeftCollide = gazePoint.LeftCollide.parent;
+            if (gazePoint.LeftCollide.parent != null)
+                gazePoint.LeftCollide = gazePoint.LeftCollide.parent;
         if (gazePoint.RightCollide != null && gazePoint.RightCollide.name.Contains("mesh"))
-            gazePoint.RightCollide = gazePoint.RightCollide.parent;
+            if (gazePoint.RightCollide.parent != null)
+                gazePoint.RightCollide = gazePoint.RightCollide.parent;
 
         if (Physics.Raycast(gazePoint.LeftWorldRay, out RaycastHit vL)) {
             validationHit[0] = shaderBehavior.transform.InverseTransformPoint(vL.point);
@@ -2723,7 +2753,7 @@ public class ExpeControl : MonoBehaviour {
         bool valR = gazeData.Right.GazeDirectionValid;
 
         // TODO: add back func startNewRecord - unblock below
-        if (false && isSampling) {
+        if (isSampling) {
             m_recorder_ET.WriteLine(
                 $"{OcutimeStamp},{UnityTimeStamp}," +
                 $"{leftPor.x},{leftPor.y}," +
@@ -2753,6 +2783,11 @@ public class ExpeControl : MonoBehaviour {
     bool eyeCalibrated = false;
     bool eyeValidated = false;
     IEnumerator FullTobiiCalibration() {
+
+        Debug.Log("Inside Tobii calibration routine");
+
+
+        // grayArea.SetActive(true);
 
         eyeCalibrated = false;
         eyeValidated = false;
@@ -2821,6 +2856,9 @@ public class ExpeControl : MonoBehaviour {
 
         eyeCalibrated = true;
         eyeValidated = true;
+
+
+        grayArea.SetActive(false);
     }
 
     private void startNewAnswerRecord(string name = "") {
