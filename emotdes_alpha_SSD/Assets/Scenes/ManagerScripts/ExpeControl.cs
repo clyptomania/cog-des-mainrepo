@@ -26,7 +26,7 @@ public class ExpeControl : MonoBehaviour {
     [SerializeField]
     private int max_idx = 100;
 
-    [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, enButton, deButton, startButton, continueButton;
+    [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, enButton, deButton, startButton, continueButton, syncButton, syncConfirmButton;
 
     [SerializeField] private List<int> durations = new List<int>();
 
@@ -84,6 +84,8 @@ public class ExpeControl : MonoBehaviour {
     // UI go
     public GameObject setupPanel;
     public GameObject infoPanel;
+
+    public Image syncPanel;
 
     // User data
     private int m_userId = -1;
@@ -277,8 +279,12 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "takeBreak",
-            "You can take a quick break if you wish to remove the headset.\n\n" +
-            "Pull the trigger when you're done to continue!"
+            "You can now take a quick break.\n\n" +
+            "Please remove the headset and follow the instructions of the assistant."
+        },
+        {
+            "endBreak",
+            "Pull the trigger to continue with the next scenes!"
         },
         {
             "pleaseLean",
@@ -423,7 +429,11 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "takeBreak",
-            "Sie können eine kurze Pause einlegen, wenn Sie das Headset abnehmen möchten.\n\n" +
+            "Sie können jetzt eine kurze Pause einnehmen.\n" +
+            "Bitte nehmen Sie das Heaset ab und wenden Sie sich an die Assistenten."
+        },
+        {
+            "endBreak",
             "Halten Sie den Trigger gedrückt um fortzufahren!"
         },
         {
@@ -567,6 +577,7 @@ public class ExpeControl : MonoBehaviour {
 
     [Tooltip("Time in seconds needed to click trigger to continue")] public float durationToContinue;
     [Tooltip("Time in seconds needed wait between messages")] public float messageWaitDuration;
+    [Tooltip("Time in seconds the screen will flash for sync")] public float syncFlashDuration;
 
     void Awake() {
 
@@ -574,6 +585,11 @@ public class ExpeControl : MonoBehaviour {
 
         if (mainCam == null)
             mainCam = Camera.main;
+
+        syncPanel.gameObject.SetActive(false);
+
+        syncPanel.color = Color.black;
+
 
         tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
         language = PlayerPrefs.GetInt("german") == 1 ? lang.german : lang.english;
@@ -628,6 +644,23 @@ public class ExpeControl : MonoBehaviour {
         // TestParticipantID ();
         // TestTrialID ();
 
+    }
+
+    bool lightSynced = false;
+    bool syncButtonPressed = false;
+
+    public void SyncButtonPress() {
+        lightSynced = false;
+        syncButtonPressed = true;
+    }
+    public void SyncConfirmPress() {
+        syncButtonPressed = false;
+        lightSynced = true;
+
+        syncButton.gameObject.SetActive(false);
+        syncButton.gameObject.SetActive(false);
+        syncConfirmButton.interactable = false;
+        syncPanel.gameObject.SetActive(false);
     }
 
     public void TestParticipantID() {
@@ -951,7 +984,7 @@ public class ExpeControl : MonoBehaviour {
         //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
         foreach (EmotPlaylistElement ple in emotPlaylist)
             WriteInfo($"{ple.expNameCSV}");
-        WriteInfo("Started experiment at: " + getTimeStamp());
+        WriteInfo("Started experiment");
         FlushInfo();
 
         // setTaskList ();
@@ -1194,7 +1227,8 @@ public class ExpeControl : MonoBehaviour {
         // print (txt);
 
         if (m_recorder_info.BaseStream.CanWrite)
-            m_recorder_info.WriteLine("{0}: {1}", getTimeStamp(), txt);
+            m_recorder_info.WriteLine("{0}:{1}", getTimeStamp(), txt);
+        Debug.Log(txt);
     }
 
     public string CondenseString(string input) {
@@ -1621,6 +1655,38 @@ public class ExpeControl : MonoBehaviour {
         trialIDInfo.text = (m_currentTrialIdx + 1).ToString();
         currentRoomInfo.text = currentEmotTrial.roomName;
 
+
+        // Light sync with the sensor pack
+        syncPanel.gameObject.SetActive(true);
+        syncButton.gameObject.SetActive(true);
+        syncConfirmButton.gameObject.SetActive(true);
+        syncConfirmButton.interactable = false;
+        syncButtonPressed = false;
+        lightSynced = false;
+        while (lightSynced != true) {
+            yield return new WaitUntil(() => syncButtonPressed || lightSynced);
+            if (lightSynced)
+                break;
+            syncButtonPressed = false;
+            WriteInfo("startedLightSync");
+            syncButton.gameObject.SetActive(false);
+            syncConfirmButton.gameObject.SetActive(false);
+            for (int i = 0; i < 5; i++) {
+                syncPanel.color = Color.black;
+                yield return new WaitForSecondsRealtime(syncFlashDuration);
+                syncPanel.color = Color.white;
+                yield return new WaitForSecondsRealtime(syncFlashDuration);
+            }
+            WriteInfo("finishedLightSync");
+            syncButton.gameObject.SetActive(true);
+            syncConfirmButton.gameObject.SetActive(true);
+            syncConfirmButton.interactable = true;
+        }
+        WriteInfo("confirmedLightSync");
+
+
+
+
         // Settings from the setup panel have been submitted: start of the trial
 
         // TO DO: Integrate this with generated / read conditions of the playlist
@@ -1875,6 +1941,8 @@ public class ExpeControl : MonoBehaviour {
             _instructBehaviour.toggleControllerInstruction(false);
             Debug.Log("Room unload finished.");
 
+
+
             int trialIDX = currentEmotTrial.trial_idx;
 
             // condObjects.Clear();
@@ -1893,15 +1961,48 @@ public class ExpeControl : MonoBehaviour {
 
                 RoomManager.instance.LoadRoom(RoomManager.instance.breakRoomName);
 
-                WriteInfo(RoomManager.instance.currSceneName);
+                // WriteInfo(RoomManager.instance.currSceneName);
                 yield return new WaitUntil(() =>
                    !RoomManager.instance.actionInProgress &&
                    RoomManager.instance.currentScene.isLoaded);
                 yield return null;
 
+                WriteInfo(currentEmotTrial.condensedRoomName);
+
                 DisableCalPoints();
 
                 toggleMessage(true, "takeBreak");
+
+
+                // Light sync with the sensor pack
+                syncPanel.gameObject.SetActive(true);
+                syncButton.gameObject.SetActive(true);
+                syncConfirmButton.gameObject.SetActive(true);
+                syncConfirmButton.interactable = false;
+                syncButtonPressed = false;
+                lightSynced = false;
+                while (lightSynced != true) {
+                    yield return new WaitUntil(() => syncButtonPressed || lightSynced);
+                    if (lightSynced)
+                        break;
+                    syncButtonPressed = false;
+                    WriteInfo("startedLightSync");
+                    syncButton.gameObject.SetActive(false);
+                    syncConfirmButton.gameObject.SetActive(false);
+                    for (int i = 0; i < 5; i++) {
+                        syncPanel.color = Color.black;
+                        yield return new WaitForSecondsRealtime(syncFlashDuration);
+                        syncPanel.color = Color.white;
+                        yield return new WaitForSecondsRealtime(syncFlashDuration);
+                    }
+                    WriteInfo("finishedLightSync");
+                    syncButton.gameObject.SetActive(true);
+                    syncConfirmButton.gameObject.SetActive(true);
+                    syncConfirmButton.interactable = true;
+                }
+                WriteInfo("confirmedLightSync");
+
+                toggleMessage(true, "endBreak");
 
                 _instructBehaviour.RequestConfirmation(durationToContinue);
                 yield return new WaitUntil(() => !_instructBehaviour.requested);
@@ -1921,12 +2022,80 @@ public class ExpeControl : MonoBehaviour {
 
             }
 
+
+            if (eyeTracking) {
+                // HfG Calibration
+                if (!tobiiTracking) {
+
+                    toggleMessage(true, "calibrateVSR");
+                    _instructBehaviour.RequestConfirmation(durationToContinue);
+                    yield return new WaitUntil(() => !_instructBehaviour.requested);
+                    yield return new WaitForSecondsRealtime(messageWaitDuration);
+                    _instructBehaviour.toggleWorldInstruction(false);
+                    yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+                    bool calibrationSuccess = false;
+                    while (!calibrationSuccess) {
+                        // Contrary to the old API this function is not async
+                        int calibReturnCode = SRanipal_Eye_API.LaunchEyeCalibration(IntPtr.Zero);
+                        // Their API kinda suck so right now you cannot pass a delegate to the calibration call (to check if it failed or succeeded) and "calibReturnCode" always returns a positive outcome.
+                        //  So if somebody fails the calibration, they have to do it again but by triggering it manually...
+                        calibrationSuccess = calibReturnCode == (int)ViveSR.Error.WORK;
+                    }
+
+                    // SGL Calibration
+                } else {
+
+                    toggleMessage(true, "calibrateTob");
+                    _instructBehaviour.RequestConfirmation(durationToContinue);
+                    yield return new WaitUntil(() => !_instructBehaviour.requested);
+                    yield return new WaitForSecondsRealtime(messageWaitDuration);
+                    _instructBehaviour.toggleWorldInstruction(false);
+                    yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+                    eyeCalibrated = false;
+                    StartCoroutine(FullTobiiCalibration());
+
+                    yield return new WaitUntil(() => eyeCalibrated);
+
+
+                }
+            }
+
+
+            yield return new WaitForSecondsRealtime(1.0f);
+
+            long start_time = getTimeStamp();
+            // Start new gaze record (record name = stimulus name)
+            if (eyeTracking) {
+                if (tobiiTracking)
+                    startNewRecord(true);
+                else
+                    _eyeTrack.startNewRecord(true);
+                Debug.Log("Started eye tracking.");
+            }
+
+
+            WriteInfo("startedBlankScene");
+            yield return new WaitForSecondsRealtime(2.0f);
+            WriteInfo("endedBlankScene");
+
+
+            // Stop recording gaze
+            if (eyeTracking)
+                if (tobiiTracking)
+                    stopRecord(getTimeStamp() - start_time);
+                else
+                    _eyeTrack.stopRecord(getTimeStamp() - start_time);
+
+
             long timeSpentLoading = getTimeStamp();
             toggleMessage(true, "loading");
             // RoomManager.instance.LoadScene(currentTrial.room_idx);
             RoomManager.instance.LoadRoom(currentEmotTrial.roomName);
 
-            WriteInfo(RoomManager.instance.currSceneName);
+            // WriteInfo(RoomManager.instance.currSceneName);
+            WriteInfo(currentEmotTrial.condensedRoomName);
             yield return new WaitUntil(() =>
                !RoomManager.instance.actionInProgress &&
                RoomManager.instance.currentScene.isLoaded);
@@ -2016,43 +2185,6 @@ public class ExpeControl : MonoBehaviour {
             _instructBehaviour.toggleWorldInstruction(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            // HfG Calibration
-            if (!tobiiTracking) {
-
-                toggleMessage(true, "calibrateVSR");
-                _instructBehaviour.RequestConfirmation(durationToContinue);
-                yield return new WaitUntil(() => !_instructBehaviour.requested);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                _instructBehaviour.toggleWorldInstruction(false);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-
-                bool calibrationSuccess = false;
-                while (!calibrationSuccess) {
-                    // Contrary to the old API this function is not async
-                    int calibReturnCode = SRanipal_Eye_API.LaunchEyeCalibration(IntPtr.Zero);
-                    // Their API kinda suck so right now you cannot pass a delegate to the calibration call (to check if it failed or succeeded) and "calibReturnCode" always returns a positive outcome.
-                    //  So if somebody fails the calibration, they have to do it again but by triggering it manually...
-                    calibrationSuccess = calibReturnCode == (int)ViveSR.Error.WORK;
-                }
-
-                // SGL Calibration
-            } else {
-
-                toggleMessage(true, "calibrateTob");
-                _instructBehaviour.RequestConfirmation(durationToContinue);
-                yield return new WaitUntil(() => !_instructBehaviour.requested);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-                _instructBehaviour.toggleWorldInstruction(false);
-                yield return new WaitForSecondsRealtime(messageWaitDuration);
-
-                eyeCalibrated = false;
-                StartCoroutine(FullTobiiCalibration());
-
-                yield return new WaitUntil(() => eyeCalibrated);
-
-
-            }
-
 
             toggleMessage(true, "three");
             yield return new WaitForSeconds(1);
@@ -2061,6 +2193,9 @@ public class ExpeControl : MonoBehaviour {
             toggleMessage(true, "one");
             yield return new WaitForSeconds(1);
             toggleMessage(false);
+
+
+            WriteInfo("Started trial: " + currentEmotTrial.expName);
 
             // Start new gaze record (record name = stimulus name)
             if (eyeTracking) {
@@ -2072,7 +2207,7 @@ public class ExpeControl : MonoBehaviour {
             }
             // Start trial
             m_isPresenting = true;
-            long start_time = getTimeStamp();
+            start_time = getTimeStamp();
 
             if (debugging) {
                 // foreach (var lightCond in LightConditions) {
@@ -2140,6 +2275,9 @@ public class ExpeControl : MonoBehaviour {
 
             _instructBehaviour.setInstruction("Please wait");
 
+
+            WriteInfo("Finished trial: " + currentEmotTrial.expName);
+
             Debug.Log($"Finished: {currentEmotTrial.expName} - {trialIDX}");
 
             //
@@ -2168,6 +2306,9 @@ public class ExpeControl : MonoBehaviour {
                     currentInstructionInfo.text = "Sitting Questions";
                     break;
             }
+
+
+            WriteInfo("Started questions: " + currentEmotTrial.expName);
 
             // toggleMessage (true, "beginQuestions");
 
@@ -2263,6 +2404,9 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
 
+
+            WriteInfo("Finished questions: " + currentEmotTrial.expName);
+
             // THIS IS THE END OF THE QUESTION BLOCK
 
             trainSpawner.DepartTrain();
@@ -2303,7 +2447,8 @@ public class ExpeControl : MonoBehaviour {
 
         RoomManager.instance.LoadRoom(RoomManager.instance.breakRoomName);
 
-        WriteInfo(RoomManager.instance.currSceneName);
+        // WriteInfo(RoomManager.instance.currSceneName);
+
         yield return new WaitUntil(() =>
            !RoomManager.instance.actionInProgress &&
            RoomManager.instance.currentScene.isLoaded);
@@ -2317,6 +2462,8 @@ public class ExpeControl : MonoBehaviour {
         // Last questions: comparisons
 
         startNewAnswerRecord("_OutroQuestions");
+
+        WriteInfo("Started outro");
 
 
 
@@ -2367,6 +2514,8 @@ public class ExpeControl : MonoBehaviour {
 
 
         Debug.Log("Experiment concluded. Quitting...");
+
+        WriteInfo("Ended experiment");
 
         FlushInfo();
         Quit();
@@ -2725,6 +2874,7 @@ public class ExpeControl : MonoBehaviour {
 
     public bool isSampling;
     public long lastOcuTS;
+    public char phase = 'z';
 
     private void HMDGazeDataReceivedCallback(object sender, HMDGazeDataEventArgs rawGazeData) {
         long OcutimeStamp = EyeTrackingOperations.GetSystemTimeStamp();
@@ -2751,6 +2901,9 @@ public class ExpeControl : MonoBehaviour {
         // Validity
         bool valL = gazeData.Left.GazeDirectionValid;
         bool valR = gazeData.Right.GazeDirectionValid;
+        //Pupil Data
+        float pDiameterL = gazeData.Left.PupilDiameter;
+        float pDiameterR = gazeData.Right.PupilDiameter;
 
         // TODO: add back func startNewRecord - unblock below
         if (isSampling) {
@@ -2768,7 +2921,7 @@ public class ExpeControl : MonoBehaviour {
                 $"{rightBasePoint.x},{rightBasePoint.y},{rightBasePoint.z}," +
                 $"{leftGazeDirection.x},{leftGazeDirection.y},{leftGazeDirection.z}," +
                 $"{rightGazeDirection.x},{rightGazeDirection.y},{rightGazeDirection.z}," +
-                $"{valL},{valR}"
+                $"{pDiameterL},{pDiameterR},{valL},{valR}"
             );
         }
 
@@ -2894,11 +3047,26 @@ public class ExpeControl : MonoBehaviour {
             m_recorder_question.Close();
     }
 
-    private void startNewRecord() {
+    private void startNewRecord(bool baseline = false) {
         // m_recorder_ET = new StreamWriter(m_userdataPath + "/TESTname_ET.csv");
         // m_recorder_ET = new StreamWriter(m_userdataPath + "/" + currentTrial.expName + "_ET.csv");
-        m_recorder_ET = new StreamWriter(m_userdataPath + "/" +
-            currentEmotTrial.expName + "_ET.csv");
+        string baseName = m_userdataPath + "/" + currentEmotTrial.expName;
+
+        string fileNameET;
+        string fileNameHMD;
+
+        if (baseline) {
+            fileNameET = baseName + "_ET_base.csv";
+            fileNameHMD = baseName + "_HMD_base.csv";
+        } else {
+            fileNameET = baseName + "_ET.csv";
+            fileNameHMD = baseName + "_HMD.csv";
+        }
+
+        // m_recorder_ET = new StreamWriter(m_userdataPath + "/" +
+        //     currentEmotTrial.expName + "_ET.csv");
+
+        m_recorder_ET = new StreamWriter(fileNameET);
         m_recorder_ET.WriteLine(
             "OcutimeStamp,UnityTimeStamp," +
             "leftPor.x,leftPor.y," +
@@ -2913,12 +3081,13 @@ public class ExpeControl : MonoBehaviour {
             "rightBasePoint.x,rightBasePoint.y,rightBasePoint.z," +
             "leftEyeDirection.x,leftEyeDirection.y,leftEyeDirection.z," +
             "rightEyeDirection.x,rightEyeDirection.y,rightEyeDirection.z," +
-            "valL,valR");
+            "pupilDiameterL,pupilDiameterR,valL,valR");
 
         // m_recorder_HMD = new StreamWriter(m_userdataPath + "/TESTname_HMD.csv");
         // m_recorder_HMD = new StreamWriter(m_userdataPath + "/" + currentTrial.expName + "_HMD.csv");
-        m_recorder_HMD = new StreamWriter(m_userdataPath + "/" +
-            currentEmotTrial.expName + "_HMD.csv");
+        m_recorder_HMD = new StreamWriter(fileNameHMD);
+        //         m_recorder_HMD = new StreamWriter(m_userdataPath + "/" +
+        //  currentEmotTrial.expName + "_HMD.csv");
         m_recorder_HMD.WriteLine(
             "OcutimeStamp,UnityTimeStamp," +
             "LeftCollide,RightCollide");

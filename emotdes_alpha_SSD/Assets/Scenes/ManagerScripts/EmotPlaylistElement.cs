@@ -30,7 +30,7 @@
         }
     }
 
-    string condensedRoomName {
+    public string condensedRoomName {
         get {
             string full = "";
             string[] roomNameParts = roomName.Split(' ');

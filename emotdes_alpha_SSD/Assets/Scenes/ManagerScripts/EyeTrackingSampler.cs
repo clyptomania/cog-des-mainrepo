@@ -62,6 +62,9 @@ public class EyeTrackingSampler : MonoBehaviour {
             bool valL = gazePoint.valid(ExpeControl.lateralisation.left);
             bool valR = gazePoint.valid(ExpeControl.lateralisation.right);
 
+            float pDiameterL = gazePoint.LeftGaze.pupil_diameter_mm;
+            float pDiameterR = gazePoint.RightGaze.pupil_diameter_mm;
+
             instance.m_recorder_ET.WriteLine(
                 $"{gazePoint.data.timestamp},{instance.UnityTimeStamp}," +
                 $"{instance.cameraPosition.x},{instance.cameraPosition.y},{instance.cameraPosition.z}," +
@@ -73,7 +76,7 @@ public class EyeTrackingSampler : MonoBehaviour {
                 $"{rightBasePoint.x},{rightBasePoint.y},{rightBasePoint.z}," +
                 $"{leftGazeDirection.x},{leftGazeDirection.y},{leftGazeDirection.z}," +
                 $"{rightGazeDirection.x},{rightGazeDirection.y},{rightGazeDirection.z}," +
-                $"{valC},{valL},{valR}"
+                $"{pDiameterL},{pDiameterR},{valC},{valL},{valR}"
              );
         }
     }
@@ -99,11 +102,25 @@ public class EyeTrackingSampler : MonoBehaviour {
         }
     }
 
-    public void startNewRecord() {
+    public void startNewRecord(bool baseline = false) {
         // m_recorder_ET = new StreamWriter(_expeControl.m_userdataPath + "/" +
         //                                  _expeControl.currentTrial.expName + "_ET.csv");
-        m_recorder_ET = new StreamWriter(_expeControl.m_userdataPath + "/" +
-                                         _expeControl.currentEmotTrial.expName + "_ET.csv");
+
+        string baseName = _expeControl.m_userdataPath + "/" + _expeControl.currentEmotTrial.expName;
+
+        string fileNameET;
+        string fileNameHMD;
+
+        if (baseline) {
+            fileNameET = baseName + "_ET_base.csv";
+            fileNameHMD = baseName + "_HMD_base.csv";
+        } else {
+            fileNameET = baseName + "_ET.csv";
+            fileNameHMD = baseName + "_HMD.csv";
+        }
+
+        // m_recorder_ET = new StreamWriter(_expeControl.m_userdataPath + "/" +
+        //                                  _expeControl.currentEmotTrial.expName + "_ET.csv");
         m_recorder_ET.WriteLine(
             "OcutimeStamp,UnityTimeStamp," +
             "cameraPosition.x,cameraPosition.y,cameraPosition.z," +
@@ -114,12 +131,15 @@ public class EyeTrackingSampler : MonoBehaviour {
             "rightBasePoint.x,rightBasePoint.y,rightBasePoint.z," +
             "leftEyeDirection.x,leftEyeDirection.y,leftEyeDirection.z," +
             "rightEyeDirection.x,rightEyeDirection.y,rightEyeDirection.z," +
-            "valB,valL,valR");
+            "pupilDiameterL,pupilDiameterR,valB,valL,valR");
+        // "pupilDiameterL,pupilDiameterR,valL,valR,phase"
 
         // m_recorder_HMD = new StreamWriter(_expeControl.m_userdataPath + "/" +
         //                                   _expeControl.currentTrial.expName + "_HMD.csv");
-        m_recorder_HMD = new StreamWriter(_expeControl.m_userdataPath + "/" +
-                                   _expeControl.currentEmotTrial.expName + "_HMD.csv");
+
+        m_recorder_HMD = new StreamWriter(fileNameHMD);
+        // m_recorder_HMD = new StreamWriter(_expeControl.m_userdataPath + "/" +
+        //                            _expeControl.currentEmotTrial.expName + "_HMD.csv");
         m_recorder_HMD.WriteLine(
             "OcutimeStamp,UnityTimeStamp," +
             "LeftCollide,RightCollide,CombCollide");
