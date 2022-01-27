@@ -112,6 +112,10 @@ public class ExpeControl : MonoBehaviour {
             "How many hours have you spent in VR so far in your life?"
         },
         {
+            "height",
+            "How tall are you (in cm)?"
+        },
+        {
             "age",
             "How old are you?"
         },
@@ -205,6 +209,10 @@ public class ExpeControl : MonoBehaviour {
         {
             "vrLife",
             "Wie viele Stunden haben Sie bisher in Ihrem Leben in VR verbracht?"
+        },
+        {
+            "height",
+            "Wie gross bist du (in cm)?"
         },
         {
             "age",
@@ -782,7 +790,7 @@ public class ExpeControl : MonoBehaviour {
 
         // string[] answerFiles = Directory.GetFiles (lastSubjectDir, "*_Answers.csv", SearchOption.AllDirectories);
         int count = Directory.GetFiles(lastSubjectDir, "*_Answers.csv", SearchOption.AllDirectories).Length;
-        int maxTrials = allPlaylists[m_userId - 1].Count + 2;
+        int maxTrials = allPlaylists[m_userId - 1].Count;
 
         Debug.Log("Detected " + count + " answer files for participant " + lastSubjID);
 
@@ -804,7 +812,7 @@ public class ExpeControl : MonoBehaviour {
             participantIDField.text = m_userId.ToString();
             trialIDField.text = (m_currentTrialIdx + 1).ToString();
 
-        } else if (count >= maxTrials) {
+        } else {
             Debug.Log("The last participant completed all answers. Starting with the next participant ID.");
 
             m_userId = lastSubjID + 1;
@@ -1772,7 +1780,14 @@ public class ExpeControl : MonoBehaviour {
             startNewAnswerRecord("_IntroQuestions");
 
             ToggleQuestion(true, "age");
-            _questionSlider.UpdateSliderRange(18, 75, false, false, "18", " ", "75");
+            _questionSlider.UpdateSliderRange(18, 76, false, false, "18", "", "75");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            ToggleQuestion(true, "height");
+            _questionSlider.UpdateSliderRange(120, 220, false, false, "120", "", "220");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
