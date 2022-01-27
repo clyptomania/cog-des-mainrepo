@@ -25,38 +25,38 @@ public class InstructBehaviour : MonoBehaviour {
 
     public bool deactivatedOtherController { get; private set; }
 
-    void OnEnable () {
+    void OnEnable() {
         instance = this;
         requested = false;
 
-        _radialProgresses = FindObjectsOfType<RadialProgress> ();
-        ResetRadialProgresses ();
+        _radialProgresses = FindObjectsOfType<RadialProgress>();
+        ResetRadialProgresses();
 
         // Already turned off by the CameraRig
-        instructionGeneral.SetActive (false);
+        instructionGeneral.SetActive(false);
         // instructionControllerL.SetActive(false);
         // instructionControllerR.SetActive(false);
 
         deactivatedOtherController = false;
 
-        _texts = new List<Text> (3);
-        _texts.Add (instructionGeneral.GetComponentInChildren<Text> ());
-        _texts.Add (instructionControllerL.GetComponentInChildren<Text> ());
-        _texts.Add (instructionControllerR.GetComponentInChildren<Text> ());
+        _texts = new List<Text>(3);
+        _texts.Add(instructionGeneral.GetComponentInChildren<Text>());
+        _texts.Add(instructionControllerL.GetComponentInChildren<Text>());
+        _texts.Add(instructionControllerR.GetComponentInChildren<Text>());
 
-        TrackPadInput.touchCallbacks.Add ("showCtrlInstruct",
+        TrackPadInput.touchCallbacks.Add("showCtrlInstruct",
             (state, lat) => {
                 if (lat == ExpeControl.lateralisation.left)
-                    instructionControllerL.SetActive (state);
+                    instructionControllerL.SetActive(state);
                 else
-                    instructionControllerR.SetActive (state);
+                    instructionControllerR.SetActive(state);
             }
         );
 
-        TrackPadInput.triggerCallbacks.Add ("HideGeneralInstruct",
+        TrackPadInput.triggerCallbacks.Add("HideGeneralInstruct",
             (state, lat) => {
                 if (isInstructGeneralDisplayed)
-                    instructionGeneral.SetActive (false);
+                    instructionGeneral.SetActive(false);
             }
         );
     }
@@ -64,43 +64,43 @@ public class InstructBehaviour : MonoBehaviour {
     private float holdTime = 0;
     private float requestTime = 0;
 
-    public void RequestConfirmation (float time) {
-        ResetRadialProgresses ();
+    public void RequestConfirmation(float time) {
+        ResetRadialProgresses();
         holdTime = 0;
         requestTime = time;
         requested = true;
-        StartCoroutine (Request ());
+        StartCoroutine(Request());
     }
 
-    IEnumerator Request () {
+    IEnumerator Request() {
         // wait for user to release previously held trigger to start filling process
         while (_expeControl.userClickedTrigger)
             yield return null;
         while (holdTime < requestTime) {
             if (_expeControl.userClickedTrigger) {
                 holdTime += Time.deltaTime;
-                SetRadialProgresses (holdTime / requestTime);
+                SetRadialProgresses(holdTime / requestTime);
             } else {
                 holdTime = 0;
-                ResetRadialProgresses ();
+                ResetRadialProgresses();
             }
             yield return null;
         }
-        SetRadialProgresses (1);
+        SetRadialProgresses(1);
         requested = false;
 
-        yield return new WaitUntil (() => !_expeControl.userTouchedTrigger);
-        ResetRadialProgresses ();
+        yield return new WaitUntil(() => !_expeControl.userTouchedTrigger);
+        ResetRadialProgresses();
     }
 
-    public void SetRadialProgresses (float fill) {
+    public void SetRadialProgresses(float fill) {
         foreach (var rP in _radialProgresses) {
-            rP.SetProgress (fill);
+            rP.SetProgress(fill);
         }
     }
-    public void ResetRadialProgresses () {
+    public void ResetRadialProgresses() {
         foreach (var rP in _radialProgresses) {
-            rP.ResetFill ();
+            rP.ResetFill();
             // Debug.Log("Reset radials of: " + rP.gameObject.name);
         }
     }
@@ -109,18 +109,18 @@ public class InstructBehaviour : MonoBehaviour {
     /// Start is called on the frame when a script is enabled just before
     /// any of the Update methods is called the first time.
     /// </summary>
-    void Start () {
+    void Start() {
         _expeControl = ExpeControl.instance;
     }
 
-    void Update () {
-        if (requested && Input.GetKeyDown ("space")) {
-            Debug.Log ("Fulfilling request manually…");
+    void Update() {
+        if (requested && Input.GetKeyDown("space")) {
+            Debug.Log("Fulfilling request manually…");
             requested = false;
         }
     }
 
-    public void positionWorldInstruction (Transform start) {
+    public void positionWorldInstruction(Transform start) {
         Transform tr = instructionGeneral.transform;
 
         // Position and rotate on top of user
@@ -135,45 +135,45 @@ public class InstructBehaviour : MonoBehaviour {
 
     public bool isWorldInstructionShowing => instructionGeneral.activeSelf;
 
-    public void toggleControllerInstruction (bool state, string message = "") {
+    public void toggleControllerInstruction(bool state, string message = "") {
         if (oneControllerOnly)
             if (leftControllerActive)
-                instructionControllerL.SetActive (state);
+                instructionControllerL.SetActive(state);
             else
-                instructionControllerR.SetActive (state);
+                instructionControllerR.SetActive(state);
         else {
-            instructionControllerL.SetActive (state);
-            instructionControllerR.SetActive (state);
+            instructionControllerL.SetActive(state);
+            instructionControllerR.SetActive(state);
         }
         if (message != "")
-            setInstruction (message);
+            setInstruction(message);
     }
-    public void toggleWorldInstruction (bool state, string message = "") {
-        instructionGeneral.SetActive (state);
+    public void toggleWorldInstruction(bool state, string message = "") {
+        instructionGeneral.SetActive(state);
         if (message != "")
-            setInstruction (message);
+            setInstruction(message);
     }
 
-    public void setInstruction (string message) {
+    public void setInstruction(string message) {
         foreach (var text in _texts) {
             text.text = message;
         }
     }
 
-    public void DeactivateController (bool left) {
+    public void DeactivateController(bool left) {
         if (!oneControllerOnly) {
             deactivatedOtherController = true;
             return;
         }
         if (!deactivatedOtherController) {
             if (left) {
-                instructionControllerL.transform.parent.gameObject.SetActive (false);
+                instructionControllerL.transform.parent.gameObject.SetActive(false);
                 leftControllerActive = false;
-                Debug.Log ("Deactivated left controller");
+                Debug.Log("Deactivated left controller");
             } else {
-                instructionControllerR.transform.parent.gameObject.SetActive (false);
+                instructionControllerR.transform.parent.gameObject.SetActive(false);
                 leftControllerActive = true;
-                Debug.Log ("Deactivated right controller");
+                Debug.Log("Deactivated right controller");
             }
             deactivatedOtherController = true;
         }

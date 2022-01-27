@@ -10,7 +10,9 @@ public class QuestionSlider : MonoBehaviour {
     private InstructBehaviour _instructBehaviour;
     public GameObject controllerMainPoint;
     private Slider slider;
-    public Text questionTextField, sliderText;
+    public GameObject timeSelector;
+    public Image leftArrow, rightArrow, timeSelectorButton;
+    public Text questionTextField, sliderText, timeText;
     public string questionText { get; private set; }
     public float sliderValue { get; private set; }
     public Text minText, midText, maxText, twoText, fourText;
@@ -20,6 +22,7 @@ public class QuestionSlider : MonoBehaviour {
     [SerializeField] private bool discrete = true;
     [SerializeField] private bool timeFormat = true;
     [SerializeField] [Range(0.1f, 1)] private float swipeSpeed = 0.5f;
+    [SerializeField] [Range(0.1f, 500)] private float timeSwipeSpeed = 0.5f;
 
     public SteamVR_Input_Sources anyHand;
     public SteamVR_Action_Boolean sideButtonAction;
@@ -57,6 +60,11 @@ public class QuestionSlider : MonoBehaviour {
 
         UpdateSliderRange(30, 300f);
 
+        timeSelector.gameObject.SetActive(true);
+        timeSelectorButton.color = new Color(0.65f, 0.65f, 0.65f);
+        rightArrow.color = new Color(0, 0, 0, 0.75f);
+        leftArrow.color = new Color(0, 0, 0, 0.50f);
+
         valencePanel.SetActive(false);
         arousalPanel.SetActive(false);
         // Debug.Log("Slider found with value: " + sliderValue);
@@ -72,17 +80,38 @@ public class QuestionSlider : MonoBehaviour {
             deltaX = 0;
             // Debug.Log("Executed non-swipe");
             nonSwipe = false;
-        } else
-            deltaX = trackpadVector.delta.x * swipeSpeed * range;
+        } else {
+            if (!timeFormat) {
+                deltaX = trackpadVector.delta.x * swipeSpeed * range;
+            } else {
+                deltaX = trackpadVector.delta.x * timeSwipeSpeed;
+            }
+        }
 
-        if (deltaX > 0)
+        if (deltaX > 0) {
             if (sliderValue + deltaX < maxVal)
                 sliderValue += deltaX;
-            else sliderValue = maxVal;
-        else
-        if (sliderValue + deltaX > minVal)
-            sliderValue += deltaX;
-        else sliderValue = minVal;
+            else {
+                sliderValue = maxVal;
+                rightArrow.color = new Color(1, 1, 1, 0);
+            }
+        } else {
+            if (sliderValue + deltaX > minVal)
+                sliderValue += deltaX;
+            else {
+                sliderValue = minVal;
+                leftArrow.color = new Color(1, 1, 1, 0);
+            }
+        }
+
+        if (deltaX > 0 && sliderValue < maxVal - 0.25f) {
+            rightArrow.color = new Color(0, 0, 0, 1);
+            leftArrow.color = new Color(0, 0, 0, 0.75f);
+        }
+        if (deltaX < 0 && sliderValue > minVal + 0.25f) {
+            rightArrow.color = new Color(0, 0, 0, 0.75f);
+            leftArrow.color = new Color(0, 0, 0, 1);
+        }
 
         UpdateSlider();
     }
@@ -94,18 +123,28 @@ public class QuestionSlider : MonoBehaviour {
         maxVal = max;
         visualAnalog = vA;
         timeFormat = tF;
-        if (maxVal >= 4.0f) rounder = 1.0f;
-        else rounder = 10.0f;
+        rounder = 1.0f;
+        // if (maxVal >= 4.0f) rounder = 1.0f;
+        // else rounder = 10.0f;
         range = max - min;
         divisor = 1 / range;
         if (timeFormat) {
             minText.text = SecondsToTime(minVal);
             midText.text = "";
             maxText.text = SecondsToTime(maxVal);
+
+            slider.gameObject.SetActive(false);
+            timeSelector.gameObject.SetActive(true);
+
         } else {
             minText.text = Mathf.RoundToInt(minVal).ToString();
             midText.text = (minVal + range / 2f).ToString();
             maxText.text = Mathf.RoundToInt(maxVal).ToString();
+
+
+            slider.gameObject.SetActive(true);
+            timeSelector.gameObject.SetActive(false);
+
         }
         if (minLabel != "") {
             minText.text = minLabel;
@@ -152,6 +191,9 @@ public class QuestionSlider : MonoBehaviour {
 
         sliderValue = minVal + range / 2f;
 
+        if (timeFormat)
+            sliderValue = 0;
+
         UpdateSlider();
     }
 
@@ -170,9 +212,10 @@ public class QuestionSlider : MonoBehaviour {
         else
             slider.value = (sliderValue - minVal) * divisor;
 
-        if (timeFormat)
+        if (timeFormat) {
             sliderText.text = SecondsToTime(discreteVal);
-        else
+            timeText.text = SecondsToTime(discreteVal);
+        } else
             sliderText.text = (discreteVal).ToString();
         if (visualAnalog)
             sliderText.text = "";
@@ -182,8 +225,9 @@ public class QuestionSlider : MonoBehaviour {
         // Debug.Log("Began Touch");
         nonSwipe = true;
         controllerMainPoint.SetActive(false);
+        timeSelectorButton.color = new Color(0.35f, 0.35f, 0.35f);
         if (confirming) {
-            questionTextField.text = questionText + confirmationText;
+            // questionTextField.text = questionText + confirmationText;
             confirming = false;
             Debug.Log("Aborted confirmation from touch start.");
 
@@ -193,13 +237,24 @@ public class QuestionSlider : MonoBehaviour {
     public void PadTouchEnd(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource) {
         // Debug.Log("Ended Touch");
         nonSwipe = true;
+        timeSelectorButton.color = new Color(0.65f, 0.65f, 0.65f);
+        leftArrow.color = new Color(0, 0, 0, 0.75f);
+        rightArrow.color = new Color(0, 0, 0, 0.75f);
+
+        if (discreteVal < minVal + 0.5f)
+            leftArrow.color = new Color(0, 0, 0, 0);
+
+        if (discreteVal > maxVal - 0.5f)
+            rightArrow.color = new Color(0, 0, 0, 0);
+
         if (directInteract && !confirmed && !_expeControl.userTouchedTrigger)
             controllerMainPoint.SetActive(true);
     }
 
     public void UpdateQuestionText(string text) {
         questionText = text;
-        questionTextField.text = questionText + confirmationText;
+        questionTextField.text = questionText;
+        // questionTextField.text = questionText + confirmationText;
 
         minText.text = "";
         midText.text = "";

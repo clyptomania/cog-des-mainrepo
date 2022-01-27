@@ -112,6 +112,18 @@ public class ExpeControl : MonoBehaviour {
             "How many hours have you spent in VR so far in your life?"
         },
         {
+            "age",
+            "How old are you?"
+        },
+        {
+            "sex",
+            "To which gender do you identify?"
+        },
+        {
+            "occupation",
+            "Which occupation describes yours best?"
+        },
+        {
             "transportFreq",
             "How often do you normally use public transport?"
         },
@@ -176,6 +188,10 @@ public class ExpeControl : MonoBehaviour {
             "Which SEAT MATERIAL did you prefer?"
         },
         {
+            "preferLighting",
+            "Which kind of ILLUMINATION did you prefer?"
+        },
+        {
             "comfort",
             "How comfortable were you during the waiting period?"
         },
@@ -189,6 +205,18 @@ public class ExpeControl : MonoBehaviour {
         {
             "vrLife",
             "Wie viele Stunden haben Sie bisher in Ihrem Leben in VR verbracht?"
+        },
+        {
+            "age",
+            "Wie alt bist du?"
+        },
+        {
+            "sex",
+            "Als welches Geschlecht identifizierst du dich?"
+        },
+        {
+            "occupation",
+            "Welche Beschätigung stimmt am ehesten mit deiner überein?"
         },
         {
             "transportFreq",
@@ -255,8 +283,12 @@ public class ExpeControl : MonoBehaviour {
             "Which SEAT MATERIAL did you prefer?"
         },
         {
+            "preferLighting",
+            "Welche Art von BELEUCHTUNG gefiel dir mehr?"
+        },
+        {
             "comfort",
-            "How comfortable were you during the waiting period?"
+            "Wie BEQUEM erschien die Wartezeit?"
         },
         {
             "totalTime",
@@ -1739,6 +1771,28 @@ public class ExpeControl : MonoBehaviour {
 
             startNewAnswerRecord("_IntroQuestions");
 
+            ToggleQuestion(true, "age");
+            _questionSlider.UpdateSliderRange(18, 75, false, false, "18", " ", "75");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            ToggleQuestion(true, "sex");
+            _questionSlider.UpdateSliderRange(0, 2, true, false, "male", " ", "female");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            ToggleQuestion(true, "occupation");
+            _questionSlider.UpdateSliderRange(0, 4, true, false, "unemployed", "employee", "other", "",
+                "student", "self-employed");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
             ToggleQuestion(true, "vrLife");
             _questionSlider.UpdateSliderRange(0, 4, true, false, "0", "1--5h", ">20h", "",
                 "<1h", "5--20h");
@@ -2323,7 +2377,7 @@ public class ExpeControl : MonoBehaviour {
 
             yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "waitEstimation");
-            _questionSlider.UpdateSliderRange(0, 300, false, true);
+            _questionSlider.UpdateSliderRange(0, 600, false, true);
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -2361,12 +2415,12 @@ public class ExpeControl : MonoBehaviour {
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "thinkPast");
             _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "thinkPresent");
@@ -2374,15 +2428,15 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "thinkFuture");
             _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "experienceBody");
             _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
             yield return new WaitUntil(() => _questionSlider.confirmed);
@@ -2390,14 +2444,13 @@ public class ExpeControl : MonoBehaviour {
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "experienceSpace");
             _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "thinkTime");
             _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "extremely often");
             yield return new WaitUntil(() => _questionSlider.confirmed);
@@ -2466,22 +2519,48 @@ public class ExpeControl : MonoBehaviour {
         WriteInfo("Started outro");
 
 
-
-        // build a switch here for different labs
-
-        ToggleQuestion(true, "preferPosture");
-        _questionSlider.UpdateSliderRange(0, 99, true, false, "sitting", "neither", "leaning");
+        yield return new WaitForSecondsRealtime(messageWaitDuration);
+        ToggleQuestion(true, "totalTime");
+        _questionSlider.UpdateSliderRange(0, 12000, false, true);
         yield return new WaitUntil(() => _questionSlider.confirmed);
         yield return new WaitForSecondsRealtime(messageWaitDuration);
         ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-        ToggleQuestion(true, "preferMaterial");
-        _questionSlider.UpdateSliderRange(0, 99, true, false, "wood", "neither", "metal mesh");
-        yield return new WaitUntil(() => _questionSlider.confirmed);
-        yield return new WaitForSecondsRealtime(messageWaitDuration);
-        ToggleQuestion(false);
-        yield return new WaitForSecondsRealtime(messageWaitDuration);
+        // SGL outro questions
+
+        if (tobiiTracking) {
+
+            ToggleQuestion(true, "preferPosture");
+            _questionSlider.UpdateSliderRange(0, 99, true, false, "sitting", "neither", "standing");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            ToggleQuestion(true, "preferLighting");
+            _questionSlider.UpdateSliderRange(0, 99, true, false, "cold", "neither", "warm");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            // HfG outro questions
+        } else {
+
+            ToggleQuestion(true, "preferPosture");
+            _questionSlider.UpdateSliderRange(0, 99, true, false, "sitting", "neither", "leaning");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+            ToggleQuestion(true, "preferMaterial");
+            _questionSlider.UpdateSliderRange(0, 99, true, false, "wood", "neither", "metal mesh");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+        }
 
 
 
