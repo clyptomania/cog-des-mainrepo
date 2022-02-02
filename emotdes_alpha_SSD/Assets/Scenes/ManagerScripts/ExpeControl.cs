@@ -16,17 +16,35 @@ using ViveSR.anipal.Eye;
 
 public class ExpeControl : MonoBehaviour {
     public static ExpeControl instance { get; private set; }
+    public PluxDeviceManager PluxDevManager;
+    public List<List<int>> MultiThreadList = null;
+    public List<int> MultiThreadSubList = null;
+
+    public List<int> ActiveChannels;
+    public List<string> ListDevices;
+    [SerializeField] private int sampleRate;
+    [SerializeField] private int bitDepth;
+    public string SelectedDevice = "";
+    private int batteryLevel = -1;
+    public Scrollbar batteryMeter;
+    public Text batteryText;
 
     [SerializeField] private bool debugging;
     [SerializeField] private bool controllerTutorial, questionnaireTutorial;
     [SerializeField] private bool deleteOldData = false;
     [SerializeField] private bool eyeTracking = true;
     [SerializeField] private bool preTesting = true;
+    [SerializeField] private bool lightSync = true;
 
     [SerializeField]
     private int max_idx = 100;
 
-    [SerializeField] private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, enButton, deButton, startButton, continueButton, syncButton, syncConfirmButton;
+    [SerializeField]
+    private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, enButton, deButton, startButton, continueButton,
+        syncButton, syncConfirmButton, scanButton, connectButton, acqButton, sampleButton;
+    [SerializeField] private Toggle chan1Toggle, chan2Toggle, chan3Toggle, chan4Toggle;
+    [SerializeField] private InputField chan1Field, chan2Field, chan3Field, chan4Field;
+    public Image connectionIndicator;
 
     [SerializeField] private List<int> durations = new List<int>();
 
@@ -82,8 +100,7 @@ public class ExpeControl : MonoBehaviour {
     };
 
     // UI go
-    public GameObject setupPanel;
-    public GameObject infoPanel;
+    public GameObject setupPanel, infoPanel, promptPanel, pluxPanel;
 
     public Image syncPanel;
 
@@ -627,9 +644,7 @@ public class ExpeControl : MonoBehaviour {
             mainCam = Camera.main;
 
         syncPanel.gameObject.SetActive(false);
-
         syncPanel.color = Color.black;
-
 
         tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
         language = PlayerPrefs.GetInt("german") == 1 ? lang.german : lang.english;
@@ -654,16 +669,16 @@ public class ExpeControl : MonoBehaviour {
         Debug.Log("CamRig pos: " + cameraRig.position + " CamRig rot: " + cameraRig.rotation);
         _instructBehaviour = GetComponent<InstructBehaviour>();
 
-        if (_instructBehaviour.leftControllerActive) {
-            controllerBasePoint = GameObject.Find("BasePointL");
-            _questionSlider.controllerMainPoint = GameObject.Find("ControlPointL");
-        } else {
-            controllerBasePoint = GameObject.Find("BasePointR");
-            _questionSlider.controllerMainPoint = GameObject.Find("ControlPointR");
-        }
+        // if (_instructBehaviour.leftControllerActive) {
+        //     controllerBasePoint = GameObject.Find("BasePointL");
+        _questionSlider.controllerMainPoint = GameObject.Find("ControlPointL");
+        // } else {
+        //     controllerBasePoint = GameObject.Find("BasePointR");
+        //     _questionSlider.controllerMainPoint = GameObject.Find("ControlPointR");
+        // }
 
-        controllerBasePoint.SetActive(false);
-        _questionSlider.controllerMainPoint.SetActive(false);
+        // controllerBasePoint.SetActive(false);
+        // _questionSlider.controllerMainPoint.SetActive(false);
 
         // condObjects = new ObjectManager();
 
@@ -686,6 +701,151 @@ public class ExpeControl : MonoBehaviour {
 
     }
 
+
+    public void ScanResults(List<string> listDevices) {
+        // Store list of devices in a global variable.
+        this.ListDevices = listDevices;
+        // Info message for development purposes.
+        Debug.Log("Number of Detected Devices: " + this.ListDevices.Count);
+        for (int i = 0; i < this.ListDevices.Count; i++) {
+            Debug.Log("Device--> " + this.ListDevices[i]);
+        }
+
+        if (this.ListDevices.Count != 0) {
+            List<string> dropDevices = new List<string>();
+
+            // Convert array to list format.
+            dropDevices.AddRange(this.ListDevices);
+
+            // A check into the list of devices.
+            dropDevices = dropDevices.GetRange(0, dropDevices.Count);
+            for (int i = dropDevices.Count - 1; i >= 0; i--) {
+                // Accept only strings containing "BTH" or "BLE" substrings "flagging" a PLUX Bluetooth device.
+                if (!dropDevices[i].Contains("BTH") && !dropDevices[i].Contains("BLE")) {
+                    dropDevices.RemoveAt(i);
+                }
+            }
+
+            Debug.Log("Number of flagged devices: " + dropDevices.Count);
+            for (int i = dropDevices.Count - 1; i >= 0; i--) {
+                Debug.Log("Device--> " + dropDevices[i]);
+            }
+
+            this.ListDevices = dropDevices;
+
+            // Raise an exception if none device was detected.
+            if (dropDevices.Count == 0) {
+                connectButton.interactable = false;
+                connectionIndicator.color = Color.HSVToRGB(0, 0.75f, 0.75f);
+                throw new ArgumentException();
+            } else {
+                connectButton.interactable = true;
+                connectionIndicator.color = Color.HSVToRGB(0.5f, 0.75f, 0.75f);
+            }
+        }
+
+        scanButton.interactable = true;
+    }
+
+    public void ConnectionDone() {
+        Debug.Log("Connection with device " + this.SelectedDevice + " established with success!");
+
+
+        connectionIndicator.color = Color.green;
+
+        string devType = PluxDevManager.GetDeviceTypeUnity();
+        Debug.Log("Product ID: " + PluxDevManager.GetProductIdUnity());
+        Debug.Log("DevType: " + devType);
+
+
+        if (devType != "BioPlux") {
+            batteryLevel = PluxDevManager.GetBatteryUnity();
+        }
+
+        if (batteryLevel > -1) {
+            Debug.Log("Battery level at " + batteryLevel + "%");
+            batteryText.text = batteryLevel.ToString();
+            batteryMeter.size = (float)batteryLevel / 100f;
+            ColorBlock batteryColors = batteryMeter.colors;
+            batteryColors.disabledColor = Color.HSVToRGB((float)batteryLevel / 240f, 1, 1);
+            batteryMeter.colors = batteryColors;
+        }
+        connectButton.interactable = false;
+        acqButton.interactable = true;
+    }
+
+    public void ScanFunction() {
+
+        connectButton.interactable = false;
+
+        try {
+            // List of available Devices.
+            List<string> listOfDomains = new List<string>();
+            listOfDomains.Add("BTH");
+
+            PluxDevManager.GetDetectableDevicesUnity(listOfDomains);
+
+            // Disable scan button.
+            scanButton.interactable = false;
+            Debug.Log("Started scanning");
+        } catch (Exception e) {
+            // Show info message.
+            // BluetoothInfoPanel.SetActive(true);
+
+            // Hide object after 5 seconds.
+            // StartCoroutine(RemoveAfterSeconds(5, BluetoothInfoPanel));
+
+            // Disable Drop-down.
+            // DeviceDropdown.interactable = false;
+        }
+    }
+
+    public void ConnectFunction() {
+        connectButton.interactable = false;
+        try {
+            this.SelectedDevice = this.ListDevices[0];
+            // Connection with the device.
+            Debug.Log("Trying to establish a connection with device " + this.SelectedDevice);
+            PluxDevManager.PluxDev(this.SelectedDevice);
+        } catch (Exception e) {
+            // Print information about the exception.
+            Debug.Log(e);
+
+            // Show info message.
+            // ConnectInfoPanel.SetActive(true);
+
+            // Hide object after 5 seconds.
+            // StartCoroutine(RemoveAfterSeconds(5, ConnectInfoPanel));
+        }
+    }
+
+    public void StartAcquisition() {
+        ActiveChannels = new List<int>();
+        if (chan1Toggle.isOn) ActiveChannels.Add(1);
+        if (chan2Toggle.isOn) ActiveChannels.Add(2);
+        if (chan3Toggle.isOn) ActiveChannels.Add(3);
+        if (chan4Toggle.isOn) ActiveChannels.Add(4);
+
+        if (ActiveChannels.Count > 0) {
+            PluxDevManager.StartAcquisitionUnity(sampleRate, ActiveChannels, bitDepth);
+            Debug.Log("Commenced Plux acquisition with " + PluxDevManager.GetNbrChannelsUnity() + " active channels.");
+            sampleButton.interactable = true;
+        }
+    }
+
+    public void GetSample() {
+        Debug.Log("Getting a sample from the Plux");
+        int[][] testPackage = PluxDevManager.GetPackageOfData(false);
+        if (testPackage[0] != null) {
+            for (int i = 0; i < testPackage[0].Length; i++) {
+                Debug.Log("Data from channel " + i + 1 + ": ");
+                for (int j = 0; j < testPackage.Length; j++) {
+                    Debug.Log(testPackage[i][j]);
+                }
+            }
+        }
+    }
+
     bool lightSynced = false;
     bool syncButtonPressed = false;
 
@@ -694,6 +854,8 @@ public class ExpeControl : MonoBehaviour {
         syncButtonPressed = true;
     }
     public void SyncConfirmPress() {
+        if (!lightSync)
+            return;
         syncButtonPressed = false;
         lightSynced = true;
 
@@ -1013,7 +1175,6 @@ public class ExpeControl : MonoBehaviour {
         SetUserPlaylistFromCSVs(m_userId - 1);
 
 
-
         // User information: basic data + playlist
         m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt");
         // Record some protocol information
@@ -1026,6 +1187,10 @@ public class ExpeControl : MonoBehaviour {
             WriteInfo($"{ple.expNameCSV}");
         WriteInfo("Started experiment");
         FlushInfo();
+
+        // Plux things
+
+        pluxPanel.SetActive(false);
 
         // setTaskList ();
     }
@@ -1049,6 +1214,8 @@ public class ExpeControl : MonoBehaviour {
                 controllerCalButton.colors = SwapColors(controllerCalButton.colors);
                 conCal = false;
                 LoadCamRigCal();
+                controllerBasePoint.SetActive(false);
+                DisableCalPoints();
             }
 
             // conCal = !conCal;
@@ -1097,6 +1264,8 @@ public class ExpeControl : MonoBehaviour {
             while (!userClickedTrigger && userTouchedTrigger) {
                 // if (userTouchedTrigger) {
                 newPos = cameraRig.position;
+                Debug.Log("ContBasePoint: " + controllerBasePoint.transform.position);
+                Debug.Log("CalPointF: " + calPointF.gameObject.transform.position);
                 newPos.y = newPos.y - (controllerBasePoint.transform.position.y - calPointF.transform.position.y);
                 cameraRig.position = newPos;
                 // }
@@ -1188,6 +1357,9 @@ public class ExpeControl : MonoBehaviour {
                 // _instructBehaviour.ResetRadialProgresses();
                 // _instructBehaviour.toggleControllerInstruction(false);
                 CalibrateByController();
+
+                controllerBasePoint.SetActive(false);
+                DisableCalPoints();
                 yield break;
             }
             if (userClickedTrigger) {
@@ -1246,10 +1418,14 @@ public class ExpeControl : MonoBehaviour {
         calPointB = GameObject.Find("CalPointB");
         calPointF = GameObject.Find("CalPointF");
 
+        if (calPointF != null) {
+            calPointF.SetActive(false);
+        }
         if (calPointA != null) {
             calPointA.SetActive(false);
+        }
+        if (calPointB != null) {
             calPointB.SetActive(false);
-            calPointF.SetActive(false);
         }
     }
 
@@ -1466,7 +1642,7 @@ public class ExpeControl : MonoBehaviour {
                     }
                 }
                 ePlaylist.Add(new EmotPlaylistElement(room, duration, i, inst, labo, j));
-                Debug.Log("Created playlist element with instruction: " + inst);
+                // Debug.Log("Created playlist element with instruction: " + inst);
                 // EmotPlaylistElement pElement = new EmotPlaylistElement (room, duration, i, inst, labo);
             }
             allPlaylists.Add(ePlaylist);
@@ -1554,6 +1730,98 @@ public class ExpeControl : MonoBehaviour {
         // GetLastUserNumber ();
     }
 
+    public void SaveChannelToggle(int chan) {
+
+        switch (chan) {
+            case 1:
+                PlayerPrefs.SetInt("chan1", (chan1Toggle.isOn ? 1 : 0));
+                Debug.Log("Saved channel " + chan + " as " + chan1Toggle.isOn);
+                break;
+            case 2:
+                PlayerPrefs.SetInt("chan2", (chan2Toggle.isOn ? 1 : 0));
+                Debug.Log("Saved channel " + chan + " as " + chan2Toggle.isOn);
+                break;
+            case 3:
+                PlayerPrefs.SetInt("chan3", (chan3Toggle.isOn ? 1 : 0));
+                Debug.Log("Saved channel " + chan + " as " + chan3Toggle.isOn);
+                break;
+            case 4:
+                PlayerPrefs.SetInt("chan4", (chan4Toggle.isOn ? 1 : 0));
+                Debug.Log("Saved channel " + chan + " as " + chan4Toggle.isOn);
+                break;
+            default:
+                PlayerPrefs.SetInt("chan1", (chan1Toggle.isOn ? 1 : 0));
+                PlayerPrefs.SetInt("chan2", (chan2Toggle.isOn ? 1 : 0));
+                PlayerPrefs.SetInt("chan3", (chan3Toggle.isOn ? 1 : 0));
+                PlayerPrefs.SetInt("chan4", (chan4Toggle.isOn ? 1 : 0));
+                Debug.Log("Saved all channel toggles");
+                break;
+        }
+        // string channelName = "chan" + chan.ToString();
+        // PlayerPrefs.SetInt(channelName, (state ? 1 : 0));
+        // PlayerPrefs.SetInt("chan1", (chan1Toggle.isOn ? 1 : 0));
+        // PlayerPrefs.SetInt("chan2", (chan2Toggle.isOn ? 1 : 0));
+        // PlayerPrefs.SetInt("chan3", (chan3Toggle.isOn ? 1 : 0));
+        // PlayerPrefs.SetInt("chan4", (chan4Toggle.isOn ? 1 : 0));
+
+        // if (PlayerPrefs.GetInt("chan1") == 1) Debug.Log("chan 1 on"); else Debug.Log("chan 1 off");
+        // if (PlayerPrefs.GetInt("chan2") == 1) Debug.Log("chan 2 on"); else Debug.Log("chan 2 off");
+        // if (PlayerPrefs.GetInt("chan3") == 1) Debug.Log("chan 3 on"); else Debug.Log("chan 3 off");
+        // if (PlayerPrefs.GetInt("chan4") == 1) Debug.Log("chan 4 on"); else Debug.Log("chan 4 off");
+    }
+    public void SaveChannelNames(int chan) {
+
+        switch (chan) {
+            case 1:
+                PlayerPrefs.SetString("chan1name", chan1Field.text);
+                Debug.Log("Saved name of channel " + chan + " as " + chan1Field.text);
+                break;
+            case 2:
+                PlayerPrefs.SetString("chan2name", chan2Field.text);
+                Debug.Log("Saved name of channel " + chan + " as " + chan2Field.text);
+                break;
+            case 3:
+                PlayerPrefs.SetString("chan3name", chan3Field.text);
+                Debug.Log("Saved name of channel " + chan + " as " + chan3Field.text);
+                break;
+            case 4:
+                PlayerPrefs.SetString("chan4name", chan4Field.text);
+                Debug.Log("Saved name of channel " + chan + " as " + chan4Field.text);
+                break;
+            default:
+                PlayerPrefs.SetString("chan1name", chan1Field.text);
+                PlayerPrefs.SetString("chan2name", chan2Field.text);
+                PlayerPrefs.SetString("chan3name", chan3Field.text);
+                PlayerPrefs.SetString("chan4name", chan4Field.text);
+                Debug.Log("Saved all channel names");
+                break;
+        }
+        // string channelName = "chan" + chan.ToString();
+        // PlayerPrefs.SetInt(channelName, (state ? 1 : 0));
+        // PlayerPrefs.SetInt("chan1", (chan1Toggle.isOn ? 1 : 0));
+        // PlayerPrefs.SetInt("chan2", (chan2Toggle.isOn ? 1 : 0));
+        // PlayerPrefs.SetInt("chan3", (chan3Toggle.isOn ? 1 : 0));
+        // PlayerPrefs.SetInt("chan4", (chan4Toggle.isOn ? 1 : 0));
+
+        // if (PlayerPrefs.GetInt("chan1") == 1) Debug.Log("chan 1 on"); else Debug.Log("chan 1 off");
+        // if (PlayerPrefs.GetInt("chan2") == 1) Debug.Log("chan 2 on"); else Debug.Log("chan 2 off");
+        // if (PlayerPrefs.GetInt("chan3") == 1) Debug.Log("chan 3 on"); else Debug.Log("chan 3 off");
+        // if (PlayerPrefs.GetInt("chan4") == 1) Debug.Log("chan 4 on"); else Debug.Log("chan 4 off");
+    }
+
+    // public void SetChannel1Toggle() {
+    //     PlayerPrefs.SetInt("chan1", (chan1Toggle.isOn ? 1 : 0));
+    // }
+    // public void SetChannel2Toggle(bool state) {
+    //     PlayerPrefs.SetInt("chan2", (state ? 1 : 0));
+    // }
+    // public void SetChannel3Toggle(bool state) {
+    //     PlayerPrefs.SetInt("chan3", (state ? 1 : 0));
+    // }
+    // public void SetChannel4Toggle(bool state) {
+    //     PlayerPrefs.SetInt("chan4", (state ? 1 : 0));
+    // }
+
     public void SetGerman(bool german) {
 
         // Debug.Log ("Requesting Lab change. SGL? " + tobTrack);
@@ -1623,11 +1891,6 @@ public class ExpeControl : MonoBehaviour {
         durationInfo.text = "";
         elapsedInfo.text = "";
 
-        if (eyeTracking)
-            yield return new WaitUntil(() => _eyeTrack.ready);
-        else
-            yield return new WaitForSeconds(1);
-
         // Debug.Log("Passed _eyeTrack.ready check");
 
         // Show SubjInfo panel
@@ -1639,10 +1902,94 @@ public class ExpeControl : MonoBehaviour {
         // _radialProgress.gameObject.SetActive(false);
         _questionSlider.gameObject.SetActive(false);
 
+
+        startButton.interactable = false;
+        continueButton.interactable = false;
+        controllerCalButton.interactable = false;
+
+
+
+        if (PlayerPrefs.GetInt("chan1") == 1) chan1Toggle.isOn = true; else chan1Toggle.isOn = false;
+        if (PlayerPrefs.GetInt("chan2") == 1) chan2Toggle.isOn = true; else chan2Toggle.isOn = false;
+        if (PlayerPrefs.GetInt("chan3") == 1) chan3Toggle.isOn = true; else chan3Toggle.isOn = false;
+        if (PlayerPrefs.GetInt("chan4") == 1) chan4Toggle.isOn = true; else chan4Toggle.isOn = false;
+
+        if (PlayerPrefs.GetInt("chan1") == 1) Debug.Log("chan 1 on"); else Debug.Log("chan 1 off");
+        if (PlayerPrefs.GetInt("chan2") == 1) Debug.Log("chan 2 on"); else Debug.Log("chan 2 off");
+        if (PlayerPrefs.GetInt("chan3") == 1) Debug.Log("chan 3 on"); else Debug.Log("chan 3 off");
+        if (PlayerPrefs.GetInt("chan4") == 1) Debug.Log("chan 4 on"); else Debug.Log("chan 4 off");
+
+        chan1Field.text = PlayerPrefs.GetString("chan1name");
+        chan2Field.text = PlayerPrefs.GetString("chan2name");
+        chan3Field.text = PlayerPrefs.GetString("chan3name");
+        chan4Field.text = PlayerPrefs.GetString("chan4name");
+
+
+
+        trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
+        if (trainSpawner != null) {
+            // trainSpawner.SpawnTrain();
+        }
+
+        LoadCamRigCal();
+        Debug.Log("Loaded Camera Rig Position");
+
+
+        if (eyeTracking)
+            yield return new WaitUntil(() => _eyeTrack.ready);
+        else
+            yield return new WaitForSeconds(1);
+
+
+        _instructBehaviour.toggleControllerInstruction(true);
+
+        _instructBehaviour.setInstruction("Press any button on this controller (trigger, side button, or trackpad).");
+
+
+        // PLUX connections
+        PluxDevManager = new PluxDeviceManager(ScanResults, ConnectionDone);
+
+        // ScanFunction();
+
+        // Initialization of Variables.      
+        MultiThreadList = new List<List<int>>();
+        ActiveChannels = new List<int>();
+
+
+
+        yield return new WaitUntil(() => _instructBehaviour.deactivatedOtherController || Input.GetKeyDown("space"));
+        _instructBehaviour.setInstruction("The other controller has been disabled!");
+
+        if (_instructBehaviour.leftControllerActive) {
+            controllerBasePoint = GameObject.Find("BasePointL");
+            _questionSlider.controllerMainPoint = GameObject.Find("ControlPointL");
+        } else {
+            controllerBasePoint = GameObject.Find("BasePointR");
+            _questionSlider.controllerMainPoint = GameObject.Find("ControlPointR");
+        }
+
+        controllerBasePoint.SetActive(false);
+        _questionSlider.controllerMainPoint.SetActive(false);
+
+
+        promptPanel.SetActive(false);
+        startButton.interactable = true;
+        continueButton.interactable = true;
+
         // _questionSlider.gameObject.SetActive(true);
         RoomManager.instance.SaveManagerSceneNum();
         RoomManager.instance.LoadBreakRoom();
         yield return new WaitUntil(() => !(RoomManager.instance.actionInProgress));
+
+        // if (!debugging) {
+        //     if (userClickedPad)
+        //         yield return new WaitUntil(() => !userClickedPad);
+        //     if (userClickedTrigger)
+        //         yield return new WaitUntil(() => !userTouchedTrigger);
+        //     if (userGrippedControl)
+        //         yield return new WaitUntil(() => !userGrippedControl);
+        // }
+        _instructBehaviour.toggleControllerInstruction(false);
 
         calPointA = GameObject.Find("CalPointA");
         calPointB = GameObject.Find("CalPointB");
@@ -1652,32 +1999,9 @@ public class ExpeControl : MonoBehaviour {
             calPointA.SetActive(false);
             calPointB.SetActive(false);
             calPointF.SetActive(false);
+
+            controllerCalButton.interactable = true;
         }
-
-        trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
-        if (trainSpawner != null) {
-            // trainSpawner.SpawnTrain();
-        }
-
-        LoadCamRigCal();
-
-        Debug.Log("Loaded Camera Rig Position");
-
-        _instructBehaviour.toggleControllerInstruction(true);
-
-        _instructBehaviour.setInstruction("Press any button on this controller (trigger, side button, or trackpad).");
-        yield return new WaitUntil(() => _instructBehaviour.deactivatedOtherController || Input.GetKeyDown("space"));
-        _instructBehaviour.setInstruction("The other controller has been disabled!");
-
-        if (!debugging) {
-            if (userClickedPad)
-                yield return new WaitUntil(() => !userClickedPad);
-            if (userClickedTrigger)
-                yield return new WaitUntil(() => !userTouchedTrigger);
-            if (userGrippedControl)
-                yield return new WaitUntil(() => !userGrippedControl);
-        }
-        _instructBehaviour.toggleControllerInstruction(false);
 
         //
         //
@@ -1697,33 +2021,34 @@ public class ExpeControl : MonoBehaviour {
 
 
         // Light sync with the sensor pack
-        syncPanel.gameObject.SetActive(true);
-        syncButton.gameObject.SetActive(true);
-        syncConfirmButton.gameObject.SetActive(true);
-        syncConfirmButton.interactable = false;
-        syncButtonPressed = false;
-        lightSynced = false;
-        while (lightSynced != true) {
-            yield return new WaitUntil(() => syncButtonPressed || lightSynced);
-            if (lightSynced)
-                break;
-            syncButtonPressed = false;
-            WriteInfo("startedLightSync");
-            syncButton.gameObject.SetActive(false);
-            syncConfirmButton.gameObject.SetActive(false);
-            for (int i = 0; i < 5; i++) {
-                syncPanel.color = Color.black;
-                yield return new WaitForSecondsRealtime(syncFlashDuration);
-                syncPanel.color = Color.white;
-                yield return new WaitForSecondsRealtime(syncFlashDuration);
-            }
-            WriteInfo("finishedLightSync");
+        if (lightSync) {
+            syncPanel.gameObject.SetActive(true);
             syncButton.gameObject.SetActive(true);
             syncConfirmButton.gameObject.SetActive(true);
-            syncConfirmButton.interactable = true;
+            syncConfirmButton.interactable = false;
+            syncButtonPressed = false;
+            lightSynced = false;
+            while (lightSynced != true) {
+                yield return new WaitUntil(() => syncButtonPressed || lightSynced);
+                if (lightSynced)
+                    break;
+                syncButtonPressed = false;
+                WriteInfo("startedLightSync");
+                syncButton.gameObject.SetActive(false);
+                syncConfirmButton.gameObject.SetActive(false);
+                for (int i = 0; i < 5; i++) {
+                    syncPanel.color = Color.black;
+                    yield return new WaitForSecondsRealtime(syncFlashDuration);
+                    syncPanel.color = Color.white;
+                    yield return new WaitForSecondsRealtime(syncFlashDuration);
+                }
+                WriteInfo("finishedLightSync");
+                syncButton.gameObject.SetActive(true);
+                syncConfirmButton.gameObject.SetActive(true);
+                syncConfirmButton.interactable = true;
+            }
+            WriteInfo("confirmedLightSync");
         }
-        WriteInfo("confirmedLightSync");
-
 
 
 
@@ -1794,7 +2119,7 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "sex");
-            _questionSlider.UpdateSliderRange(0, 2, true, false, "male", " ", "female");
+            _questionSlider.UpdateSliderRange(0, 2, true, false, "male", "diverse", "female");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -2044,32 +2369,34 @@ public class ExpeControl : MonoBehaviour {
 
 
                 // Light sync with the sensor pack
-                syncPanel.gameObject.SetActive(true);
-                syncButton.gameObject.SetActive(true);
-                syncConfirmButton.gameObject.SetActive(true);
-                syncConfirmButton.interactable = false;
-                syncButtonPressed = false;
-                lightSynced = false;
-                while (lightSynced != true) {
-                    yield return new WaitUntil(() => syncButtonPressed || lightSynced);
-                    if (lightSynced)
-                        break;
-                    syncButtonPressed = false;
-                    WriteInfo("startedLightSync");
-                    syncButton.gameObject.SetActive(false);
-                    syncConfirmButton.gameObject.SetActive(false);
-                    for (int i = 0; i < 5; i++) {
-                        syncPanel.color = Color.black;
-                        yield return new WaitForSecondsRealtime(syncFlashDuration);
-                        syncPanel.color = Color.white;
-                        yield return new WaitForSecondsRealtime(syncFlashDuration);
-                    }
-                    WriteInfo("finishedLightSync");
+                if (lightSync) {
+                    syncPanel.gameObject.SetActive(true);
                     syncButton.gameObject.SetActive(true);
                     syncConfirmButton.gameObject.SetActive(true);
-                    syncConfirmButton.interactable = true;
+                    syncConfirmButton.interactable = false;
+                    syncButtonPressed = false;
+                    lightSynced = false;
+                    while (lightSynced != true) {
+                        yield return new WaitUntil(() => syncButtonPressed || lightSynced);
+                        if (lightSynced)
+                            break;
+                        syncButtonPressed = false;
+                        WriteInfo("startedLightSync");
+                        syncButton.gameObject.SetActive(false);
+                        syncConfirmButton.gameObject.SetActive(false);
+                        for (int i = 0; i < 5; i++) {
+                            syncPanel.color = Color.black;
+                            yield return new WaitForSecondsRealtime(syncFlashDuration);
+                            syncPanel.color = Color.white;
+                            yield return new WaitForSecondsRealtime(syncFlashDuration);
+                        }
+                        WriteInfo("finishedLightSync");
+                        syncButton.gameObject.SetActive(true);
+                        syncConfirmButton.gameObject.SetActive(true);
+                        syncConfirmButton.interactable = true;
+                    }
+                    WriteInfo("confirmedLightSync");
                 }
-                WriteInfo("confirmedLightSync");
 
                 toggleMessage(true, "endBreak");
 
@@ -2683,8 +3010,12 @@ public class ExpeControl : MonoBehaviour {
     }
 
     private void OnApplicationQuit() {
-        if (eyeTracking)
-            if (isSampling && tobiiTracking)
+
+        // Disconnect from plux device.
+        PluxDevManager.DisconnectPluxDev();
+
+        if (eyeTracking && isSampling)
+            if (tobiiTracking)
                 stopRecord(-1);
             else
                 _eyeTrack.stopRecord(-1);

@@ -1,0 +1,29 @@
+63779416350049:User_ID: 4
+63779416350049:lab,participant,trial_idx,roomName,instruction,duration
+63779416350050:HfG,4,0,Version1BankTestbedMesh,hfgSit,75
+63779416350051:HfG,4,1,Version1BankTestbedMesh,hfgLean,45
+63779416350051:HfG,4,2,Version2BankTestbedWood,hfgLean,105
+63779416350052:HfG,4,3,Version2BankTestbedWood,hfgSit,90
+63779416350052:HfG,4,4,Version1BankTestbedMesh,hfgLean,60
+63779416350052:HfG,4,5,Version2BankTestbedWood,hfgSit,75
+63779416350053:HfG,4,6,Version2BankTestbedWood,hfgLean,105
+63779416350053:HfG,4,7,Version2BankTestbedWood,hfgLean,90
+63779416350054:HfG,4,8,Version2BankTestbedWood,hfgSit,45
+63779416350054:HfG,4,9,Version2BankTestbedWood,hfgLean,60
+63779416350055:HfG,4,10,Version1BankTestbedMesh,hfgSit,90
+63779416350055:HfG,4,11,Version1BankTestbedMesh,hfgLean,75
+63779416350055:HfG,4,12,Version1BankTestbedMesh,hfgSit,60
+63779416350056:HfG,4,13,Version1BankTestbedMesh,hfgSit,105
+63779416350056:HfG,4,14,Version1BankTestbedMesh,hfgLean,45
+63779416350057:HfG,4,15,Version1BankTestbedMesh,hfgLean,60
+63779416350057:HfG,4,16,Version2BankTestbedWood,hfgLean,45
+63779416350058:HfG,4,17,Version1BankTestbedMesh,hfgLean,105
+63779416350058:HfG,4,18,Version2BankTestbedWood,hfgLean,75
+63779416350058:HfG,4,19,Version1BankTestbedMesh,hfgLean,90
+63779416350059:HfG,4,20,Version1BankTestbedMesh,hfgSit,45
+63779416350059:HfG,4,21,Version2BankTestbedWood,hfgSit,60
+63779416350060:HfG,4,22,Version1BankTestbedMesh,hfgSit,75
+63779416350060:HfG,4,23,Version2BankTestbedWood,hfgSit,90
+63779416350061:HfG,4,24,Version2BankTestbedWood,hfgSit,105
+63779416350061:Started experiment
+63779416359705:Elapsed time: -1

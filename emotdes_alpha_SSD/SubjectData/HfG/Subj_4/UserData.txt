@@ -1,0 +1,38 @@
+63779419907593:User_ID: 4
+63779419907594:lab,participant,trial_idx,roomName,instruction,duration
+63779419907595:HfG,4,0,Version1BankTestbedMesh,hfgSit,75
+63779419907595:HfG,4,1,Version1BankTestbedMesh,hfgLean,45
+63779419907596:HfG,4,2,Version2BankTestbedWood,hfgLean,105
+63779419907596:HfG,4,3,Version2BankTestbedWood,hfgSit,90
+63779419907596:HfG,4,4,Version1BankTestbedMesh,hfgLean,60
+63779419907597:HfG,4,5,Version2BankTestbedWood,hfgSit,75
+63779419907597:HfG,4,6,Version2BankTestbedWood,hfgLean,105
+63779419907598:HfG,4,7,Version2BankTestbedWood,hfgLean,90
+63779419907598:HfG,4,8,Version2BankTestbedWood,hfgSit,45
+63779419907598:HfG,4,9,Version2BankTestbedWood,hfgLean,60
+63779419907599:HfG,4,10,Version1BankTestbedMesh,hfgSit,90
+63779419907599:HfG,4,11,Version1BankTestbedMesh,hfgLean,75
+63779419907600:HfG,4,12,Version1BankTestbedMesh,hfgSit,60
+63779419907600:HfG,4,13,Version1BankTestbedMesh,hfgSit,105
+63779419907600:HfG,4,14,Version1BankTestbedMesh,hfgLean,45
+63779419907601:HfG,4,15,Version1BankTestbedMesh,hfgLean,60
+63779419907601:HfG,4,16,Version2BankTestbedWood,hfgLean,45
+63779419907602:HfG,4,17,Version1BankTestbedMesh,hfgLean,105
+63779419907602:HfG,4,18,Version2BankTestbedWood,hfgLean,75
+63779419907602:HfG,4,19,Version1BankTestbedMesh,hfgLean,90
+63779419907603:HfG,4,20,Version1BankTestbedMesh,hfgSit,45
+63779419907603:HfG,4,21,Version2BankTestbedWood,hfgSit,60
+63779419907604:HfG,4,22,Version1BankTestbedMesh,hfgSit,75
+63779419907604:HfG,4,23,Version2BankTestbedWood,hfgSit,90
+63779419907604:HfG,4,24,Version2BankTestbedWood,hfgSit,105
+63779419907605:Started experiment
+63779419953758:Started: [4] HfG_4_3_Version2BankTestbedWood_hfgSit_90
+63779419953759:startedBlankScene
+63779419955767:endedBlankScene
+63779419955768:Elapsed time: 2011
+63779419955769:Version2BankTestbedWood
+63779419964487:Started trial: HfG_4_3_Version2BankTestbedWood_hfgSit_90
+63779419964489:Started: [4] HfG_4_3_Version2BankTestbedWood_hfgSit_90
+63779419969121:Elapsed time: 4632
+63779419969122:Finished trial: HfG_4_3_Version2BankTestbedWood_hfgSit_90
+63779419969123:Started questions: HfG_4_3_Version2BankTestbedWood_hfgSit_90

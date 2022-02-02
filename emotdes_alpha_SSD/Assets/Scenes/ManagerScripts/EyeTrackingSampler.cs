@@ -121,6 +121,8 @@ public class EyeTrackingSampler : MonoBehaviour {
 
         // m_recorder_ET = new StreamWriter(_expeControl.m_userdataPath + "/" +
         //                                  _expeControl.currentEmotTrial.expName + "_ET.csv");
+
+        m_recorder_ET = new StreamWriter(fileNameET);
         m_recorder_ET.WriteLine(
             "OcutimeStamp,UnityTimeStamp," +
             "cameraPosition.x,cameraPosition.y,cameraPosition.z," +
@@ -195,7 +197,7 @@ public class EyeTrackingSampler : MonoBehaviour {
             gazePoint.RightCollide = gazePoint.RightCollide.parent;
         if (gazePoint.CombinedCollide != null && gazePoint.CombinedCollide.name.Contains("mesh")) {
             gazePoint.CombinedCollide = gazePoint.CombinedCollide.parent;
-            Debug.Log("Looking at: " + gazePoint.CombinedCollide.name);
+            // Debug.Log("Looking at: " + gazePoint.CombinedCollide.name);
         }
 
 
