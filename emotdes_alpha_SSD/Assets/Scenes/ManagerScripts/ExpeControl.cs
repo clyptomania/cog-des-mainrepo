@@ -277,11 +277,11 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "experienceBody",
-            "Wie intensiv hast du \ndeinen KÖRPER während des Wartens erlebt?"
+            "Wie intensiv hast du deinen KÖRPER während des Wartens erlebt?"
         },
         {
             "experienceSpace",
-            "Wie intensiv hast du \nden UMGEBUNGSRAUM während des Wartens erlebt?"
+            "Wie intensiv hast du den UMGEBUNGSRAUM während des Wartens erlebt?"
         },
         {
             "thinkTime",
@@ -313,7 +313,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "comfort",
-            "Wie BEQUEM erschien dir die Wartezeit?"
+            "Wie bequem hast du die Wartezeit empfunden?"
         },
         {
             "totalTime",
@@ -546,8 +546,8 @@ public class ExpeControl : MonoBehaviour {
         {
             "instructionEndSitLean",
             "Die Wartezeit ist nun vorbei!\n\n" +
-            "Bitte stehe jetzt auf und trete ein Stück von der Sitzbank weg.\n\n" +
-            "Halten den Trigger gedrückt, um mit den Fragen fortzufahren."
+            "Bitte stehe auf und trete ein Stück von der Sitzbank weg.\n\n" +
+            "Halte den Trigger gedrückt, um mit den Fragen fortzufahren."
         },
         {
             "instructionEndStand",
@@ -559,29 +559,25 @@ public class ExpeControl : MonoBehaviour {
         {
             "instructionSitSGL",
             "Die Wartezeit wird gleich beginnen!\n" +
-            "Wenn diese vorüber ist, wirst du benachrichtigt und dir\n" +
-            "werden Fragen gestellt.\n\n" +
+            "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
             "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionStandSGL",
             "Die Wartezeit wird gleich beginnen!\n" +
-            "Wenn diese vorüber ist, wirst du benachrichtigt und dir\n" +
-            "werden Fragen gestellt.\n\n" +
+            "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
             "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionSitHFG",
             "Die Wartezeit wird gleich beginnen!\n" +
-            "Wenn diese vorüber ist, wirst du benachrichtigt und dir\n" +
-            "werden Fragen gestellt.\n\n" +
+            "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
             "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionLeanHFG",
             "Die Wartezeit wird gleich beginnen!\n" +
-            "Wenn diese vorüber ist, wirst du benachrichtigt und dir\n" +
-            "werden Fragen gestellt.\n\n" +
+            "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
             "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
@@ -599,7 +595,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "beginQuestions",
             "Die Wartezeit ist nun vorbei!\n\n" +
-            "Bitte stehe jetzt auf und trete ein Stück von der Sitzbank weg.\n\n" +
+            "Bitte stehe auf und trete ein Stück von der Sitzbank weg.\n\n" +
             "Halte den Trigger gedrückt, um mit den Fragen fortzufahren."
         },
         {
