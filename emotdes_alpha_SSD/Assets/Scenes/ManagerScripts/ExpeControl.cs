@@ -26,7 +26,7 @@ public class ExpeControl : MonoBehaviour {
     [SerializeField] private int bitDepth;
     public string SelectedDevice = "";
     private int batteryLevel = -1;
-    public Scrollbar batteryMeter;
+    public Scrollbar batteryMeter, batteryMeterInfo;
     public Text batteryText;
 
     [SerializeField] private bool debugging;
@@ -139,7 +139,8 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "sex",
-            "Which gender do you identify with?"
+            // "Which gender do you identify with?"
+            "To which gender do you identify?" // Modern convention
         },
         {
             "occupation",
@@ -155,7 +156,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "waitEstimation",
-            "How long do you think you have been waiting?"
+            "How long do you think you have been waiting until the doors opened?"
         },
         {
             "valence",
@@ -218,6 +219,14 @@ public class ExpeControl : MonoBehaviour {
             "How comfortable were you during the waiting period?"
         },
         {
+            "relax",
+            "How relaxed or tense did you feel during the waiting period?"
+        },
+        {
+            "tired",
+            "How tired or awake did you feel during the waiting period?"
+        },
+        {
             "totalTime",
             "How long did you estimate the experiment took in total?"
         }
@@ -254,7 +263,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "waitEstimation",
-            "Wie lange, glaubst du, hast du gewartet?"
+            "Wie lange, glaubst du, hast du gewartet, bis die Türen sich öffneten?"
         },
         {
             "valence",
@@ -317,6 +326,14 @@ public class ExpeControl : MonoBehaviour {
             "Wie bequem hast du die Wartezeit empfunden?"
         },
         {
+            "relax",
+            "Wie entspannt oder angespannt hast du dich während der Zeit gefühlt?"
+        },
+        {
+            "tired",
+            "Wie müde oder wach hast du dich während der Zeit gefühlt?"
+        },
+        {
             "totalTime",
             "Wie lange glaubst du hat das gesamte Experiment gedauert?"
         }
@@ -331,7 +348,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "calibrateTob",
             "Please start the EYE TRACKER calibration.\n" +
-            "FOLLOW the RED DOT as closesly as you can!\n\n" +
+            "FOLLOW the RED DOT as closely as you can!\n\n" +
             "Pull the trigger to continue."
         },
         {
@@ -695,7 +712,7 @@ public class ExpeControl : MonoBehaviour {
     public void ScanResults(List<string> listDevices) {
         // Store list of devices in a global variable.
         this.ListDevices = listDevices;
-        scanned = true;
+        pluxScanned = true;
         // Info message for development purposes.
         Debug.Log("Number of Detected Devices: " + this.ListDevices.Count);
         for (int i = 0; i < this.ListDevices.Count; i++) {
@@ -738,6 +755,17 @@ public class ExpeControl : MonoBehaviour {
         scanButton.interactable = true;
     }
 
+    public void UpdateBatteryLevel() {
+        if (pluxConnected) {
+            batteryLevel = PluxDevManager.GetBatteryUnity();
+            batteryMeterInfo.GetComponentInChildren<Text>().text = batteryLevel.ToString();
+            batteryMeterInfo.size = (float)batteryLevel / 100f;
+            ColorBlock batteryColors = batteryMeterInfo.colors;
+            batteryColors.disabledColor = Color.HSVToRGB((float)batteryLevel / 240f, 1, 1);
+            batteryMeterInfo.colors = batteryColors;
+        }
+    }
+
     public void ConnectionDone() {
         Debug.Log("Connection with device " + this.SelectedDevice + " established with success!");
 
@@ -761,6 +789,8 @@ public class ExpeControl : MonoBehaviour {
             batteryColors.disabledColor = Color.HSVToRGB((float)batteryLevel / 240f, 1, 1);
             batteryMeter.colors = batteryColors;
         }
+
+        UpdateBatteryLevel();
         connectButton.interactable = true;
         connectButton.GetComponentInChildren<Text>().text = "<i>Disconnect</i>";
 
@@ -770,7 +800,7 @@ public class ExpeControl : MonoBehaviour {
 
         // scanButton.interactable = false;
         acqButton.interactable = true;
-        connected = true;
+        pluxConnected = true;
     }
 
 
@@ -780,16 +810,16 @@ public class ExpeControl : MonoBehaviour {
         bool flag = false;
         while (!flag) {
             if (procedure == "scan")
-                flag = scanned;
+                flag = pluxScanned;
             else
-                flag = connected;
+                flag = pluxConnected;
             hue = startHue + (Mathf.Abs(((Time.time - startTime) % 2) - 1) - 0.5f) / 2;
             // Debug.Log(hue);
             // 0.75f + Mathf.Cos(Time.time - startTime) / 4f;
             connectionIndicator.color = Color.HSVToRGB(hue, 0.75f, 0.75f);
             yield return null;
         }
-        if (connected) {
+        if (pluxConnected) {
             connectionIndicator.color = Color.green;
         } else {
             if (connectButton.interactable) {
@@ -801,13 +831,13 @@ public class ExpeControl : MonoBehaviour {
     }
 
     private bool autoConnect = false;
-    private bool connected = false;
-    private bool scanned = false;
+    private bool pluxConnected = false;
+    private bool pluxScanned = false;
     public void ScanFunction(bool auto = false) {
 
-        scanned = false;
+        pluxScanned = false;
 
-        if (!connected)
+        if (!pluxConnected)
             connectButton.interactable = false;
         connectionIndicator.color = Color.HSVToRGB(0.5f, 0.75f, 0.75f);
 
@@ -863,17 +893,17 @@ public class ExpeControl : MonoBehaviour {
         chan3Toggle.interactable = true;
         chan4Toggle.interactable = true;
 
-        connected = false;
+        pluxConnected = false;
     }
 
     public void ConnectFunction() {
 
-        if (connected) {
+        if (pluxConnected) {
             Disconnect();
             return;
         }
 
-        connected = false;
+        pluxConnected = false;
         connectButton.interactable = false;
 
         connectionIndicator.color = Color.HSVToRGB(0.5f, 0.75f, 0.75f);
@@ -897,7 +927,7 @@ public class ExpeControl : MonoBehaviour {
 
     private bool pluxSampling = false;
 
-    public void StartAcquisition() {
+    public void TogglePluxAcquisition(string special = "") {
 
         if (pluxSampling) {
 
@@ -939,7 +969,7 @@ public class ExpeControl : MonoBehaviour {
 
                 Debug.Log("Commenced Plux acquisition with " + PluxDevManager.GetNbrChannelsUnity() + " active channels.");
 
-                startNewPluxRecord("testing");
+                startNewPluxRecord(special);
 
                 pluxSampling = true;
 
@@ -2196,6 +2226,7 @@ public class ExpeControl : MonoBehaviour {
         DisableCalPoints();
 
         infoPanel.SetActive(true);
+        UpdateBatteryLevel();
         participantIDInfo.text = m_userId.ToString();
 
         trialIDInfo.text = (m_currentTrialIdx + 1).ToString();
@@ -2294,24 +2325,29 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "height");
-            _questionSlider.UpdateSliderRange(120, 220, false, false, "120", "", "220");
+            _questionSlider.UpdateSliderRange(120, 220, false, false, "120 cm", "", "220 cm");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            //"männlich", "divers", "weiblich"
             ToggleQuestion(true, "sex");
-            _questionSlider.UpdateSliderRange(0, 2, true, false, "male", "diverse", "female");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(0, 2, true, false, "Männlich", "Divers", "Weiblich");
+            else
+                _questionSlider.UpdateSliderRange(0, 2, true, false, "male", "diverse", "female");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            //"arbeitslos", "angestellt", "selbstständig", "studierend", "andere"
             ToggleQuestion(true, "occupation");
-            _questionSlider.UpdateSliderRange(0, 4, true, false, "unemployed", "employee", "self-employed", "",
-                "student", "other");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(0, 4, true, false, "arbeitslos", "angestellt", "selbstständig", "",
+                    "studierend", "andere");
+            else
+                _questionSlider.UpdateSliderRange(0, 4, true, false, "unemployed", "employee", "self-employed", "",
+                    "student", "other");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -2325,18 +2361,23 @@ public class ExpeControl : MonoBehaviour {
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            //"nie", "monatlich", "täglich", "","jährlich", "wöchentlich"
             ToggleQuestion(true, "transportFreq");
-            _questionSlider.UpdateSliderRange(0, 4, true, false, "never", "monthly", "daily", "",
-                "yearly", "weekly");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(0, 4, true, false, "nie", "monatlich", "täglich", "",
+                    "jährlich", "wöchentlich");
+            else
+                _questionSlider.UpdateSliderRange(0, 4, true, false, "never", "monthly", "daily", "",
+                    "yearly", "weekly");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            //"garnicht geduldig", "sehr geduldig"
             ToggleQuestion(true, "patience");
-            _questionSlider.UpdateSliderRange(0, 99, true, false, "not at all", " ", "very patient");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "gar nicht geduldig", " ", "sehr geduldig");
+            else
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "not at all", " ", "very patient");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -2647,6 +2688,9 @@ public class ExpeControl : MonoBehaviour {
 
             yield return new WaitForSecondsRealtime(1.0f);
 
+            if (pluxConnected)
+                TogglePluxAcquisition();
+
             long start_time = getTimeStamp();
             // Start new gaze record (record name = stimulus name)
             if (eyeTracking) {
@@ -2901,6 +2945,10 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             toggleMessage(false);
 
+
+            if (pluxConnected)
+                TogglePluxAcquisition();
+
             // THIS IS THE QUESTION BLOCK
 
             yield return new WaitForSecondsRealtime(0.5f);
@@ -2912,7 +2960,10 @@ public class ExpeControl : MonoBehaviour {
 
             yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "timePass");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "extremely slowly", " ", "extremely fast");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "extrem langsam", " ", "extrem schnell");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "extremely slowly", " ", "extremely fast");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -2921,10 +2972,36 @@ public class ExpeControl : MonoBehaviour {
 
             yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "comfort");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "very uncomfortable", " ", "very comfortable");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "sehr unbequem", " ", "sehr bequem");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "very uncomfortable", " ", "very comfortable");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "relax");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "extrem angespannt", " ", "extrem entspannt");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "extremely tense", " ", "extremely relaxed");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            ToggleQuestion(true, "tired");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "sehr müde", " ", "sehr wach");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "very tired", " ", "very awake");
+            yield return new WaitUntil(() => _questionSlider.confirmed);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+            ToggleQuestion(false);
+
 
 
             // SAM Scale: valence
@@ -2944,7 +3021,10 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "thinkPast");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "überhaupt nicht", " ", "die ganze Zeit");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -2952,35 +3032,50 @@ public class ExpeControl : MonoBehaviour {
 
             yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "thinkPresent");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "überhaupt nicht", " ", "die ganze Zeit");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "thinkFuture");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "überhaupt nicht", " ", "die ganze Zeit");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "all the time");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "experienceBody");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "überhaupt nicht", " ", "sehr intensiv");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "experienceSpace");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "überhaupt nicht", " ", "sehr intensiv");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "very intensively");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "thinkTime");
-            _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "extremely often");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "überhaupt nicht", " ", "sehr intensiv");
+            else
+                _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "extremely often");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -3059,14 +3154,20 @@ public class ExpeControl : MonoBehaviour {
         if (tobiiTracking) {
 
             ToggleQuestion(true, "preferPosture");
-            _questionSlider.UpdateSliderRange(0, 99, true, false, "sitting", "neither", "standing");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "sitzend", "weder noch", "stehend");
+            else
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "sitting", "neither", "standing");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "preferLighting");
-            _questionSlider.UpdateSliderRange(0, 99, true, false, "cold", "neither", "warm");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "kalt", "weder noch", "warm");
+            else
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "cold", "neither", "warm");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -3076,14 +3177,20 @@ public class ExpeControl : MonoBehaviour {
         } else {
 
             ToggleQuestion(true, "preferPosture");
-            _questionSlider.UpdateSliderRange(0, 99, true, false, "sitting", "neither", "leaning");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "sitzend", "weder noch", "lehnend");
+            else
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "sitting", "neither", "leaning");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "preferMaterial");
-            _questionSlider.UpdateSliderRange(0, 99, true, false, "wood", "neither", "metal mesh");
+            if (language == lang.german)
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "Holz", "weder noch", "Metallgitter");
+            else
+                _questionSlider.UpdateSliderRange(0, 99, true, false, "wood", "neither", "metal mesh");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
@@ -3093,14 +3200,20 @@ public class ExpeControl : MonoBehaviour {
 
 
         ToggleQuestion(true, "differences");
-        _questionSlider.UpdateSliderRange(0, 99, true, false, "extremely similar", " ", "extremely different");
+        if (language == lang.german)
+            _questionSlider.UpdateSliderRange(0, 99, true, false, "extrem ähnlich", " ", "extrem unterschiedlich");
+        else
+            _questionSlider.UpdateSliderRange(0, 99, true, false, "extremely similar", " ", "extremely different");
         yield return new WaitUntil(() => _questionSlider.confirmed);
         yield return new WaitForSecondsRealtime(messageWaitDuration);
         ToggleQuestion(false);
         yield return new WaitForSecondsRealtime(messageWaitDuration);
 
         ToggleQuestion(true, "realism");
-        _questionSlider.UpdateSliderRange(0, 99, true, false, "extremely unrealistic", " ", "extremely realistic");
+        if (language == lang.german)
+            _questionSlider.UpdateSliderRange(0, 99, true, false, "extrem unrealistisch", " ", "extrem realistisch");
+        else
+            _questionSlider.UpdateSliderRange(0, 99, true, false, "extremely unrealistic", " ", "extremely realistic");
         yield return new WaitUntil(() => _questionSlider.confirmed);
         yield return new WaitForSecondsRealtime(messageWaitDuration);
         ToggleQuestion(false);
@@ -3421,16 +3534,25 @@ public class ExpeControl : MonoBehaviour {
     private static readonly Thread mainThread = Thread.CurrentThread;
 
     float passedTime = 0f;
+    float batteryMeterTime = 0f;
     private void Update() {
 
         if (pluxSampling) {
             passedTime += Time.deltaTime;
-            if (passedTime > 10.0f / (float)sampleRate) {
+            if (passedTime > 100.0f / (float)sampleRate) {
                 passedTime = 0;
                 GetSample();
             }
-
         }
+
+        if (pluxConnected) {
+            batteryMeterTime += Time.deltaTime;
+            if (batteryMeterTime > 30.0f) {
+                batteryMeterTime = 0;
+                UpdateBatteryLevel();
+            }
+        }
+
         // return;
         // To be used in this component - Coroutines are called back between "Update" and "LateUpdate"
         if (tobiiTracking) {

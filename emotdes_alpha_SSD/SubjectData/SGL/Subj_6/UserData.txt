@@ -1,0 +1,28 @@
+63779529909891:User_ID: 6
+63779529909891:lab,participant,trial_idx,roomName,instruction,duration
+63779529909892:SGL,6,0,Version8warmesLicht,sglSit,90
+63779529909893:SGL,6,1,Version8warmesLicht,sglStand,60
+63779529909893:SGL,6,2,Version9kaltesLicht,sglStand,120
+63779529909893:SGL,6,3,Version9kaltesLicht,sglSit,105
+63779529909894:SGL,6,4,Version8warmesLicht,sglStand,75
+63779529909894:SGL,6,5,Version8warmesLicht,sglSit,120
+63779529909895:SGL,6,6,Version8warmesLicht,sglSit,105
+63779529909896:SGL,6,7,Version9kaltesLicht,sglSit,90
+63779529909896:SGL,6,8,Version8warmesLicht,sglSit,60
+63779529909896:SGL,6,9,Version9kaltesLicht,sglSit,75
+63779529909897:SGL,6,10,Version9kaltesLicht,sglStand,60
+63779529909897:SGL,6,11,Version8warmesLicht,sglStand,90
+63779529909898:SGL,6,12,Version9kaltesLicht,sglStand,120
+63779529909898:SGL,6,13,Version8warmesLicht,sglStand,75
+63779529909899:SGL,6,14,Version9kaltesLicht,sglStand,105
+63779529909899:SGL,6,15,Version9kaltesLicht,sglStand,75
+63779529909900:SGL,6,16,Version9kaltesLicht,sglSit,120
+63779529909900:SGL,6,17,Version9kaltesLicht,sglSit,105
+63779529909901:SGL,6,18,Version9kaltesLicht,sglStand,90
+63779529909901:SGL,6,19,Version9kaltesLicht,sglSit,60
+63779529909901:SGL,6,20,Version8warmesLicht,sglStand,105
+63779529909902:SGL,6,21,Version8warmesLicht,sglStand,60
+63779529909902:SGL,6,22,Version8warmesLicht,sglSit,75
+63779529909903:SGL,6,23,Version8warmesLicht,sglStand,120
+63779529909903:SGL,6,24,Version8warmesLicht,sglSit,90
+63779529909904:Started experiment
