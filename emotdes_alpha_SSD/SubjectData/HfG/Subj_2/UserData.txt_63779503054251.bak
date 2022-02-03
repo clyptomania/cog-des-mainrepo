@@ -1,0 +1,39 @@
+63779498602753:User_ID: 2
+63779498602754:lab,participant,trial_idx,roomName,instruction,duration
+63779498602754:HfG,2,0,Version1BankTestbedMesh,hfgSit,75
+63779498602755:HfG,2,1,Version1BankTestbedMesh,hfgLean,45
+63779498602755:HfG,2,2,Version2BankTestbedWood,hfgLean,105
+63779498602756:HfG,2,3,Version2BankTestbedWood,hfgSit,90
+63779498602756:HfG,2,4,Version1BankTestbedMesh,hfgLean,60
+63779498602756:HfG,2,5,Version1BankTestbedMesh,hfgSit,75
+63779498602757:HfG,2,6,Version1BankTestbedMesh,hfgSit,90
+63779498602757:HfG,2,7,Version1BankTestbedMesh,hfgLean,60
+63779498602758:HfG,2,8,Version1BankTestbedMesh,hfgLean,105
+63779498602758:HfG,2,9,Version1BankTestbedMesh,hfgSit,45
+63779498602758:HfG,2,10,Version2BankTestbedWood,hfgLean,45
+63779498602759:HfG,2,11,Version2BankTestbedWood,hfgSit,60
+63779498602759:HfG,2,12,Version2BankTestbedWood,hfgLean,90
+63779498602760:HfG,2,13,Version2BankTestbedWood,hfgLean,75
+63779498602760:HfG,2,14,Version2BankTestbedWood,hfgSit,105
+63779498602760:HfG,2,15,Version1BankTestbedMesh,hfgLean,90
+63779498602761:HfG,2,16,Version2BankTestbedWood,hfgLean,105
+63779498602761:HfG,2,17,Version1BankTestbedMesh,hfgLean,45
+63779498602762:HfG,2,18,Version2BankTestbedWood,hfgLean,60
+63779498602762:HfG,2,19,Version1BankTestbedMesh,hfgLean,75
+63779498602762:HfG,2,20,Version1BankTestbedMesh,hfgSit,60
+63779498602763:HfG,2,21,Version2BankTestbedWood,hfgSit,75
+63779498602763:HfG,2,22,Version1BankTestbedMesh,hfgSit,105
+63779498602763:HfG,2,23,Version2BankTestbedWood,hfgSit,45
+63779498602764:HfG,2,24,Version2BankTestbedWood,hfgSit,90
+63779498602764:Started experiment
+63779498727139:Started: [1] HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779498727139:startedBlankScene
+63779498729147:endedBlankScene
+63779498729148:Elapsed time: 2011
+63779498729149:Version1BankTestbedMesh
+63779498747253:Started trial: HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779498747255:Started: [1] HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779498776344:Elapsed time: 29087
+63779498776344:Finished trial: HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779498776345:Started questions: HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779498987667:Finished questions: HfG_2_0_Version1BankTestbedMesh_hfgSit_75
