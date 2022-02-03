@@ -43,7 +43,7 @@ public class ExpeControl : MonoBehaviour {
     private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, enButton, deButton, startButton, continueButton,
         syncButton, syncConfirmButton, scanButton, connectButton, acqButton, sampleButton;
     [SerializeField] private Toggle chan1Toggle, chan2Toggle, chan3Toggle, chan4Toggle;
-    [SerializeField] private InputField chan1Field, chan2Field, chan3Field, chan4Field;
+    [SerializeField] private InputField chan1Field, chan2Field, chan3Field, chan4Field, sampleRateField;
     public Image connectionIndicator;
 
     [SerializeField] private List<int> durations = new List<int>();
@@ -115,6 +115,7 @@ public class ExpeControl : MonoBehaviour {
     public StreamWriter m_recorder_HMD = StreamWriter.Null;
     private StreamWriter m_recorder_info = StreamWriter.Null;
     private StreamWriter m_recorder_question = StreamWriter.Null;
+    private StreamWriter m_recorder_plux = StreamWriter.Null;
 
     public GameObject pausePanel;
     public GameObject questionPanel;
@@ -705,6 +706,7 @@ public class ExpeControl : MonoBehaviour {
     public void ScanResults(List<string> listDevices) {
         // Store list of devices in a global variable.
         this.ListDevices = listDevices;
+        scanned = true;
         // Info message for development purposes.
         Debug.Log("Number of Detected Devices: " + this.ListDevices.Count);
         for (int i = 0; i < this.ListDevices.Count; i++) {
@@ -770,13 +772,57 @@ public class ExpeControl : MonoBehaviour {
             batteryColors.disabledColor = Color.HSVToRGB((float)batteryLevel / 240f, 1, 1);
             batteryMeter.colors = batteryColors;
         }
-        connectButton.interactable = false;
+        connectButton.interactable = true;
+        connectButton.GetComponentInChildren<Text>().text = "<i>Disconnect</i>";
+
+        ColorBlock buttonColors = connectButton.colors;
+        buttonColors.normalColor = Color.red;
+        connectButton.colors = buttonColors;
+
+        // scanButton.interactable = false;
         acqButton.interactable = true;
+        connected = true;
     }
 
-    public void ScanFunction() {
 
-        connectButton.interactable = false;
+    IEnumerator ColorPhase(float startHue = 0.75f, string procedure = "scan") {
+        float hue = startHue;
+        float startTime = Time.time;
+        bool flag = false;
+        while (!flag) {
+            if (procedure == "scan")
+                flag = scanned;
+            else
+                flag = connected;
+            hue = startHue + (Mathf.Abs(((Time.time - startTime) % 2) - 1) - 0.5f) / 2;
+            // Debug.Log(hue);
+            // 0.75f + Mathf.Cos(Time.time - startTime) / 4f;
+            connectionIndicator.color = Color.HSVToRGB(hue, 0.75f, 0.75f);
+            yield return null;
+        }
+        if (connected) {
+            connectionIndicator.color = Color.green;
+        } else {
+            if (connectButton.interactable) {
+                connectionIndicator.color = Color.HSVToRGB(0.5f, 0.75f, 0.75f);
+            } else {
+                connectionIndicator.color = Color.HSVToRGB(0, 0.75f, 0.75f);
+            }
+        }
+    }
+
+    private bool autoConnect = false;
+    private bool connected = false;
+    private bool scanned = false;
+    public void ScanFunction(bool auto = false) {
+
+        scanned = false;
+
+        if (!connected)
+            connectButton.interactable = false;
+        connectionIndicator.color = Color.HSVToRGB(0.5f, 0.75f, 0.75f);
+
+        StartCoroutine(ColorPhase(0.75f, "scan"));
 
         try {
             // List of available Devices.
@@ -800,8 +846,49 @@ public class ExpeControl : MonoBehaviour {
         }
     }
 
+    public void Disconnect() {
+        try {
+            // Disconnect device.
+            PluxDevManager.DisconnectPluxDev();
+        } catch (Exception exception) {
+            Debug.Log("Trying to disconnect from an unconnected device...");
+        }
+        connectButton.GetComponentInChildren<Text>().text = "Connect";
+
+        ColorBlock buttonColors = connectButton.colors;
+        buttonColors.normalColor = Color.white;
+        connectButton.colors = buttonColors;
+
+        acqButton.interactable = false;
+        sampleButton.interactable = false;
+
+        sampleRateField.interactable = true;
+
+        chan1Field.interactable = true;
+        chan2Field.interactable = true;
+        chan3Field.interactable = true;
+        chan4Field.interactable = true;
+
+        chan1Toggle.interactable = true;
+        chan2Toggle.interactable = true;
+        chan3Toggle.interactable = true;
+        chan4Toggle.interactable = true;
+
+        connected = false;
+    }
+
     public void ConnectFunction() {
+
+        if (connected) {
+            Disconnect();
+            return;
+        }
+
+        connected = false;
         connectButton.interactable = false;
+
+        connectionIndicator.color = Color.HSVToRGB(0.5f, 0.75f, 0.75f);
+        StartCoroutine(ColorPhase(0.5f, "connect"));
         try {
             this.SelectedDevice = this.ListDevices[0];
             // Connection with the device.
@@ -819,7 +906,38 @@ public class ExpeControl : MonoBehaviour {
         }
     }
 
+    private bool pluxSampling = false;
+
     public void StartAcquisition() {
+
+        if (pluxSampling) {
+
+            PluxDevManager.StopAcquisitionUnity();
+            Debug.Log("Stopped Plux data acquisition.");
+
+            stopPluxRecord();
+
+            acqButton.GetComponentInChildren<Text>().text = "Acquisition";
+
+            sampleButton.interactable = false;
+
+            sampleRateField.interactable = true;
+
+            chan1Field.interactable = true;
+            chan2Field.interactable = true;
+            chan3Field.interactable = true;
+            chan4Field.interactable = true;
+
+            chan1Toggle.interactable = true;
+            chan2Toggle.interactable = true;
+            chan3Toggle.interactable = true;
+            chan4Toggle.interactable = true;
+
+            pluxSampling = false;
+
+            return;
+        }
+
         ActiveChannels = new List<int>();
         if (chan1Toggle.isOn) ActiveChannels.Add(1);
         if (chan2Toggle.isOn) ActiveChannels.Add(2);
@@ -828,22 +946,94 @@ public class ExpeControl : MonoBehaviour {
 
         if (ActiveChannels.Count > 0) {
             PluxDevManager.StartAcquisitionUnity(sampleRate, ActiveChannels, bitDepth);
-            Debug.Log("Commenced Plux acquisition with " + PluxDevManager.GetNbrChannelsUnity() + " active channels.");
-            sampleButton.interactable = true;
+            if (PluxDevManager.GetNbrChannelsUnity() > 0) {
+
+                Debug.Log("Commenced Plux acquisition with " + PluxDevManager.GetNbrChannelsUnity() + " active channels.");
+
+                startNewPluxRecord("testing");
+
+                pluxSampling = true;
+
+
+                acqButton.GetComponentInChildren<Text>().text = "Stop Sampling";
+                acqButton.interactable = true;
+
+                sampleButton.interactable = true;
+
+                sampleRateField.interactable = false;
+
+                chan1Field.interactable = false;
+                chan2Field.interactable = false;
+                chan3Field.interactable = false;
+                chan4Field.interactable = false;
+
+                chan1Toggle.interactable = false;
+                chan2Toggle.interactable = false;
+                chan3Toggle.interactable = false;
+                chan4Toggle.interactable = false;
+            }
+        }
+    }
+
+    public void ValidateSampleRate() {
+        bool parsed = int.TryParse(sampleRateField.text, out int sRate);
+        if (parsed) {
+            if (sRate < 1 || sRate > 16000) {
+                sampleRateField.text = "100";
+                sampleRate = 100;
+            } else {
+                sampleRate = sRate;
+            }
+            PlayerPrefs.SetInt("sampleRate", sampleRate);
+        }
+    }
+
+    void WritePluxLines(int[][] package, long dumpTime) {
+
+        float timeStepMillis = (1000.0f / (float)sampleRate);
+        long firstSampleTime = dumpTime - Mathf.RoundToInt(timeStepMillis * (float)package.Length);
+        long sampleTime = firstSampleTime;
+
+        for (int i = 0; i < package.Length; i++) {
+            sampleTime = firstSampleTime + Mathf.RoundToInt(timeStepMillis * ((float)(i + 1)));
+            string dataLine = (sampleTime).ToString();
+            // string dataLine = getTimeStamp().ToString();
+            for (int j = 0; j < package[i].Length; j++) {
+                dataLine += "," + package[i][j];
+            }
+            if (m_recorder_plux.BaseStream.CanWrite) {
+                m_recorder_plux.WriteLine(dataLine);
+            }
         }
     }
 
     public void GetSample() {
-        Debug.Log("Getting a sample from the Plux");
-        int[][] testPackage = PluxDevManager.GetPackageOfData(false);
-        if (testPackage[0] != null) {
-            for (int i = 0; i < testPackage[0].Length; i++) {
-                Debug.Log("Data from channel " + i + 1 + ": ");
-                for (int j = 0; j < testPackage.Length; j++) {
-                    Debug.Log(testPackage[i][j]);
-                }
-            }
-        }
+        // Debug.Log("Getting samples from the Plux!");
+
+
+        int[][] testPackage = PluxDevManager.GetPackageOfData(true);
+        WritePluxLines(testPackage, getTimeStamp());
+
+
+        // foreach (int chan in ActiveChannels) {
+        //     int[] testPackage = PluxDevManager.GetPackageOfData(chan, ActiveChannels, true);
+        //     if (testPackage != null) {
+        //         Debug.Log(testPackage.Length + " samples from channel " + chan + " :");
+        //         for (int i = 0; i < testPackage.Length; i++) {
+        //             // Debug.Log(testPackage[i]);
+        //         }
+        //     }
+        // }
+
+        // int[][] testPackage = PluxDevManager.GetPackageOfData(false);
+        // if (testPackage[0] != null) {
+        //     for (int i = 0; i < testPackage[0].Length; i++) {
+        //         Debug.Log("Data from channel " + i + 1 + ": ");
+        //         for (int j = 0; j < testPackage.Length; j++) {
+        //             Debug.Log(testPackage[i][j]);
+        //         }
+        //     }
+        // }
     }
 
     bool lightSynced = false;
@@ -1774,26 +1964,26 @@ public class ExpeControl : MonoBehaviour {
         switch (chan) {
             case 1:
                 PlayerPrefs.SetString("chan1name", chan1Field.text);
-                Debug.Log("Saved name of channel " + chan + " as " + chan1Field.text);
+                // Debug.Log("Saved name of channel " + chan + " as " + chan1Field.text);
                 break;
             case 2:
                 PlayerPrefs.SetString("chan2name", chan2Field.text);
-                Debug.Log("Saved name of channel " + chan + " as " + chan2Field.text);
+                // Debug.Log("Saved name of channel " + chan + " as " + chan2Field.text);
                 break;
             case 3:
                 PlayerPrefs.SetString("chan3name", chan3Field.text);
-                Debug.Log("Saved name of channel " + chan + " as " + chan3Field.text);
+                // Debug.Log("Saved name of channel " + chan + " as " + chan3Field.text);
                 break;
             case 4:
                 PlayerPrefs.SetString("chan4name", chan4Field.text);
-                Debug.Log("Saved name of channel " + chan + " as " + chan4Field.text);
+                // Debug.Log("Saved name of channel " + chan + " as " + chan4Field.text);
                 break;
             default:
                 PlayerPrefs.SetString("chan1name", chan1Field.text);
                 PlayerPrefs.SetString("chan2name", chan2Field.text);
                 PlayerPrefs.SetString("chan3name", chan3Field.text);
                 PlayerPrefs.SetString("chan4name", chan4Field.text);
-                Debug.Log("Saved all channel names");
+                // Debug.Log("Saved all channel names");
                 break;
         }
         // string channelName = "chan" + chan.ToString();
@@ -1923,6 +2113,9 @@ public class ExpeControl : MonoBehaviour {
         chan2Field.text = PlayerPrefs.GetString("chan2name");
         chan3Field.text = PlayerPrefs.GetString("chan3name");
         chan4Field.text = PlayerPrefs.GetString("chan4name");
+
+        sampleRateField.text = PlayerPrefs.GetInt("sampleRate").ToString();
+
 
 
 
@@ -3014,6 +3207,8 @@ public class ExpeControl : MonoBehaviour {
         // Disconnect from plux device.
         PluxDevManager.DisconnectPluxDev();
 
+        stopPluxRecord();
+
         if (eyeTracking && isSampling)
             if (tobiiTracking)
                 stopRecord(-1);
@@ -3231,7 +3426,18 @@ public class ExpeControl : MonoBehaviour {
     public long UnityTimeStamp;
 
     private static readonly Thread mainThread = Thread.CurrentThread;
+
+    float passedTime = 0f;
     private void Update() {
+
+        if (pluxSampling) {
+            passedTime += Time.deltaTime;
+            if (passedTime > 10.0f / (float)sampleRate) {
+                passedTime = 0;
+                GetSample();
+            }
+
+        }
         // return;
         // To be used in this component - Coroutines are called back between "Update" and "LateUpdate"
         if (tobiiTracking) {
@@ -3439,6 +3645,50 @@ public class ExpeControl : MonoBehaviour {
         grayArea.SetActive(false);
     }
 
+    private void startNewPluxRecord(string special = "") {
+
+        string fileName;
+
+        if (special != "") {
+            fileName = Directory.GetParent(Application.dataPath) + "/Pluxing/" + special + ".csv";
+        } else {
+            fileName = m_userdataPath + "/" + currentEmotTrial.expName + "_Plux.csv";
+        }
+
+        m_recorder_plux = new StreamWriter(fileName);
+
+        string channelNames = "UnityTS";
+
+        foreach (int chan in ActiveChannels) {
+            switch (chan) {
+                case 1:
+                    channelNames += "," + chan1Field.text;
+                    break;
+                case 2:
+                    channelNames += "," + chan2Field.text;
+                    break;
+                case 3:
+                    channelNames += "," + chan3Field.text;
+                    break;
+                case 4:
+                    channelNames += "," + chan4Field.text;
+                    break;
+            }
+        }
+
+        if (m_recorder_plux.BaseStream.CanWrite) {
+            m_recorder_plux.WriteLine(channelNames);
+            m_recorder_plux.Flush();
+        }
+    }
+
+    private void stopPluxRecord() {
+
+        if (m_recorder_plux != null && m_recorder_plux.BaseStream.CanWrite)
+            m_recorder_plux.Close();
+
+    }
+
     private void startNewAnswerRecord(string name = "") {
 
         string fileName = "";
@@ -3453,6 +3703,7 @@ public class ExpeControl : MonoBehaviour {
         fileName += ".csv";
 
         m_recorder_question = new StreamWriter(m_userdataPath + "/" + fileName);
+
 
         // m_recorder_question = new StreamWriter (m_userdataPath + "/Answers.csv", true); 
 
