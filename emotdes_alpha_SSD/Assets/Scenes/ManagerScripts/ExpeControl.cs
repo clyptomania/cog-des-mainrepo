@@ -138,7 +138,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "sex",
-            "To which gender do you identify?"
+            "Which gender do you identify with?"
         },
         {
             "occupation",
@@ -2126,8 +2126,8 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "occupation");
-            _questionSlider.UpdateSliderRange(0, 4, true, false, "unemployed", "employee", "other", "",
-                "student", "self-employed");
+            _questionSlider.UpdateSliderRange(0, 4, true, false, "unemployed", "employee", "self-employed", "",
+                "student", "other");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
