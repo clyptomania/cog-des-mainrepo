@@ -1,28 +1,49 @@
-63779492695760:User_ID: 2
-63779492695760:lab,participant,trial_idx,roomName,instruction,duration
-63779492695761:HfG,2,0,Version1BankTestbedMesh,hfgSit,75
-63779492695761:HfG,2,1,Version1BankTestbedMesh,hfgLean,45
-63779492695762:HfG,2,2,Version2BankTestbedWood,hfgLean,105
-63779492695762:HfG,2,3,Version2BankTestbedWood,hfgSit,90
-63779492695763:HfG,2,4,Version1BankTestbedMesh,hfgLean,60
-63779492695763:HfG,2,5,Version1BankTestbedMesh,hfgSit,75
-63779492695764:HfG,2,6,Version1BankTestbedMesh,hfgSit,90
-63779492695764:HfG,2,7,Version1BankTestbedMesh,hfgLean,60
-63779492695764:HfG,2,8,Version1BankTestbedMesh,hfgLean,105
-63779492695765:HfG,2,9,Version1BankTestbedMesh,hfgSit,45
-63779492695765:HfG,2,10,Version2BankTestbedWood,hfgLean,45
-63779492695766:HfG,2,11,Version2BankTestbedWood,hfgSit,60
-63779492695766:HfG,2,12,Version2BankTestbedWood,hfgLean,90
-63779492695766:HfG,2,13,Version2BankTestbedWood,hfgLean,75
-63779492695767:HfG,2,14,Version2BankTestbedWood,hfgSit,105
-63779492695767:HfG,2,15,Version1BankTestbedMesh,hfgLean,90
-63779492695768:HfG,2,16,Version2BankTestbedWood,hfgLean,105
-63779492695768:HfG,2,17,Version1BankTestbedMesh,hfgLean,45
-63779492695769:HfG,2,18,Version2BankTestbedWood,hfgLean,60
-63779492695769:HfG,2,19,Version1BankTestbedMesh,hfgLean,75
-63779492695769:HfG,2,20,Version1BankTestbedMesh,hfgSit,60
-63779492695770:HfG,2,21,Version2BankTestbedWood,hfgSit,75
-63779492695770:HfG,2,22,Version1BankTestbedMesh,hfgSit,105
-63779492695771:HfG,2,23,Version2BankTestbedWood,hfgSit,45
-63779492695771:HfG,2,24,Version2BankTestbedWood,hfgSit,90
-63779492695772:Started experiment
+63779503054253:User_ID: 2
+63779503054254:lab,participant,trial_idx,roomName,instruction,duration
+63779503054255:HfG,2,0,Version1BankTestbedMesh,hfgSit,75
+63779503054255:HfG,2,1,Version1BankTestbedMesh,hfgLean,45
+63779503054255:HfG,2,2,Version2BankTestbedWood,hfgLean,105
+63779503054256:HfG,2,3,Version2BankTestbedWood,hfgSit,90
+63779503054256:HfG,2,4,Version1BankTestbedMesh,hfgLean,60
+63779503054257:HfG,2,5,Version1BankTestbedMesh,hfgSit,75
+63779503054257:HfG,2,6,Version1BankTestbedMesh,hfgSit,90
+63779503054258:HfG,2,7,Version1BankTestbedMesh,hfgLean,60
+63779503054258:HfG,2,8,Version1BankTestbedMesh,hfgLean,105
+63779503054258:HfG,2,9,Version1BankTestbedMesh,hfgSit,45
+63779503054259:HfG,2,10,Version2BankTestbedWood,hfgLean,45
+63779503054259:HfG,2,11,Version2BankTestbedWood,hfgSit,60
+63779503054260:HfG,2,12,Version2BankTestbedWood,hfgLean,90
+63779503054260:HfG,2,13,Version2BankTestbedWood,hfgLean,75
+63779503054261:HfG,2,14,Version2BankTestbedWood,hfgSit,105
+63779503054261:HfG,2,15,Version1BankTestbedMesh,hfgLean,90
+63779503054262:HfG,2,16,Version2BankTestbedWood,hfgLean,105
+63779503054262:HfG,2,17,Version1BankTestbedMesh,hfgLean,45
+63779503054262:HfG,2,18,Version2BankTestbedWood,hfgLean,60
+63779503054263:HfG,2,19,Version1BankTestbedMesh,hfgLean,75
+63779503054263:HfG,2,20,Version1BankTestbedMesh,hfgSit,60
+63779503054264:HfG,2,21,Version2BankTestbedWood,hfgSit,75
+63779503054264:HfG,2,22,Version1BankTestbedMesh,hfgSit,105
+63779503054264:HfG,2,23,Version2BankTestbedWood,hfgSit,45
+63779503054265:HfG,2,24,Version2BankTestbedWood,hfgSit,90
+63779503054265:Started experiment
+63779503233778:Started: [1] HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779503233778:startedBlankScene
+63779503235786:endedBlankScene
+63779503235787:Elapsed time: 2011
+63779503235788:Version1BankTestbedMesh
+63779503322453:Started trial: HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779503322455:Started: [1] HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779503397456:Elapsed time: 75001
+63779503397457:Finished trial: HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779503397458:Started questions: HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779503526526:Finished questions: HfG_2_0_Version1BankTestbedMesh_hfgSit_75
+63779503585436:Started: [2] HfG_2_1_Version1BankTestbedMesh_hfgLean_45
+63779503585436:startedBlankScene
+63779503587445:endedBlankScene
+63779503587446:Elapsed time: 2011
+63779503587446:Version1BankTestbedMesh
+63779503600864:Started trial: HfG_2_1_Version1BankTestbedMesh_hfgLean_45
+63779503600865:Started: [2] HfG_2_1_Version1BankTestbedMesh_hfgLean_45
+63779503645868:Elapsed time: 45002
+63779503645868:Finished trial: HfG_2_1_Version1BankTestbedMesh_hfgLean_45
+63779503645870:Started questions: HfG_2_1_Version1BankTestbedMesh_hfgLean_45

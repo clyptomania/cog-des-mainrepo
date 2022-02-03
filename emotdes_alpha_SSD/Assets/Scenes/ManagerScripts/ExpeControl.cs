@@ -166,15 +166,15 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "thinkPast",
-            "How much did you think about\nyour PAST while waiting?"
+            "How much did you think about\nYOUR PAST while waiting?"
         },
         {
             "thinkPresent",
-            "How much did you think about\nyour PRESENT while waiting?"
+            "How much did you think about\nYOUR PRESENT while waiting?"
         },
         {
             "thinkFuture",
-            "How much did you think about\nyour FUTURE while waiting?"
+            "How much did you think about\nYOUR FUTURE while waiting?"
         },
         {
             "experienceBody",
@@ -182,7 +182,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "experienceSpace",
-            "How intensively did you experience\nTHE SURROUNDING SPACE most of the time?"
+            "How intensively did you experience \nTHE SURROUNDING SPACE most of the time?"
         },
         {
             "thinkTime",
@@ -229,7 +229,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "height",
-            "Wie gross bist du (in cm)?"
+            "Wie groß bist du (in cm)?"
         },
         {
             "age",
@@ -324,9 +324,8 @@ public class ExpeControl : MonoBehaviour {
     private readonly Dictionary<string, string> messagesEN = new Dictionary<string, string> {
         {
             "calibrateVSR",
-            "Please start the EYE TRACKER calibration.\n" +
-            "you may ask the assistant for help with that.\n\n" +
-            "Pull the trigger when you're done to continue!"
+            "Now we need to callibrate the EYE TRACKER.\n\n" +
+            "Please pull the trigger to start the callibration!    "
         },
         {
             "calibrateTob",
@@ -396,14 +395,13 @@ public class ExpeControl : MonoBehaviour {
         {
             "beginWaitingSit",
             "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
-            "Please sit down, and pull the trigger to begin!"
+            "You will get notified once it's over, and you will be asked questions about your experience then. Please sit down, and pull the trigger to begin!"
         },
         {
             "instructionEndSitLean",
             "The waiting time is now over!\n\n" +
-            "Please stand up now and step a way a bit from the seats.\n\n" +
+            "Please stand up and take a step forward,\n" +
+            "away from the seats.\n\n" +
             "Pull the trigger to continue with the questionnaires."
         },
         {
@@ -416,29 +414,25 @@ public class ExpeControl : MonoBehaviour {
         {
             "instructionSitSGL",
             "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
+            "You will get notified once it's over, and you will be asked questions about your experience then.\n\n" +
             "Please sit down, and pull the trigger to begin!"
         },
         {
             "instructionStandSGL",
             "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
+            "You will get notified once it's over, and you will be asked questions about your experience then.\n\n" +
             "Please stand a bit away from the seat, and pull the trigger to begin!"
         },
         {
             "instructionSitHFG",
             "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
+            "You will get notified once it's over, and you will be asked questions about your experience then.\n\n" +
             "Please sit down on the low bench, and pull the trigger to begin!"
         },
         {
             "instructionLeanHFG",
             "The waiting period will begin soon!\n" +
-            "You will get notified once it's over, and you will\n" +
-            "be asked questions about your experience then.\n\n" +
+            "You will get notified once it's over, and you will be asked questions about your experience then.\n\n" +
             "Please lean on the high bench, and pull the trigger to begin!"
         },
         {
@@ -476,7 +470,7 @@ public class ExpeControl : MonoBehaviour {
             "calibrateVSR",
             "Starte bitte die EYE TRACKER Kalibrierung.\n" +
             "Du kannst die Assistenten dabei jederzeit um Hilfe bitten.\n\n" +
-            "Halte den Trigger gedrückt um fortzufahren!"
+            "Halte den Trigger gedrückt um die Kallibrierung zu starten!"
         },
         {
             "calibrateTob",
@@ -546,8 +540,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "beginWaitingSit",
             "Die Wartezeit wird gleich beginnen!\n" +
-            "Wenn diese vorüber ist, wirst du benachrichtigt und dir\n" +
-            "werden Fragen gestellt.\n\n" +
+            "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
             "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
@@ -592,15 +585,15 @@ public class ExpeControl : MonoBehaviour {
             "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
-            "Drei",
+            "three",
             "3..."
         },
         {
-            "Zwei",
+            "two",
             "2..."
         },
         {
-            "Eins",
+            "one",
             "1..."
         },
         {
@@ -2118,6 +2111,7 @@ public class ExpeControl : MonoBehaviour {
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
+            //"männlich", "divers", "weiblich"
             ToggleQuestion(true, "sex");
             _questionSlider.UpdateSliderRange(0, 2, true, false, "male", "diverse", "female");
             yield return new WaitUntil(() => _questionSlider.confirmed);
@@ -2125,6 +2119,7 @@ public class ExpeControl : MonoBehaviour {
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
+            //"arbeitslos", "angestellt", "selbstständig", "studierend", "andere"
             ToggleQuestion(true, "occupation");
             _questionSlider.UpdateSliderRange(0, 4, true, false, "unemployed", "employee", "self-employed", "",
                 "student", "other");
@@ -2134,13 +2129,14 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             ToggleQuestion(true, "vrLife");
-            _questionSlider.UpdateSliderRange(0, 4, true, false, "0", "1--5h", ">20h", "",
-                "<1h", "5--20h");
+            _questionSlider.UpdateSliderRange(0, 4, true, false, "0", "1-5h", ">20h", "",
+                "<1h", "5-20h");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
+            //"nie", "monatlich", "täglich", "","jährlich", "wöchentlich"
             ToggleQuestion(true, "transportFreq");
             _questionSlider.UpdateSliderRange(0, 4, true, false, "never", "monthly", "daily", "",
                 "yearly", "weekly");
@@ -2149,6 +2145,7 @@ public class ExpeControl : MonoBehaviour {
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
+            //"garnicht geduldig", "sehr geduldig"
             ToggleQuestion(true, "patience");
             _questionSlider.UpdateSliderRange(0, 99, true, false, "not at all", " ", "very patient");
             yield return new WaitUntil(() => _questionSlider.confirmed);
