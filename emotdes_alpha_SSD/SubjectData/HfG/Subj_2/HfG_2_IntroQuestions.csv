@@ -1,8 +1,8 @@
 UnityTS,LabID,ParticipantID,TrialID,Room,Instruction,Duration,Question,Answer
-63779503980631,HfG,2,0,Version1BankTestbedMesh,hfgSit,75,age,47
-63779503983642,HfG,2,0,Version1BankTestbedMesh,hfgSit,75,height,170
-63779503988506,HfG,2,0,Version1BankTestbedMesh,hfgSit,75,sex,1
-63779503993815,HfG,2,0,Version1BankTestbedMesh,hfgSit,75,occupation,2
-63779504005844,HfG,2,0,Version1BankTestbedMesh,hfgSit,75,vrLife,2
-63779504009931,HfG,2,0,Version1BankTestbedMesh,hfgSit,75,transportFreq,2
-63779504015695,HfG,2,0,Version1BankTestbedMesh,hfgSit,75,patience,50
+63779585903389,HfG,2,0,Version1BankTestbedMesh,hfgSit,90,age,27
+63779585910230,HfG,2,0,Version1BankTestbedMesh,hfgSit,90,height,157
+63779585914182,HfG,2,0,Version1BankTestbedMesh,hfgSit,90,sex,2
+63779585921646,HfG,2,0,Version1BankTestbedMesh,hfgSit,90,occupation,1
+63779585925979,HfG,2,0,Version1BankTestbedMesh,hfgSit,90,vrLife,4
+63779585932010,HfG,2,0,Version1BankTestbedMesh,hfgSit,90,transportFreq,4
+63779585936852,HfG,2,0,Version1BankTestbedMesh,hfgSit,90,patience,84

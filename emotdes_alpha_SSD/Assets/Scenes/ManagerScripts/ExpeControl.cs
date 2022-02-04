@@ -44,7 +44,7 @@ public class ExpeControl : MonoBehaviour {
         syncButton, syncConfirmButton, scanButton, connectButton, acqButton, sampleButton;
     [SerializeField] private Toggle chan1Toggle, chan2Toggle, chan3Toggle, chan4Toggle;
     [SerializeField] private InputField chan1Field, chan2Field, chan3Field, chan4Field, sampleRateField;
-    public Image connectionIndicator;
+    public Image connectionIndicator, signal1Indicator, signal2Indicator, signal3Indicator, signal4Indicator;
 
     [SerializeField] private List<int> durations = new List<int>();
 
@@ -156,7 +156,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "waitEstimation",
-            "How long do you think you have been waiting until the doors opened?"
+            "How long do you think you have been waiting from the START of the waiting period until NOW?"
         },
         {
             "valence",
@@ -188,7 +188,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "thinkTime",
-            "How often did you think about time?"
+            "How often did you think about time while waiting?"
         },
         {
             "timePass",
@@ -263,7 +263,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "waitEstimation",
-            "Wie lange, glaubst du, hast du gewartet, bis die Türen sich öffneten?"
+            "Wie lange, glaubst du, hast du seit BEGINN der Wartezeit bis JETZT gewartet?"
         },
         {
             "valence",
@@ -287,15 +287,15 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "experienceBody",
-            "Wie intensiv hast du deinen KÖRPER während des Wartens erlebt?"
+            "Wie intensiv hast du deinen KÖRPER während des Wartens wahrgenommen?"
         },
         {
             "experienceSpace",
-            "Wie intensiv hast du den UMGEBUNGSRAUM während des Wartens erlebt?"
+            "Wie intensiv hast du deine UMGEBUNG während des Wartens wahrgenommen?"
         },
         {
             "thinkTime",
-            "Wie oft hast du über Zeit an sich nachgedacht?"
+            "Wie oft hast du über Zeit an sich nachgedacht beim Warten?"
         },
         {
             "timePass",
@@ -307,7 +307,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "differences",
-            "Hast Du die einzelnen Warteszenarios ähnlich oder unterschiedlich erlebt?"
+            "Wie unterschiedlich oder ähnlich kamen dir die einzelnen Warteszenarios vor?"
         },
         {
             "preferPosture",
@@ -498,7 +498,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "takeBreak",
-            "Du kannst jetzt eine kurze Pause machen.\n" +
+            "Du kannst jetzt eine kurze Pause machen.\n\n" +
             "Bitte nehme das Heaset ab und wende dich an die Assistenten."
         },
         {
@@ -564,7 +564,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "instructionEndSitLean",
             "Die Wartezeit ist nun vorbei!\n\n" +
-            "Bitte stehe auf und trete ein Stück von der Sitzbank weg.\n\n" +
+            "Bitte stehe auf und trete ein Stück von der Bank weg.\n\n" +
             "Halte den Trigger gedrückt, um mit den Fragen fortzufahren."
         },
         {
@@ -584,19 +584,19 @@ public class ExpeControl : MonoBehaviour {
             "instructionStandSGL",
             "Die Wartezeit wird gleich beginnen!\n" +
             "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
-            "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
+            "Bitte stehe etwas vom Sitz entfernt, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionSitHFG",
             "Die Wartezeit wird gleich beginnen!\n" +
             "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
-            "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
+            "Bitte setze dich auf die niedrige Bank, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionLeanHFG",
             "Die Wartezeit wird gleich beginnen!\n" +
             "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
-            "Bitte setze dich, und halte den Trigger gedrückt, um zu beginnen!"
+            "Bitte lehne dich an die hohe Bank an, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
             "three",
@@ -693,7 +693,7 @@ public class ExpeControl : MonoBehaviour {
 
         // Disable panels
         setupPanel.SetActive(false);
-        infoPanel.SetActive(false);
+        // infoPanel.SetActive(false);
         pausePanel.SetActive(false);
 
         grayArea.SetActive(false);
@@ -1385,16 +1385,24 @@ public class ExpeControl : MonoBehaviour {
 
 
         // User information: basic data + playlist
-        m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt");
-        // Record some protocol information
-        WriteInfo("User_ID: " + m_userId);
-        WriteInfo("lab,participant,trial_idx,roomName,instruction,duration");
-        // writeInfo("Stimuli order, room name, target idx, scotoma condition:");
-        // foreach (playlistElement elp in playlist)
-        //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
-        foreach (EmotPlaylistElement ple in emotPlaylist)
-            WriteInfo($"{ple.expNameCSV}");
-        WriteInfo("Started experiment");
+        bool append = false;
+        if (rename)
+            append = true;
+        m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt", append);
+
+        if (!rename) {
+            // Record some protocol information
+            WriteInfo("User_ID: " + m_userId);
+            WriteInfo("lab,participant,trial_idx,roomName,instruction,duration");
+            // writeInfo("Stimuli order, room name, target idx, scotoma condition:");
+            // foreach (playlistElement elp in playlist)
+            //     writeInfo($"{elp.expName} - quest_{elp.task_idx}");
+            foreach (EmotPlaylistElement ple in emotPlaylist)
+                WriteInfo($"{ple.expNameCSV}");
+            WriteInfo("Started experiment");
+        } else {
+            WriteInfo("Continued experiment");
+        }
         FlushInfo();
 
         // Plux things
@@ -2005,6 +2013,11 @@ public class ExpeControl : MonoBehaviour {
                 // Debug.Log("Saved all channel names");
                 break;
         }
+
+        signal1Indicator.GetComponentInChildren<Text>().text = chan1Field.text;
+        signal2Indicator.GetComponentInChildren<Text>().text = chan2Field.text;
+        signal3Indicator.GetComponentInChildren<Text>().text = chan3Field.text;
+        signal4Indicator.GetComponentInChildren<Text>().text = chan4Field.text;
         // string channelName = "chan" + chan.ToString();
         // PlayerPrefs.SetInt(channelName, (state ? 1 : 0));
         // PlayerPrefs.SetInt("chan1", (chan1Toggle.isOn ? 1 : 0));
@@ -2104,7 +2117,7 @@ public class ExpeControl : MonoBehaviour {
 
         // Show SubjInfo panel
         setupPanel.SetActive(true);
-        infoPanel.SetActive(false);
+        // infoPanel.SetActive(false);
         pausePanel.SetActive(false);
         // questionPanel.SetActive(false);
         _progressBar.gameObject.SetActive(false);
@@ -2132,6 +2145,11 @@ public class ExpeControl : MonoBehaviour {
         chan2Field.text = PlayerPrefs.GetString("chan2name");
         chan3Field.text = PlayerPrefs.GetString("chan3name");
         chan4Field.text = PlayerPrefs.GetString("chan4name");
+
+        signal1Indicator.GetComponentInChildren<Text>().text = chan1Field.text;
+        signal2Indicator.GetComponentInChildren<Text>().text = chan2Field.text;
+        signal3Indicator.GetComponentInChildren<Text>().text = chan3Field.text;
+        signal4Indicator.GetComponentInChildren<Text>().text = chan4Field.text;
 
         sampleRateField.text = PlayerPrefs.GetInt("sampleRate").ToString();
 
@@ -2625,6 +2643,8 @@ public class ExpeControl : MonoBehaviour {
                     WriteInfo("confirmedLightSync");
                 }
 
+
+                yield return new WaitForSecondsRealtime(30);
                 toggleMessage(true, "endBreak");
 
                 _instructBehaviour.RequestConfirmation(durationToContinue);
@@ -2632,6 +2652,8 @@ public class ExpeControl : MonoBehaviour {
                 yield return new WaitForSecondsRealtime(messageWaitDuration);
                 _instructBehaviour.toggleWorldInstruction(false);
                 yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+
 
                 toggleMessage(true, "unloading");
                 Debug.Log("Starting room unload...");
@@ -3225,13 +3247,7 @@ public class ExpeControl : MonoBehaviour {
 
         toggleMessage(true, "end");
 
-        _instructBehaviour.RequestConfirmation(durationToContinue);
-        yield return new WaitUntil(() => !_instructBehaviour.requested);
-        yield return new WaitForSecondsRealtime(messageWaitDuration);
-        _instructBehaviour.toggleWorldInstruction(false);
-        yield return new WaitForSecondsRealtime(messageWaitDuration);
-        toggleMessage(false);
-
+        yield return new WaitForSecondsRealtime(15);
 
         Debug.Log("Experiment concluded. Quitting...");
 
@@ -3535,6 +3551,42 @@ public class ExpeControl : MonoBehaviour {
 
     float passedTime = 0f;
     float batteryMeterTime = 0f;
+
+    public void UpdateSensorReadouts() {
+        if (!pluxSampling)
+            return;
+
+        int[][] dataPackage = PluxDevManager.GetPackageOfData(false);
+        int[] lastSamples = new int[ActiveChannels.Count];
+
+        if (dataPackage != null && dataPackage[0] != null) {
+
+            lastSamples = dataPackage.Last();
+
+            float maxSample = Mathf.Pow(2, bitDepth);
+
+            foreach (int chan in ActiveChannels) {
+                switch (chan) {
+                    case 1:
+                        signal1Indicator.color = Color.HSVToRGB(0, 1, lastSamples[0] / maxSample);
+                        break;
+                    case 2:
+                        signal2Indicator.color = Color.HSVToRGB(0.55f, 1, lastSamples[1] / maxSample);
+                        break;
+                    case 3:
+                        signal3Indicator.color = Color.HSVToRGB(0.25f, 1, lastSamples[2] / maxSample);
+                        break;
+                    case 4:
+                        signal4Indicator.color = Color.HSVToRGB(0.15f, 1, lastSamples[3] / maxSample);
+                        break;
+                }
+            }
+        }
+
+    }
+
+    [SerializeField] private bool realTimeReadout = false;
+
     private void Update() {
 
         if (pluxSampling) {
@@ -3543,13 +3595,15 @@ public class ExpeControl : MonoBehaviour {
                 passedTime = 0;
                 GetSample();
             }
+            if (realTimeReadout)
+                UpdateSensorReadouts();
         }
 
         if (pluxConnected) {
             batteryMeterTime += Time.deltaTime;
             if (batteryMeterTime > 30.0f) {
                 batteryMeterTime = 0;
-                UpdateBatteryLevel();
+                // UpdateBatteryLevel();
             }
         }
 

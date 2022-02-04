@@ -1,39 +1,231 @@
-63779504286536:User_ID: 2
-63779504286537:lab,participant,trial_idx,roomName,instruction,duration
-63779504286538:HfG,2,0,Version1BankTestbedMesh,hfgSit,75
-63779504286538:HfG,2,1,Version1BankTestbedMesh,hfgLean,45
-63779504286539:HfG,2,2,Version2BankTestbedWood,hfgLean,105
-63779504286539:HfG,2,3,Version2BankTestbedWood,hfgSit,90
-63779504286539:HfG,2,4,Version1BankTestbedMesh,hfgLean,60
-63779504286540:HfG,2,5,Version1BankTestbedMesh,hfgSit,75
-63779504286540:HfG,2,6,Version1BankTestbedMesh,hfgSit,90
-63779504286541:HfG,2,7,Version1BankTestbedMesh,hfgLean,60
-63779504286541:HfG,2,8,Version1BankTestbedMesh,hfgLean,105
-63779504286541:HfG,2,9,Version1BankTestbedMesh,hfgSit,45
-63779504286542:HfG,2,10,Version2BankTestbedWood,hfgLean,45
-63779504286542:HfG,2,11,Version2BankTestbedWood,hfgSit,60
-63779504286543:HfG,2,12,Version2BankTestbedWood,hfgLean,90
-63779504286543:HfG,2,13,Version2BankTestbedWood,hfgLean,75
-63779504286544:HfG,2,14,Version2BankTestbedWood,hfgSit,105
-63779504286544:HfG,2,15,Version1BankTestbedMesh,hfgLean,90
-63779504286544:HfG,2,16,Version2BankTestbedWood,hfgLean,105
-63779504286545:HfG,2,17,Version1BankTestbedMesh,hfgLean,45
-63779504286545:HfG,2,18,Version2BankTestbedWood,hfgLean,60
-63779504286546:HfG,2,19,Version1BankTestbedMesh,hfgLean,75
-63779504286546:HfG,2,20,Version1BankTestbedMesh,hfgSit,60
-63779504286547:HfG,2,21,Version2BankTestbedWood,hfgSit,75
-63779504286547:HfG,2,22,Version1BankTestbedMesh,hfgSit,105
-63779504286547:HfG,2,23,Version2BankTestbedWood,hfgSit,45
-63779504286548:HfG,2,24,Version2BankTestbedWood,hfgSit,90
-63779504286548:Started experiment
-63779504333069:Started: [2] HfG_2_1_Version1BankTestbedMesh_hfgLean_45
-63779504333070:startedBlankScene
-63779504335077:endedBlankScene
-63779504335078:Elapsed time: 2010
-63779504335079:Version1BankTestbedMesh
-63779504543516:Started trial: HfG_2_1_Version1BankTestbedMesh_hfgLean_45
-63779504543518:Started: [2] HfG_2_1_Version1BankTestbedMesh_hfgLean_45
-63779504588522:Elapsed time: 45003
-63779504588522:Finished trial: HfG_2_1_Version1BankTestbedMesh_hfgLean_45
-63779504588524:Started questions: HfG_2_1_Version1BankTestbedMesh_hfgLean_45
-63779504962404:Finished questions: HfG_2_1_Version1BankTestbedMesh_hfgLean_45
+63779587982842:User_ID: 2
+63779587982843:lab,participant,trial_idx,roomName,instruction,duration
+63779587982844:HfG,2,0,Version1BankTestbedMesh,hfgSit,90
+63779587982844:HfG,2,1,Version1BankTestbedMesh,hfgLean,60
+63779587982844:HfG,2,2,Version2BankTestbedWood,hfgLean,120
+63779587982845:HfG,2,3,Version2BankTestbedWood,hfgSit,105
+63779587982845:HfG,2,4,Version1BankTestbedMesh,hfgLean,75
+63779587982846:HfG,2,5,Version1BankTestbedMesh,hfgSit,90
+63779587982846:HfG,2,6,Version1BankTestbedMesh,hfgSit,105
+63779587982846:HfG,2,7,Version1BankTestbedMesh,hfgLean,75
+63779587982847:HfG,2,8,Version1BankTestbedMesh,hfgLean,120
+63779587982847:HfG,2,9,Version1BankTestbedMesh,hfgSit,60
+63779587982848:HfG,2,10,Version2BankTestbedWood,hfgLean,60
+63779587982848:HfG,2,11,Version2BankTestbedWood,hfgSit,75
+63779587982848:HfG,2,12,Version2BankTestbedWood,hfgLean,105
+63779587982849:HfG,2,13,Version2BankTestbedWood,hfgLean,90
+63779587982849:HfG,2,14,Version2BankTestbedWood,hfgSit,120
+63779587982850:HfG,2,15,Version1BankTestbedMesh,hfgLean,105
+63779587982850:HfG,2,16,Version2BankTestbedWood,hfgLean,120
+63779587982851:HfG,2,17,Version1BankTestbedMesh,hfgLean,60
+63779587982851:HfG,2,18,Version2BankTestbedWood,hfgLean,75
+63779587982851:HfG,2,19,Version1BankTestbedMesh,hfgLean,90
+63779587982852:HfG,2,20,Version1BankTestbedMesh,hfgSit,75
+63779587982852:HfG,2,21,Version2BankTestbedWood,hfgSit,90
+63779587982853:HfG,2,22,Version1BankTestbedMesh,hfgSit,120
+63779587982853:HfG,2,23,Version2BankTestbedWood,hfgSit,60
+63779587982854:HfG,2,24,Version2BankTestbedWood,hfgSit,105
+63779587982854:Started experiment
+63779588049116:Started: [8] HfG_2_7_Version1BankTestbedMesh_hfgLean_75
+63779588049117:startedBlankScene
+63779588051123:endedBlankScene
+63779588051124:Elapsed time: 2008
+63779588051124:Version1BankTestbedMesh
+63779588068512:Started trial: HfG_2_7_Version1BankTestbedMesh_hfgLean_75
+63779588068514:Started: [8] HfG_2_7_Version1BankTestbedMesh_hfgLean_75
+63779588143187:Elapsed time: 74673
+63779588143187:Finished trial: HfG_2_7_Version1BankTestbedMesh_hfgLean_75
+63779588143190:Started questions: HfG_2_7_Version1BankTestbedMesh_hfgLean_75
+63779588265838:Finished questions: HfG_2_7_Version1BankTestbedMesh_hfgLean_75
+63779588322430:Started: [9] HfG_2_8_Version1BankTestbedMesh_hfgLean_120
+63779588322430:startedBlankScene
+63779588324435:endedBlankScene
+63779588324435:Elapsed time: 2007
+63779588324436:Version1BankTestbedMesh
+63779588340313:Started trial: HfG_2_8_Version1BankTestbedMesh_hfgLean_120
+63779588340315:Started: [9] HfG_2_8_Version1BankTestbedMesh_hfgLean_120
+63779588460315:Elapsed time: 119999
+63779588460315:Finished trial: HfG_2_8_Version1BankTestbedMesh_hfgLean_120
+63779588460317:Started questions: HfG_2_8_Version1BankTestbedMesh_hfgLean_120
+63779588541316:Finished questions: HfG_2_8_Version1BankTestbedMesh_hfgLean_120
+63779588586769:Started: [10] HfG_2_9_Version1BankTestbedMesh_hfgSit_60
+63779588586770:startedBlankScene
+63779588588773:endedBlankScene
+63779588588774:Elapsed time: 2005
+63779588588775:Version1BankTestbedMesh
+63779588605424:Started trial: HfG_2_9_Version1BankTestbedMesh_hfgSit_60
+63779588605426:Started: [10] HfG_2_9_Version1BankTestbedMesh_hfgSit_60
+63779588665433:Elapsed time: 60007
+63779588665433:Finished trial: HfG_2_9_Version1BankTestbedMesh_hfgSit_60
+63779588665435:Started questions: HfG_2_9_Version1BankTestbedMesh_hfgSit_60
+63779588758018:Finished questions: HfG_2_9_Version1BankTestbedMesh_hfgSit_60
+63779588763160:Version2BankTestbedWood
+63779589014700:Started: [11] HfG_2_10_Version2BankTestbedWood_hfgLean_60
+63779589014701:startedBlankScene
+63779589016712:endedBlankScene
+63779589016712:Elapsed time: 2013
+63779589016713:Version2BankTestbedWood
+63779589034883:Started trial: HfG_2_10_Version2BankTestbedWood_hfgLean_60
+63779589034885:Started: [11] HfG_2_10_Version2BankTestbedWood_hfgLean_60
+63779589094894:Elapsed time: 60008
+63779589094894:Finished trial: HfG_2_10_Version2BankTestbedWood_hfgLean_60
+63779589094896:Started questions: HfG_2_10_Version2BankTestbedWood_hfgLean_60
+63779589186824:Finished questions: HfG_2_10_Version2BankTestbedWood_hfgLean_60
+63779589233154:Started: [12] HfG_2_11_Version2BankTestbedWood_hfgSit_75
+63779589233154:startedBlankScene
+63779589235157:endedBlankScene
+63779589235158:Elapsed time: 2005
+63779589235159:Version2BankTestbedWood
+63779589253218:Started trial: HfG_2_11_Version2BankTestbedWood_hfgSit_75
+63779589253220:Started: [12] HfG_2_11_Version2BankTestbedWood_hfgSit_75
+63779589328222:Elapsed time: 75001
+63779589328222:Finished trial: HfG_2_11_Version2BankTestbedWood_hfgSit_75
+63779589328224:Started questions: HfG_2_11_Version2BankTestbedWood_hfgSit_75
+63779589399859:Finished questions: HfG_2_11_Version2BankTestbedWood_hfgSit_75
+63779589448615:Started: [13] HfG_2_12_Version2BankTestbedWood_hfgLean_105
+63779589448615:startedBlankScene
+63779589450628:endedBlankScene
+63779589450628:Elapsed time: 2015
+63779589450629:Version2BankTestbedWood
+63779589465949:Started trial: HfG_2_12_Version2BankTestbedWood_hfgLean_105
+63779589465959:Started: [13] HfG_2_12_Version2BankTestbedWood_hfgLean_105
+63779589570952:Elapsed time: 104992
+63779589570952:Finished trial: HfG_2_12_Version2BankTestbedWood_hfgLean_105
+63779589570954:Started questions: HfG_2_12_Version2BankTestbedWood_hfgLean_105
+63779589656345:Finished questions: HfG_2_12_Version2BankTestbedWood_hfgLean_105
+63779589708966:Started: [14] HfG_2_13_Version2BankTestbedWood_hfgLean_90
+63779589708967:startedBlankScene
+63779589710974:endedBlankScene
+63779589710974:Elapsed time: 2011
+63779589710975:Version2BankTestbedWood
+63779589725039:Started trial: HfG_2_13_Version2BankTestbedWood_hfgLean_90
+63779589725227:Started: [14] HfG_2_13_Version2BankTestbedWood_hfgLean_90
+63779589815526:Elapsed time: 90298
+63779589815526:Finished trial: HfG_2_13_Version2BankTestbedWood_hfgLean_90
+63779589815528:Started questions: HfG_2_13_Version2BankTestbedWood_hfgLean_90
+63779589893083:Finished questions: HfG_2_13_Version2BankTestbedWood_hfgLean_90
+63779589942381:Started: [15] HfG_2_14_Version2BankTestbedWood_hfgSit_120
+63779589942381:startedBlankScene
+63779589944383:endedBlankScene
+63779589944384:Elapsed time: 2003
+63779589944385:Version2BankTestbedWood
+63779589964621:Started trial: HfG_2_14_Version2BankTestbedWood_hfgSit_120
+63779589964623:Started: [15] HfG_2_14_Version2BankTestbedWood_hfgSit_120
+63779590084629:Elapsed time: 120004
+63779590084629:Finished trial: HfG_2_14_Version2BankTestbedWood_hfgSit_120
+63779590084632:Started questions: HfG_2_14_Version2BankTestbedWood_hfgSit_120
+63779590166383:Finished questions: HfG_2_14_Version2BankTestbedWood_hfgSit_120
+63779590171519:Version1BankTestbedMesh
+63779590358553:Started: [16] HfG_2_15_Version1BankTestbedMesh_hfgLean_105
+63779590358554:startedBlankScene
+63779590360559:endedBlankScene
+63779590360560:Elapsed time: 2218
+63779590360561:Version1BankTestbedMesh
+63779590377643:Started trial: HfG_2_15_Version1BankTestbedMesh_hfgLean_105
+63779590377645:Started: [16] HfG_2_15_Version1BankTestbedMesh_hfgLean_105
+63779590482647:Elapsed time: 105001
+63779590482647:Finished trial: HfG_2_15_Version1BankTestbedMesh_hfgLean_105
+63779590482649:Started questions: HfG_2_15_Version1BankTestbedMesh_hfgLean_105
+63779590567555:Finished questions: HfG_2_15_Version1BankTestbedMesh_hfgLean_105
+63779590614702:Started: [17] HfG_2_16_Version2BankTestbedWood_hfgLean_120
+63779590614702:startedBlankScene
+63779590616713:endedBlankScene
+63779590616713:Elapsed time: 2012
+63779590616714:Version2BankTestbedWood
+63779590634017:Started trial: HfG_2_16_Version2BankTestbedWood_hfgLean_120
+63779590634019:Started: [17] HfG_2_16_Version2BankTestbedWood_hfgLean_120
+63779590754025:Elapsed time: 120006
+63779590754025:Finished trial: HfG_2_16_Version2BankTestbedWood_hfgLean_120
+63779590754027:Started questions: HfG_2_16_Version2BankTestbedWood_hfgLean_120
+63779590841857:Finished questions: HfG_2_16_Version2BankTestbedWood_hfgLean_120
+63779590886025:Started: [18] HfG_2_17_Version1BankTestbedMesh_hfgLean_60
+63779590886026:startedBlankScene
+63779590888031:endedBlankScene
+63779590888032:Elapsed time: 2009
+63779590888033:Version1BankTestbedMesh
+63779590901121:Started trial: HfG_2_17_Version1BankTestbedMesh_hfgLean_60
+63779590901122:Started: [18] HfG_2_17_Version1BankTestbedMesh_hfgLean_60
+63779590961131:Elapsed time: 60007
+63779590961131:Finished trial: HfG_2_17_Version1BankTestbedMesh_hfgLean_60
+63779590961133:Started questions: HfG_2_17_Version1BankTestbedMesh_hfgLean_60
+63779591046819:Finished questions: HfG_2_17_Version1BankTestbedMesh_hfgLean_60
+63779591090515:Started: [19] HfG_2_18_Version2BankTestbedWood_hfgLean_75
+63779591090516:startedBlankScene
+63779591092516:endedBlankScene
+63779591092517:Elapsed time: 2003
+63779591092518:Version2BankTestbedWood
+63779591105761:Started trial: HfG_2_18_Version2BankTestbedWood_hfgLean_75
+63779591105763:Started: [19] HfG_2_18_Version2BankTestbedWood_hfgLean_75
+63779591180765:Elapsed time: 75002
+63779591180765:Finished trial: HfG_2_18_Version2BankTestbedWood_hfgLean_75
+63779591180767:Started questions: HfG_2_18_Version2BankTestbedWood_hfgLean_75
+63779591252157:Finished questions: HfG_2_18_Version2BankTestbedWood_hfgLean_75
+63779591298998:Started: [20] HfG_2_19_Version1BankTestbedMesh_hfgLean_90
+63779591298998:startedBlankScene
+63779591301004:endedBlankScene
+63779591301005:Elapsed time: 2011
+63779591301006:Version1BankTestbedMesh
+63779591313196:Started trial: HfG_2_19_Version1BankTestbedMesh_hfgLean_90
+63779591313198:Started: [20] HfG_2_19_Version1BankTestbedMesh_hfgLean_90
+63779591403198:Elapsed time: 89999
+63779591403198:Finished trial: HfG_2_19_Version1BankTestbedMesh_hfgLean_90
+63779591403200:Started questions: HfG_2_19_Version1BankTestbedMesh_hfgLean_90
+63779591475390:Finished questions: HfG_2_19_Version1BankTestbedMesh_hfgLean_90
+63779591480521:Version1BankTestbedMesh
+63779591703988:Started: [21] HfG_2_20_Version1BankTestbedMesh_hfgSit_75
+63779591703989:startedBlankScene
+63779591705993:endedBlankScene
+63779591705994:Elapsed time: 2006
+63779591705995:Version1BankTestbedMesh
+63779591719381:Started trial: HfG_2_20_Version1BankTestbedMesh_hfgSit_75
+63779591719383:Started: [21] HfG_2_20_Version1BankTestbedMesh_hfgSit_75
+63779591794385:Elapsed time: 75001
+63779591794385:Finished trial: HfG_2_20_Version1BankTestbedMesh_hfgSit_75
+63779591794387:Started questions: HfG_2_20_Version1BankTestbedMesh_hfgSit_75
+63779591872531:Finished questions: HfG_2_20_Version1BankTestbedMesh_hfgSit_75
+63779591924436:Started: [22] HfG_2_21_Version2BankTestbedWood_hfgSit_90
+63779591924437:startedBlankScene
+63779591926441:endedBlankScene
+63779591926441:Elapsed time: 2007
+63779591926442:Version2BankTestbedWood
+63779591934983:Started trial: HfG_2_21_Version2BankTestbedWood_hfgSit_90
+63779591934985:Started: [22] HfG_2_21_Version2BankTestbedWood_hfgSit_90
+63779592024992:Elapsed time: 90007
+63779592024993:Finished trial: HfG_2_21_Version2BankTestbedWood_hfgSit_90
+63779592024995:Started questions: HfG_2_21_Version2BankTestbedWood_hfgSit_90
+63779592096929:Finished questions: HfG_2_21_Version2BankTestbedWood_hfgSit_90
+63779592142890:Started: [23] HfG_2_22_Version1BankTestbedMesh_hfgSit_120
+63779592142890:startedBlankScene
+63779592144897:endedBlankScene
+63779592144898:Elapsed time: 2008
+63779592144899:Version1BankTestbedMesh
+63779592163835:Started trial: HfG_2_22_Version1BankTestbedMesh_hfgSit_120
+63779592163837:Started: [23] HfG_2_22_Version1BankTestbedMesh_hfgSit_120
+63779592283844:Elapsed time: 120006
+63779592283844:Finished trial: HfG_2_22_Version1BankTestbedMesh_hfgSit_120
+63779592283846:Started questions: HfG_2_22_Version1BankTestbedMesh_hfgSit_120
+63779592352260:Finished questions: HfG_2_22_Version1BankTestbedMesh_hfgSit_120
+63779592396256:Started: [24] HfG_2_23_Version2BankTestbedWood_hfgSit_60
+63779592396257:startedBlankScene
+63779592398262:endedBlankScene
+63779592398263:Elapsed time: 2007
+63779592398263:Version2BankTestbedWood
+63779592411092:Started trial: HfG_2_23_Version2BankTestbedWood_hfgSit_60
+63779592411094:Started: [24] HfG_2_23_Version2BankTestbedWood_hfgSit_60
+63779592471101:Elapsed time: 60007
+63779592471101:Finished trial: HfG_2_23_Version2BankTestbedWood_hfgSit_60
+63779592471104:Started questions: HfG_2_23_Version2BankTestbedWood_hfgSit_60
+63779592544960:Finished questions: HfG_2_23_Version2BankTestbedWood_hfgSit_60
+63779592590770:Started: [25] HfG_2_24_Version2BankTestbedWood_hfgSit_105
+63779592590771:startedBlankScene
+63779592592780:endedBlankScene
+63779592592781:Elapsed time: 2012
+63779592592782:Version2BankTestbedWood
+63779592606247:Started trial: HfG_2_24_Version2BankTestbedWood_hfgSit_105
+63779592606249:Started: [25] HfG_2_24_Version2BankTestbedWood_hfgSit_105
+63779592711249:Elapsed time: 105000
+63779592711249:Finished trial: HfG_2_24_Version2BankTestbedWood_hfgSit_105
+63779592711251:Started questions: HfG_2_24_Version2BankTestbedWood_hfgSit_105
+63779592791916:Finished questions: HfG_2_24_Version2BankTestbedWood_hfgSit_105
+63779592802378:Started outro
+63779592919375:Ended experiment
