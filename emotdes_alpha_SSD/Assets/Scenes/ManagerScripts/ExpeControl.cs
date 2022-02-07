@@ -160,11 +160,11 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "valence",
-            "Which of these pictures represents your emotional state best?"
+            "Which of these pictures best represents your emotional state during the waiting time?"
         },
         {
             "arousal",
-            "Which of these pictures represents your excitement best?"
+            "Which of these pictures best represents your excitement during the waiting time?"
         },
         {
             "thinkPast",
@@ -180,11 +180,11 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "experienceBody",
-            "How intensively did you experience\nYOUR BODY most of the time?"
+            "How intensively did you experience\nYOUR BODY most of the time while waiting?"
         },
         {
             "experienceSpace",
-            "How intensively did you experience \nTHE SURROUNDING SPACE most of the time?"
+            "How intensively did you experience \nTHE SURROUNDING SPACE most of the time while waiting?"
         },
         {
             "thinkTime",
@@ -192,7 +192,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "timePass",
-            "How fast did time pass for you?"
+            "How fast did time pass for you while waiting?"
         },
         {
             "realism",
@@ -204,7 +204,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "preferPosture",
-            "Which POSTURE did you prefer?"
+            "Which POSTURE did you prefe while waiting?"
         },
         {
             "preferMaterial",
@@ -267,15 +267,15 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "valence",
-            "Welches dieser Bilder stellt deine Gefühlslage am besten dar?"
+            "Welches dieser Bilder stellt deine Gefühlslage während der Wartezeit am besten dar?"
         },
         {
             "arousal",
-            "Welches dieser Bilder stellt deine Aufregung am besten dar?"
+            "Welches dieser Bilder stellt deine Aufregung während der Wartezeit am besten dar?"
         },
         {
             "thinkPast",
-            "Wie oft hast du während der Wartezeit über \ndeine VERGANGENHEIT nachgedacht?"
+            "Wie oft hast du während des Wartens über \ndeine VERGANGENHEIT nachgedacht?"
         },
         {
             "thinkPresent",
@@ -295,11 +295,11 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "thinkTime",
-            "Wie oft hast du über Zeit an sich nachgedacht beim Warten?"
+            "Wie oft hast du beim Warten über Zeit an sich nachgedacht?"
         },
         {
             "timePass",
-            "Wie schnell ist die Zeit für dich vergangen?"
+            "Wie schnell ist die Zeit für dich vergangen beim Warten?"
         },
         {
             "realism",
@@ -307,7 +307,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "differences",
-            "Wie unterschiedlich oder ähnlich kamen dir die einzelnen Warteszenarios vor?"
+            "Wie unterschiedlich oder ähnlich kamen dir die einzelnen Szenarios vor?"
         },
         {
             "preferPosture",
@@ -327,11 +327,11 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "relax",
-            "Wie entspannt oder angespannt hast du dich während der Zeit gefühlt?"
+            "Wie entspannt oder angespannt hast du dich während der Wartezeit gefühlt?"
         },
         {
             "tired",
-            "Wie müde oder wach hast du dich während der Zeit gefühlt?"
+            "Wie müde oder wach hast du dich während der Wartezeit gefühlt?"
         },
         {
             "totalTime",
