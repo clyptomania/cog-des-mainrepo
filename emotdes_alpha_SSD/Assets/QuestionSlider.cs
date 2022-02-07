@@ -292,8 +292,8 @@ public class QuestionSlider : MonoBehaviour {
             questionTextField.text = confirmedText;
 
             string answerString = discreteVal.ToString();
-            if (timeFormat)
-                answerString += "s";
+            // if (timeFormat)
+            //     answerString += "s";
 
             _expeControl.WriteAnswer(questionText, answerString);
 
@@ -356,8 +356,8 @@ public class QuestionSlider : MonoBehaviour {
         Debug.Log("Successfully confirmed answer: " + sliderValue);
 
         string answerString = discreteVal.ToString();
-        if (timeFormat)
-            answerString += "s";
+        // if (timeFormat)
+        //     answerString += "s";
 
         _expeControl.WriteAnswer(questionText, answerString);
 

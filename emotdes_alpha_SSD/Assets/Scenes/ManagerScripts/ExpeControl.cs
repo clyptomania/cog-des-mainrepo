@@ -40,9 +40,9 @@ public class ExpeControl : MonoBehaviour {
     private int max_idx = 100;
 
     [SerializeField]
-    private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, enButton, deButton, startButton, continueButton,
-        syncButton, syncConfirmButton, scanButton, connectButton, acqButton, sampleButton;
-    [SerializeField] private Toggle chan1Toggle, chan2Toggle, chan3Toggle, chan4Toggle;
+    private Button controllerCalButton, trackerCalButton, hfgButton, sglButton, enButton, deButton, preButton, studyButton,
+    startButton, continueButton, syncButton, syncConfirmButton, scanButton, connectButton, acqButton, sampleButton;
+    [SerializeField] private Toggle chan1Toggle, chan2Toggle, chan3Toggle, chan4Toggle, eTToggle;
     [SerializeField] private InputField chan1Field, chan2Field, chan3Field, chan4Field, sampleRateField;
     public Image connectionIndicator, signal1Indicator, signal2Indicator, signal3Indicator, signal4Indicator;
 
@@ -655,6 +655,8 @@ public class ExpeControl : MonoBehaviour {
 
         tobiiTracking = PlayerPrefs.GetInt("tobii", 0) != 0;
         language = PlayerPrefs.GetInt("german") == 1 ? lang.german : lang.english;
+        preTesting = PlayerPrefs.GetInt("pretesting") == 1 ? true : false;
+        eyeTracking = PlayerPrefs.GetInt("eyetracking") == 1 ? true : false;
         m_labID = tobiiTracking ? "SGL" : "HfG";
 
         if (eyeTracking) {
@@ -1131,12 +1133,23 @@ public class ExpeControl : MonoBehaviour {
     public void GetPreviousParticipant() {
 
         m_basePath = Directory.GetParent(Application.dataPath) + "/SubjectData/" + m_labID;
+        if (preTesting)
+            m_basePath += "/PreTests";
+        // Working in D:\Maxim\cog-des-mainrepo\emotdes_alpha_SSD/SubjectData/SGL
+        // Working in D:\Maxim\cog-des-mainrepo\emotdes_alpha_SSD/SubjectData/SGL/PreTests
+
         if (!Directory.Exists(m_basePath))
             Directory.CreateDirectory(m_basePath);
 
+        Debug.Log("Working in " + m_basePath);
+
         string[] directories = Directory.GetDirectories(m_basePath);
-        int lastSubjID = 0;
-        string lastSubjectDir = "";
+        int lastSubjID = 1;
+        string lastSubjectDir = m_basePath + "/Subj_" + lastSubjID;
+
+
+        if (!Directory.Exists(lastSubjectDir))
+            Directory.CreateDirectory(lastSubjectDir);
 
         foreach (string directory in directories) {
             string folder = directory.Split('/').Last();
@@ -1156,6 +1169,7 @@ public class ExpeControl : MonoBehaviour {
 
         m_userId = lastSubjID;
         Debug.Log("Last detected participant folder " + " from " + m_labID + ": " + lastSubjID);
+        Debug.Log("Looking at " + lastSubjectDir);
 
         // m_userdataPath = m_basePath + "/Subj_" + m_userId;
 
@@ -1243,6 +1257,8 @@ public class ExpeControl : MonoBehaviour {
 
         // Get last user number
         m_basePath = Directory.GetParent(Application.dataPath) + "/SubjectData/" + m_labID;
+        if (preTesting)
+            m_basePath += "/PreTests";
         if (!Directory.Exists(m_basePath))
             Directory.CreateDirectory(m_basePath);
 
@@ -1362,9 +1378,9 @@ public class ExpeControl : MonoBehaviour {
                 } else {
 
                     // Rename userdata file before creating a new one
-                    if (File.Exists(m_userdataPath + "/UserData.txt")) {
-                        File.Move(m_userdataPath + "/UserData.txt", m_userdataPath + $"/UserData_{getTimeStamp()}.txt");
-                    }
+                    // if (File.Exists(m_userdataPath + "/UserData.txt")) {
+                    // File.Move(m_userdataPath + "/UserData.txt", m_userdataPath + $"/UserData_{getTimeStamp()}.txt");
+                    // }
                 }
             }
 
@@ -1385,12 +1401,9 @@ public class ExpeControl : MonoBehaviour {
 
 
         // User information: basic data + playlist
-        bool append = false;
-        if (rename)
-            append = true;
-        m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt", append);
+        m_recorder_info = new StreamWriter(m_userdataPath + "/UserData.txt", !rename);
 
-        if (!rename) {
+        if (rename) {
             // Record some protocol information
             WriteInfo("User_ID: " + m_userId);
             WriteInfo("lab,participant,trial_idx,roomName,instruction,duration");
@@ -1947,6 +1960,11 @@ public class ExpeControl : MonoBehaviour {
         // GetLastUserNumber ();
     }
 
+    public void SetEyeTracking() {
+        eyeTracking = eTToggle.isOn ? true : false;
+        PlayerPrefs.SetInt("eyetracking", (eTToggle.isOn ? 1 : 0));
+    }
+
     public void SaveChannelToggle(int chan) {
 
         switch (chan) {
@@ -2043,6 +2061,34 @@ public class ExpeControl : MonoBehaviour {
     // public void SetChannel4Toggle(bool state) {
     //     PlayerPrefs.SetInt("chan4", (state ? 1 : 0));
     // }
+    public void SetPreTest(bool pre) {
+
+        // Debug.Log ("Requesting Lab change. SGL? " + tobTrack);
+
+        if (pre) {
+            if (preTesting) {
+                Debug.Log("It's already Pre-Testing...");
+                return;
+            } else {
+                preTesting = true;
+                preButton.colors = SwapColors(preButton.colors);
+                studyButton.colors = SwapColors(studyButton.colors);
+                PlayerPrefs.SetInt("pretesting", 1);
+                GetPreviousParticipant();
+            }
+        } else {
+            if (!preTesting) {
+                Debug.Log("It's already the full study...");
+                return;
+            } else {
+                preTesting = false;
+                preButton.colors = SwapColors(preButton.colors);
+                studyButton.colors = SwapColors(studyButton.colors);
+                PlayerPrefs.SetInt("pretesting", 0);
+                GetPreviousParticipant();
+            }
+        }
+    }
 
     public void SetGerman(bool german) {
 
@@ -2104,6 +2150,18 @@ public class ExpeControl : MonoBehaviour {
             deButton.colors = SwapColors(deButton.colors);
         } else {
             enButton.colors = SwapColors(enButton.colors);
+        }
+
+        if (preTesting) {
+            preButton.colors = SwapColors(preButton.colors);
+        } else {
+            studyButton.colors = SwapColors(studyButton.colors);
+        }
+
+        if (eyeTracking) {
+            eTToggle.isOn = true;
+        } else {
+            eTToggle.isOn = false;
         }
 
         currentRoomInfo.text = "";
@@ -2563,6 +2621,8 @@ public class ExpeControl : MonoBehaviour {
 
         while (m_currentTrialIdx < emotPlaylist.Count) {
 
+            UpdateBatteryLevel();
+
             participantIDInfo.text = m_userId.ToString();
             trialIDInfo.text = (m_currentTrialIdx + 1).ToString();
             currentRoomInfo.text = currentEmotTrial.roomName;
@@ -2607,6 +2667,7 @@ public class ExpeControl : MonoBehaviour {
                 yield return null;
 
                 WriteInfo(currentEmotTrial.condensedRoomName);
+                FlushInfo();
 
                 DisableCalPoints();
 
@@ -2749,6 +2810,7 @@ public class ExpeControl : MonoBehaviour {
                RoomManager.instance.currentScene.isLoaded);
             yield return null;
             toggleMessage(false);
+            FlushInfo();
 
             trainSpawner = GameObject.FindObjectOfType<TrainSpawner>();
             DisableCalPoints();
@@ -2844,6 +2906,7 @@ public class ExpeControl : MonoBehaviour {
 
 
             WriteInfo("Started trial: " + currentEmotTrial.expName);
+            FlushInfo();
 
             // Start new gaze record (record name = stimulus name)
             if (eyeTracking) {
@@ -2921,12 +2984,17 @@ public class ExpeControl : MonoBehaviour {
 
             m_isPresenting = false;
 
+            // Stop recording Plux data
+            if (pluxConnected)
+                TogglePluxAcquisition();
+
             _instructBehaviour.setInstruction("Please wait");
 
 
             WriteInfo("Finished trial: " + currentEmotTrial.expName);
 
             Debug.Log($"Finished: {currentEmotTrial.expName} - {trialIDX}");
+            FlushInfo();
 
             //
             // Initiate Questioning
@@ -2956,7 +3024,6 @@ public class ExpeControl : MonoBehaviour {
             }
 
 
-            WriteInfo("Started questions: " + currentEmotTrial.expName);
 
             // toggleMessage (true, "beginQuestions");
 
@@ -2966,21 +3033,21 @@ public class ExpeControl : MonoBehaviour {
             _instructBehaviour.toggleWorldInstruction(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             toggleMessage(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-
-            if (pluxConnected)
-                TogglePluxAcquisition();
 
             // THIS IS THE QUESTION BLOCK
 
-            yield return new WaitForSecondsRealtime(0.5f);
+            WriteInfo("Started questions: " + currentEmotTrial.expName);
+            FlushInfo();
+
             ToggleQuestion(true, "waitEstimation");
-            _questionSlider.UpdateSliderRange(0, 600, false, true);
+            _questionSlider.UpdateSliderRange(0, 600, false, true, "", "mm:ss");
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "timePass");
             if (language == lang.german)
                 _questionSlider.UpdateSliderRange(1, 100, true, false, "extrem langsam", " ", "extrem schnell");
@@ -2989,10 +3056,9 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
 
-
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "comfort");
             if (language == lang.german)
                 _questionSlider.UpdateSliderRange(1, 100, true, false, "sehr unbequem", " ", "sehr bequem");
@@ -3001,9 +3067,9 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "relax");
             if (language == lang.german)
                 _questionSlider.UpdateSliderRange(1, 100, true, false, "extrem angespannt", " ", "extrem entspannt");
@@ -3012,9 +3078,9 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "tired");
             if (language == lang.german)
                 _questionSlider.UpdateSliderRange(1, 100, true, false, "sehr müde", " ", "sehr wach");
@@ -3023,8 +3089,7 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitUntil(() => _questionSlider.confirmed);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
-
-
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
 
             // SAM Scale: valence
             ToggleQuestion(true, "valence");
@@ -3052,7 +3117,6 @@ public class ExpeControl : MonoBehaviour {
             ToggleQuestion(false);
             yield return new WaitForSecondsRealtime(messageWaitDuration);
 
-            yield return new WaitForSecondsRealtime(0.5f);
             ToggleQuestion(true, "thinkPresent");
             if (language == lang.german)
                 _questionSlider.UpdateSliderRange(1, 100, true, false, "überhaupt nicht", " ", "die ganze Zeit");
@@ -3099,11 +3163,12 @@ public class ExpeControl : MonoBehaviour {
             else
                 _questionSlider.UpdateSliderRange(1, 100, true, false, "not at all", " ", "extremely often");
             yield return new WaitUntil(() => _questionSlider.confirmed);
-            yield return new WaitForSecondsRealtime(messageWaitDuration);
             ToggleQuestion(false);
-
-
             WriteInfo("Finished questions: " + currentEmotTrial.expName);
+            FlushInfo();
+            yield return new WaitForSecondsRealtime(messageWaitDuration);
+
+
 
             // THIS IS THE END OF THE QUESTION BLOCK
 
@@ -3115,7 +3180,6 @@ public class ExpeControl : MonoBehaviour {
             yield return new WaitForSecondsRealtime(3.0f);
 
             m_currentTrialIdx++;
-            FlushInfo();
         }
 
         m_currentTrialIdx--;
@@ -3166,7 +3230,7 @@ public class ExpeControl : MonoBehaviour {
 
         yield return new WaitForSecondsRealtime(messageWaitDuration);
         ToggleQuestion(true, "totalTime");
-        _questionSlider.UpdateSliderRange(0, 12000, false, true);
+        _questionSlider.UpdateSliderRange(0, 300, false, true, "", "hh:mm");
         yield return new WaitUntil(() => _questionSlider.confirmed);
         yield return new WaitForSecondsRealtime(messageWaitDuration);
         ToggleQuestion(false);
