@@ -2632,6 +2632,35 @@ public class ExpeControl : MonoBehaviour {
 
             UpdateBatteryLevel();
 
+            switch (m_currentTrialIdx) {
+
+                case 0:
+                    durationToContinue = 0.75f;
+                    messageWaitDuration = 0.75f;
+                    break;
+                case 1:
+                    durationToContinue = 0.6f;
+                    messageWaitDuration = 0.6f;
+                    break;
+                case 2:
+                    durationToContinue = 0.5f;
+                    messageWaitDuration = 0.5f;
+                    break;
+                case 3:
+                    durationToContinue = 0.4f;
+                    messageWaitDuration = 0.4f;
+                    break;
+                case 4:
+                    durationToContinue = 0.35f;
+                    messageWaitDuration = 0.35f;
+                    break;
+                default:
+                    durationToContinue = 0.3f;
+                    messageWaitDuration = 0.3f;
+                    break;
+
+            }
+
             participantIDInfo.text = m_userId.ToString();
             trialIDInfo.text = (m_currentTrialIdx + 1).ToString();
             currentRoomInfo.text = currentEmotTrial.roomName;
