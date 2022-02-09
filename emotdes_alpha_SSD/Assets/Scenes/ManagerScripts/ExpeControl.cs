@@ -956,6 +956,9 @@ public class ExpeControl : MonoBehaviour {
 
             pluxSampling = false;
 
+            if (startButtonReady)
+                startButton.interactable = true;
+
             return;
         }
 
@@ -974,6 +977,8 @@ public class ExpeControl : MonoBehaviour {
                 startNewPluxRecord(special);
 
                 pluxSampling = true;
+
+                startButton.interactable = false;
 
 
                 acqButton.GetComponentInChildren<Text>().text = "Stop Sampling";
@@ -2127,6 +2132,8 @@ public class ExpeControl : MonoBehaviour {
 
     // THE ACTUAL GAME LOOP!
 
+    bool startButtonReady = false;
+
     IEnumerator Start() {
 
         taskTime = 0;
@@ -2184,6 +2191,7 @@ public class ExpeControl : MonoBehaviour {
 
 
         startButton.interactable = false;
+        startButtonReady = false;
         continueButton.interactable = false;
         controllerCalButton.interactable = false;
 
@@ -2262,6 +2270,7 @@ public class ExpeControl : MonoBehaviour {
 
         promptPanel.SetActive(false);
         startButton.interactable = true;
+        startButtonReady = true;
         continueButton.interactable = true;
 
         // _questionSlider.gameObject.SetActive(true);
