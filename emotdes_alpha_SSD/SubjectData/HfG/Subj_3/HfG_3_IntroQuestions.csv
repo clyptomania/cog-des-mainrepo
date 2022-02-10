@@ -1,0 +1,8 @@
+UnityTS,LabID,ParticipantID,TrialID,Room,Instruction,Duration,Question,Answer
+63780101754026,HfG,3,0,Version1BankTestbedMesh,hfgSit,90,age,63
+63780101756592,HfG,3,0,Version1BankTestbedMesh,hfgSit,90,height,170
+63780101759513,HfG,3,0,Version1BankTestbedMesh,hfgSit,90,sex,1
+63780101761823,HfG,3,0,Version1BankTestbedMesh,hfgSit,90,occupation,2
+63780101764433,HfG,3,0,Version1BankTestbedMesh,hfgSit,90,vrLife,2
+63780101768509,HfG,3,0,Version1BankTestbedMesh,hfgSit,90,transportFreq,2
+63780101771363,HfG,3,0,Version1BankTestbedMesh,hfgSit,90,patience,50
