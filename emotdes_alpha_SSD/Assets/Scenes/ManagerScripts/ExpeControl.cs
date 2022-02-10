@@ -928,7 +928,6 @@ public class ExpeControl : MonoBehaviour {
     }
 
     private bool pluxSampling = false;
-
     public void TogglePluxAcquisition(string special = "") {
 
         if (pluxSampling) {
@@ -956,8 +955,10 @@ public class ExpeControl : MonoBehaviour {
 
             pluxSampling = false;
 
-            if (startButtonReady)
+            if (startButtonReady) {
                 startButton.interactable = true;
+                continueButton.interactable = true;
+            }
 
             return;
         }
@@ -979,6 +980,7 @@ public class ExpeControl : MonoBehaviour {
                 pluxSampling = true;
 
                 startButton.interactable = false;
+                continueButton.interactable = false;
 
 
                 acqButton.GetComponentInChildren<Text>().text = "Stop Sampling";
@@ -1014,7 +1016,20 @@ public class ExpeControl : MonoBehaviour {
         }
     }
 
-    void WritePluxLines(int[][] package, long dumpTime) {
+    void WritePluxLines(long[][] package) {
+
+        for (int i = 0; i < package.Length; i++) {
+            string dataLine = package[i][0].ToString();
+            // string dataLine = getTimeStamp().ToString();
+            for (int j = 1; j < package[i].Length; j++) {
+                dataLine += "," + package[i][j];
+            }
+            if (m_recorder_plux.BaseStream.CanWrite) {
+                m_recorder_plux.WriteLine(dataLine);
+            }
+        }
+    }
+    void WritePluxLinesOwnTS(long[][] package, long dumpTime) {
 
         float timeStepMillis = (1000.0f / (float)sampleRate);
         long firstSampleTime = dumpTime - Mathf.RoundToInt(timeStepMillis * (float)package.Length);
@@ -1037,8 +1052,9 @@ public class ExpeControl : MonoBehaviour {
         // Debug.Log("Getting samples from the Plux!");
 
 
-        int[][] testPackage = PluxDevManager.GetPackageOfData(true);
-        WritePluxLines(testPackage, getTimeStamp());
+        long[][] testPackage = PluxDevManager.GetPackageOfData(true);
+        // WritePluxLinesOwnTS(testPackage, getTimeStamp());
+        WritePluxLines(testPackage);
 
 
         // foreach (int chan in ActiveChannels) {
@@ -1335,6 +1351,9 @@ public class ExpeControl : MonoBehaviour {
     }
 
     private void SetUp(Boolean rename = true) {
+
+        if (isSampling)
+            TogglePluxAcquisition();
 
         // deleteOldData = reset;
         m_userdataPath = m_basePath + "/Subj_" + m_userId;
@@ -3658,8 +3677,8 @@ public class ExpeControl : MonoBehaviour {
         if (!pluxSampling)
             return;
 
-        int[][] dataPackage = PluxDevManager.GetPackageOfData(false);
-        int[] lastSamples = new int[ActiveChannels.Count];
+        long[][] dataPackage = PluxDevManager.GetPackageOfData(false);
+        long[] lastSamples = new long[ActiveChannels.Count];
 
         if (dataPackage != null && dataPackage[0] != null) {
 
@@ -3670,16 +3689,16 @@ public class ExpeControl : MonoBehaviour {
             foreach (int chan in ActiveChannels) {
                 switch (chan) {
                     case 1:
-                        signal1Indicator.color = Color.HSVToRGB(0, 1, lastSamples[0] / maxSample);
+                        signal1Indicator.color = Color.HSVToRGB(0, 1, lastSamples[1] / maxSample);
                         break;
                     case 2:
-                        signal2Indicator.color = Color.HSVToRGB(0.55f, 1, lastSamples[1] / maxSample);
+                        signal2Indicator.color = Color.HSVToRGB(0.55f, 1, lastSamples[2] / maxSample);
                         break;
                     case 3:
-                        signal3Indicator.color = Color.HSVToRGB(0.25f, 1, lastSamples[2] / maxSample);
+                        signal3Indicator.color = Color.HSVToRGB(0.25f, 1, lastSamples[3] / maxSample);
                         break;
                     case 4:
-                        signal4Indicator.color = Color.HSVToRGB(0.15f, 1, lastSamples[3] / maxSample);
+                        signal4Indicator.color = Color.HSVToRGB(0.15f, 1, lastSamples[4] / maxSample);
                         break;
                 }
             }
