@@ -335,7 +335,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "totalTime",
-            "Wie lange glaubst du hat das gesamte Experiment gedauert?"
+            "Wie lange glaubst du hat das gesamte Experiment gedauert (h:mm)?"
         }
     };
 
@@ -362,17 +362,17 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "pleaseLean",
-            "Please lean on the high bench.\n\n" +
+            "Please LEAN on the HIGH BENCH.\n\n" +
             "Once you're seated, pull the trigger to continue."
         },
         {
             "pleaseSit",
-            "Please sit down on the low bench.\n\n" +
+            "Please SIT DOWN on the LOW BENCH.\n\n" +
             "Once you're seated, pull the trigger to continue."
         },
         {
             "pleaseStand",
-            "Please stand up and take one step forward, away from the bench.\n\n" +
+            "Please STAND UP and take one STEP FORWARD, away from the bench.\n\n" +
             "Once you're standing, pull the trigger to continue."
         },
         {
@@ -445,13 +445,13 @@ public class ExpeControl : MonoBehaviour {
             "instructionSitHFG",
             "The waiting period will begin soon!\n" +
             "You will get notified once it's over, and you will be asked questions about your experience then.\n\n" +
-            "Please sit down on the low bench, and pull the trigger to begin!"
+            "Please SIT DOWN on the LOW BENCH, and pull the trigger to begin!"
         },
         {
             "instructionLeanHFG",
             "The waiting period will begin soon!\n" +
             "You will get notified once it's over, and you will be asked questions about your experience then.\n\n" +
-            "Please lean on the high bench, and pull the trigger to begin!"
+            "Please LEAN on the HIGH BENCH, and pull the trigger to begin!"
         },
         {
             "three",
@@ -468,7 +468,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "beginQuestions",
             "The waiting time is now over!\n\n" +
-            "Please stand up now and step a way a bit from the chairs.\n\n" +
+            "Please STAND UP now and step a way a bit from the chairs.\n\n" +
             "Pull the trigger to continue with the questionnaires."
         },
         {
@@ -487,7 +487,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "calibrateVSR",
             "Starte bitte die EYE TRACKER Kalibrierung.\n" +
-            "Du kannst die Assistenten dabei jederzeit um Hilfe bitten.\n\n" +
+            "Du kannst die Assistent*Innen dabei jederzeit um Hilfe bitten.\n\n" +
             "Halte den Trigger gedrückt um die Kallibrierung zu starten!"
         },
         {
@@ -499,7 +499,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "takeBreak",
             "Du kannst jetzt eine kurze Pause machen.\n\n" +
-            "Bitte nehme das Heaset ab und wende dich an die Assistenten."
+            "Bitte nehme das Heaset ab und wende dich an die Assistent*Innen."
         },
         {
             "endBreak",
@@ -507,17 +507,17 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "pleaseLean",
-            "Bitte lehne dich an den Anlehner an.\n\n" +
+            "Bitte LEHNE dich an die HOHE BANK an.\n\n" +
             "Sobald du Platz genommen hast, halte den Trigger gedrückt, um fortzufahren."
         },
         {
             "pleaseSit",
-            "Bitte setze dich auf die Bank.\n\n" +
+            "Bitte SETZE dich auf die BANK.\n\n" +
             "Sobald du Platz genommen hast, halte den Trigger gedrückt, um fortzufahren."
         },
         {
             "pleaseStand",
-            "Bitte stehe auf und trete einen Schritt nach vorne, weg von der Bank.\n\n" +
+            "Bitte STEHE AUF und trete einen SCHRITT NACH VORNE, weg von der Bank.\n\n" +
             "Sobald du stehst, halte den Trigger gedrückt, um fortzufahren."
         },
         {
@@ -564,7 +564,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "instructionEndSitLean",
             "Die Wartezeit ist nun vorbei!\n\n" +
-            "Bitte stehe auf und trete ein Stück von der Bank weg.\n\n" +
+            "Bitte STEHE AUF und trete ein Stück von der Bank weg.\n\n" +
             "Halte den Trigger gedrückt, um mit den Fragen fortzufahren."
         },
         {
@@ -590,13 +590,13 @@ public class ExpeControl : MonoBehaviour {
             "instructionSitHFG",
             "Die Wartezeit wird gleich beginnen!\n" +
             "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
-            "Bitte setze dich auf die niedrige Bank, und halte den Trigger gedrückt, um zu beginnen!"
+            "Bitte SETZE dich auf die NIEDRIGE BANK, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
             "instructionLeanHFG",
             "Die Wartezeit wird gleich beginnen!\n" +
             "Wenn diese vorüber ist, wirst du benachrichtigt und dir werden Fragen gestellt.\n\n" +
-            "Bitte lehne dich an die hohe Bank an, und halte den Trigger gedrückt, um zu beginnen!"
+            "Bitte LEHNE dich an die HOHE BANK an, und halte den Trigger gedrückt, um zu beginnen!"
         },
         {
             "three",
@@ -613,7 +613,7 @@ public class ExpeControl : MonoBehaviour {
         {
             "beginQuestions",
             "Die Wartezeit ist nun vorbei!\n\n" +
-            "Bitte stehe auf und trete ein Stück von der Sitzbank weg.\n\n" +
+            "Bitte STEHE AUF und trete ein Stück von der Sitzbank weg.\n\n" +
             "Halte den Trigger gedrückt, um mit den Fragen fortzufahren."
         },
         {
