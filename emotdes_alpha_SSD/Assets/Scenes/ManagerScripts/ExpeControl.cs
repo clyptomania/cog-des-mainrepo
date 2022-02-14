@@ -771,7 +771,6 @@ public class ExpeControl : MonoBehaviour {
     public void ConnectionDone() {
         Debug.Log("Connection with device " + this.SelectedDevice + " established with success!");
 
-
         connectionIndicator.color = Color.green;
 
         string devType = PluxDevManager.GetDeviceTypeUnity();
@@ -803,6 +802,8 @@ public class ExpeControl : MonoBehaviour {
         // scanButton.interactable = false;
         acqButton.interactable = true;
         pluxConnected = true;
+
+        usingPlux = true;
     }
 
 
@@ -928,6 +929,8 @@ public class ExpeControl : MonoBehaviour {
     }
 
     private bool pluxSampling = false;
+    private bool usingPlux = false;
+    private bool pluxperimenting = false;
     public void TogglePluxAcquisition(string special = "") {
 
         if (pluxSampling) {
@@ -1352,7 +1355,8 @@ public class ExpeControl : MonoBehaviour {
 
     private void SetUp(Boolean rename = true) {
 
-        if (isSampling)
+        // Turn off plux acquisition if it's already running
+        if (pluxSampling)
             TogglePluxAcquisition();
 
         // deleteOldData = reset;
@@ -2828,9 +2832,6 @@ public class ExpeControl : MonoBehaviour {
 
             yield return new WaitForSecondsRealtime(1.0f);
 
-            if (pluxConnected)
-                TogglePluxAcquisition();
-
             long start_time = getTimeStamp();
             // Start new gaze record (record name = stimulus name)
             if (eyeTracking) {
@@ -2840,6 +2841,13 @@ public class ExpeControl : MonoBehaviour {
                     _eyeTrack.startNewRecord(true);
                 Debug.Log("Started eye tracking.");
             }
+
+            // Already start a plux record for the baseline and the transition to the next scene
+            if (pluxConnected && !pluxSampling)
+                TogglePluxAcquisition();
+
+            if (usingPlux)
+                pluxperimenting = true;
 
 
             WriteInfo("startedBlankScene");
@@ -3042,8 +3050,10 @@ public class ExpeControl : MonoBehaviour {
             m_isPresenting = false;
 
             // Stop recording Plux data
-            if (pluxConnected)
+            if (pluxConnected && pluxSampling)
                 TogglePluxAcquisition();
+
+            pluxperimenting = false;
 
             _instructBehaviour.setInstruction("Please wait");
 
@@ -3672,6 +3682,7 @@ public class ExpeControl : MonoBehaviour {
 
     float passedTime = 0f;
     float batteryMeterTime = 0f;
+    bool sensorUpdateFail = false;
 
     public void UpdateSensorReadouts() {
         if (!pluxSampling)
@@ -3702,6 +3713,8 @@ public class ExpeControl : MonoBehaviour {
                         break;
                 }
             }
+        } else {
+            sensorUpdateFail = true;
         }
 
     }
@@ -3718,6 +3731,13 @@ public class ExpeControl : MonoBehaviour {
             }
             if (realTimeReadout)
                 UpdateSensorReadouts();
+        }
+
+        if (pluxperimenting) {
+            if (!pluxConnected || !pluxSampling || sensorUpdateFail) {
+                pluxperimenting = false;
+                syncPanel.gameObject.SetActive(true);
+            }
         }
 
         if (pluxConnected) {
