@@ -2789,8 +2789,11 @@ public class ExpeControl : MonoBehaviour {
 
             }
 
+            if (trialIDX % 5 == 0) {
+                Debug.Log("This is where the eye tracker calibration would happen.");
+            }
 
-            if (eyeTracking) {
+            if (eyeTracking && trialIDX % 5 == 0) {
                 // HfG Calibration
                 if (!tobiiTracking) {
 
@@ -2824,8 +2827,6 @@ public class ExpeControl : MonoBehaviour {
                     StartCoroutine(FullTobiiCalibration());
 
                     yield return new WaitUntil(() => eyeCalibrated);
-
-
                 }
             }
 
