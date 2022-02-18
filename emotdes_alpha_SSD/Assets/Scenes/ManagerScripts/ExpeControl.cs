@@ -3877,6 +3877,8 @@ public class ExpeControl : MonoBehaviour {
 
     bool eyeCalibrated = false;
     bool eyeValidated = false;
+
+    private bool tobiiCallbackAdded = false;
     IEnumerator FullTobiiCalibration() {
 
         Debug.Log("Inside Tobii calibration routine");
@@ -3893,7 +3895,10 @@ public class ExpeControl : MonoBehaviour {
         print("_eyeTrackerTobii != null");
 
         yield return new WaitForEndOfFrame();
-        _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
+        if (!tobiiCallbackAdded) {
+            _eyeTrackerTobii._eyeTracker.HMDGazeDataReceived += HMDGazeDataReceivedCallback;
+            tobiiCallbackAdded = true;
+        }
 
         m_ETsubscribed = true;
         print("Eyetracker started and subscribed to");
