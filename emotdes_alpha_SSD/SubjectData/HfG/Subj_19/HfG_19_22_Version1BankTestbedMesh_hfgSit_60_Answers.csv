@@ -1,0 +1,14 @@
+UnityTS,LabID,ParticipantID,TrialID,Room,Instruction,Duration,Question,Answer
+63781296512510,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,waitEstimation,25
+63781296517997,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,timePass,89
+63781296523351,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,comfort,96
+63781296532692,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,relax,86
+63781296536757,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,tired,33
+63781296539954,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,valence,4
+63781296543564,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,arousal,1
+63781296546952,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,thinkPast,4
+63781296551017,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,thinkPresent,62
+63781296555560,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,thinkFuture,32
+63781296560524,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,experienceBody,32
+63781296563911,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,experienceSpace,85
+63781296567689,HfG,19,22,Version1BankTestbedMesh,hfgSit,60,thinkTime,81
