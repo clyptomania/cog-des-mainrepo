@@ -156,7 +156,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "waitEstimation",
-            "How long do you think you have been waiting from the START of the waiting period until NOW?"
+            "How long do you think you have been waiting from the START of the waiting period until NOW (mm:ss)?"
         },
         {
             "valence",
@@ -204,7 +204,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "preferPosture",
-            "Which POSTURE did you prefe while waiting?"
+            "Which POSTURE did you prefer while waiting?"
         },
         {
             "preferMaterial",
@@ -228,7 +228,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "totalTime",
-            "How long did you estimate the experiment took in total?"
+            "How long did you estimate the experiment took in total (h:mm)?"
         }
     };
 
@@ -263,7 +263,7 @@ public class ExpeControl : MonoBehaviour {
         },
         {
             "waitEstimation",
-            "Wie lange, glaubst du, hast du seit BEGINN der Wartezeit bis JETZT gewartet?"
+            "Wie lange, glaubst du, hast du seit BEGINN der Wartezeit bis JETZT gewartet (mm:ss)?"
         },
         {
             "valence",
