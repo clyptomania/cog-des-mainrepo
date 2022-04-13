@@ -1,0 +1,28 @@
+63785471662319:User_ID: 14
+63785471662319:lab,participant,trial_idx,roomName,instruction,duration
+63785471662320:SGL,14,0,Version8warmesLicht,sglSit,90
+63785471662321:SGL,14,1,Version8warmesLicht,sglStand,60
+63785471662321:SGL,14,2,Version9kaltesLicht,sglStand,120
+63785471662322:SGL,14,3,Version9kaltesLicht,sglSit,105
+63785471662322:SGL,14,4,Version8warmesLicht,sglStand,75
+63785471662323:SGL,14,5,Version8warmesLicht,sglSit,90
+63785471662323:SGL,14,6,Version9kaltesLicht,sglSit,120
+63785471662324:SGL,14,7,Version8warmesLicht,sglSit,105
+63785471662325:SGL,14,8,Version8warmesLicht,sglSit,75
+63785471662325:SGL,14,9,Version9kaltesLicht,sglSit,60
+63785471662326:SGL,14,10,Version8warmesLicht,sglSit,120
+63785471662326:SGL,14,11,Version8warmesLicht,sglStand,105
+63785471662327:SGL,14,12,Version8warmesLicht,sglStand,75
+63785471662327:SGL,14,13,Version8warmesLicht,sglSit,60
+63785471662327:SGL,14,14,Version8warmesLicht,sglStand,90
+63785471662328:SGL,14,15,Version9kaltesLicht,sglStand,105
+63785471662329:SGL,14,16,Version9kaltesLicht,sglStand,90
+63785471662329:SGL,14,17,Version8warmesLicht,sglStand,60
+63785471662329:SGL,14,18,Version8warmesLicht,sglStand,120
+63785471662330:SGL,14,19,Version9kaltesLicht,sglStand,75
+63785471662330:SGL,14,20,Version9kaltesLicht,sglSit,75
+63785471662331:SGL,14,21,Version9kaltesLicht,sglStand,60
+63785471662331:SGL,14,22,Version9kaltesLicht,sglStand,120
+63785471662332:SGL,14,23,Version9kaltesLicht,sglSit,90
+63785471662332:SGL,14,24,Version9kaltesLicht,sglSit,105
+63785471662339:Started experiment
