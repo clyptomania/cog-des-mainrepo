@@ -1,0 +1,14 @@
+UnityTS,LabID,ParticipantID,TrialID,Room,Instruction,Duration,Question,Answer
+63786170629469,SGL,24,5,Version8warmesLicht,sglStand,120,waitEstimation,91
+63786170632262,SGL,24,5,Version8warmesLicht,sglStand,120,timePass,31
+63786170634653,SGL,24,5,Version8warmesLicht,sglStand,120,comfort,72
+63786170635937,SGL,24,5,Version8warmesLicht,sglStand,120,relax,50
+63786170637288,SGL,24,5,Version8warmesLicht,sglStand,120,tired,50
+63786170639188,SGL,24,5,Version8warmesLicht,sglStand,120,valence,3
+63786170641545,SGL,24,5,Version8warmesLicht,sglStand,120,arousal,1
+63786170643521,SGL,24,5,Version8warmesLicht,sglStand,120,thinkPast,50
+63786170645352,SGL,24,5,Version8warmesLicht,sglStand,120,thinkPresent,50
+63786170646996,SGL,24,5,Version8warmesLicht,sglStand,120,thinkFuture,31
+63786170649365,SGL,24,5,Version8warmesLicht,sglStand,120,experienceBody,50
+63786170651318,SGL,24,5,Version8warmesLicht,sglStand,120,experienceSpace,39
+63786170653038,SGL,24,5,Version8warmesLicht,sglStand,120,thinkTime,50
